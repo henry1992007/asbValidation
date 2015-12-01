@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Validations>
+
+    <condition id="other1" field="test" operator=">" value="" fields="field2" msg=""/>
+    <condition id="othsser1" field="other" operator="l=" value="" fields="sadf" msg=""/>
+    <class id="bizObj" class="com.company.BizObj"/>
+
+    <validation class="com.company.BizObj">
+        <condition field="test" operator=">" value="" fields="field2" msg=""/>
+        <condition field="field2" operator="in" value="4,5" msg="field2 must be 4 or 5"/>
+        <condition field="inner.obj3.string" operator="not" value="aaa,ccc" msg=""/>
+        <condition ref="other1"/>
+
+        <condition field="field2" operator="in" _value="4,5">
+            <condition field="inner" operator="not" value="gsa" msg=""/>
+            <condition field="inner" operator="not" value="gsa" msg="">
+                <condition id="other" ref="other1" field="other" operator="l=" value="" fields="sadf" msg="" logic=""/>
+            </condition>
+            <condition field="inner" operator="not" value="gsa" msg=""/>
+        </condition>
+
+        <condition id="other21" field="map" operator="key" value="test"/>
+    </validation>
+
+
+    <condition id="other1" operator=">" value="" fields="field2" msg=""/>
+
+</Validations>
