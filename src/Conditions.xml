@@ -13,6 +13,7 @@
 
         <condition field="field2" operator="in" _value="4,5">
             <condition field="inner" operator="not" value="gsa" msg=""/>
+            <condition field="inner" operator="not" value="gsa" msg=""/>
             <condition field="inner" operator="not" value="gsa" msg="">
                 <condition id="other" ref="other1" field="other" operator="l=" value="" fields="sadf" msg="" logic=""/>
             </condition>

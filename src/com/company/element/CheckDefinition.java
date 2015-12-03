@@ -9,7 +9,7 @@ import com.company.enums.SupportedType;
 /**
  * Created by henry on 15/11/16.
  */
-public class ConditionDefinition extends AbstractElementDefinition {
+public class CheckDefinition extends AbstractElementDefinition {
     private Object[] checkObjects;
     private SupportedType type;
     private ConditionField[] fields;
@@ -22,12 +22,12 @@ public class ConditionDefinition extends AbstractElementDefinition {
     private ComputeOperator _cmpt;
     private LogicComputeOperator _logic;
     private String msg;
-    private ConditionDefinition[] subConditions;
-    private ConditionDefinition[] refConditions;
+    private CheckDefinition[] subConditions;
+    private CheckDefinition[] refConditions;
     private ConditionTypeEnum conditionType;
 
 
-    public ConditionDefinition(String id, int lineNum) {
+    public CheckDefinition(String id, int lineNum) {
         setId(id);
         setLineNum(lineNum);
     }
@@ -120,19 +120,19 @@ public class ConditionDefinition extends AbstractElementDefinition {
         this.msg = msg;
     }
 
-    public ConditionDefinition[] getSubConditions() {
+    public CheckDefinition[] getSubConditions() {
         return subConditions;
     }
 
-    public void setSubConditions(ConditionDefinition[] subConditions) {
+    public void setSubConditions(CheckDefinition[] subConditions) {
         this.subConditions = subConditions;
     }
 
-    public ConditionDefinition[] getRefConditions() {
+    public CheckDefinition[] getRefConditions() {
         return refConditions;
     }
 
-    public void setRefConditions(ConditionDefinition[] refConditions) {
+    public void setRefConditions(CheckDefinition[] refConditions) {
         this.refConditions = refConditions;
     }
 

@@ -15,7 +15,7 @@ public class ConfigContext {
     List<Entity> entities;
 
     Map<String, ClassDefinition> classes;
-    Map<String, ConditionDefinition> refConditions;
+    Map<String, CheckDefinition> refConditions;
     Map<String, ValidationDefinition> validations;
 
     public ConfigContext(List<Entity> entities) {

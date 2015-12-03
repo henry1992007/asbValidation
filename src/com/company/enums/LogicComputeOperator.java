@@ -1,6 +1,7 @@
 package com.company.enums;
 
 import com.company.ComputeOperator;
+import jdk.nashorn.internal.objects.NativeUint16Array;
 
 import java.util.Arrays;
 
@@ -29,6 +30,12 @@ public enum LogicComputeOperator implements ComputeOperator<Boolean> {
                 if (var[0] != b) return true;
             return false;
         }
+    },
+    UNKNOWN("") {
+        @Override
+        public Boolean[] operate(Boolean... var) {
+            return null;
+        }
     };
 
     private String[] values;
@@ -38,10 +45,12 @@ public enum LogicComputeOperator implements ComputeOperator<Boolean> {
     }
 
     public static LogicComputeOperator fromValue(String value) {
+        if (value == null)
+            return null;
         for (LogicComputeOperator e : values())
             if (Arrays.asList(e.getValue()).contains(value.toLowerCase()))
                 return e;
-        return null;
+        return nuUNKNOWNll;
     }
 
 

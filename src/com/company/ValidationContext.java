@@ -1,6 +1,6 @@
 package com.company;
 
-import com.company.element.ConditionDefinition;
+import com.company.element.CheckDefinition;
 import com.company.element.ConditionField;
 import com.company.element.ValidationDefinition;
 import com.company.utils.Assert;
@@ -21,7 +21,7 @@ import java.util.*;
 public class ValidationContext {
 
     private ValidationDefinition ved;
-    private List<ConditionDefinition> ceds;
+    private List<CheckDefinition> ceds;
     private Map<String, Class> classMap;
     private Map<Class, Set<Object>> objectClassMap = new HashMap<Class, Set<Object>>();
 
@@ -43,7 +43,7 @@ public class ValidationContext {
             ceds = ved.getConditions();
             classMap = ved.getClasses();
 
-            for (ConditionDefinition ced : ceds) {
+            for (CheckDefinition ced : ceds) {
                 switch (ced.getConditionType()) {
                     case NORMAL:
 
@@ -55,7 +55,7 @@ public class ValidationContext {
         }
     }
 
-    public void validateNormal(ConditionDefinition ced, Object... objs) {
+    public void validateNormal(CheckDefinition ced, Object... objs) {
         ConditionField[] fields = ced.getFields();
         Map<String, Object> fieldValues = new HashMap<>();
 

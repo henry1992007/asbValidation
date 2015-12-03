@@ -7,7 +7,7 @@ import java.util.Map;
  */
 public class ValidationDefinition extends AbstractElementDefinition {
     private Map<String, Class> classes;
-    private ConditionDefinition[] conditions;
+    private CheckDefinition[] conditions;
 
 
     public ValidationDefinition(String id, int lineNum) {
@@ -23,11 +23,11 @@ public class ValidationDefinition extends AbstractElementDefinition {
         this.classes = classes;
     }
 
-    public ConditionDefinition[] getConditions() {
+    public CheckDefinition[] getConditions() {
         return conditions;
     }
 
-    public void setConditions(ConditionDefinition[] conditions) {
+    public void setConditions(CheckDefinition[] conditions) {
         this.conditions = conditions;
     }
 

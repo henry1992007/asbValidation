@@ -19,7 +19,7 @@
 //    ConfigContext configContext;
 //
 //    Map<String, ClassDefinition> classes = new HashMap<String, ClassDefinition>();
-//    Map<String, ConditionDefinition> refConditions = new HashMap<String, ConditionDefinition>();
+//    Map<String, CheckDefinition> refConditions = new HashMap<String, CheckDefinition>();
 //    Map<String, ValidationDefinition> validations = new HashMap<String, ValidationDefinition>();
 //
 //    public Map<String, Class> classIDMap = new HashMap<String, Class>();

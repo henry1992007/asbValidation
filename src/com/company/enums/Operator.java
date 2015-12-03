@@ -22,7 +22,8 @@ public enum Operator {
     CONTAINS_KEY_VALUE("kv", " must contains kv pairs "),
     BEFORE("before", ""),
     AFTER("between", ""),
-    FLOATPOINT("fp","");
+    FLOATPOINT("fp", ""),
+    UNKNOWN("", "");
 
 
     private String value;
@@ -34,6 +35,8 @@ public enum Operator {
     }
 
     public static Operator getOperator(String operator) {
+        if (operator == null)
+            return null;
         String str = operator.toLowerCase();
         for (Operator e : values()) {
             if (str.equals("=>"))
@@ -43,7 +46,7 @@ public enum Operator {
             if (e.getValue().equals(str))
                 return e;
         }
-        return null;
+        return UNKNOWN;
     }
 
     public String getValue() {

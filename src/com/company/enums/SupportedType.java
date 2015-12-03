@@ -36,7 +36,8 @@ public enum SupportedType {
             NOT_EQUAL),
     DATE("date", Date.class),
     LIST("list", List.class),
-    MAP("map", Map.class);
+    MAP("map", Map.class),
+    UNKNOWN("", null);
 
     private String name;
     private Class clazz;
@@ -49,10 +50,12 @@ public enum SupportedType {
     }
 
     public static SupportedType fromName(String name) {
+        if (name == null)
+            return null;
         for (SupportedType e : values())
             if (e.getName().equals(name))
                 return e;
-        return null;
+        return UNKNOWN;
     }
 
     public static SupportedType fromClass(Class<?> clazz) {

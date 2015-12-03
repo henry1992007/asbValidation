@@ -1,22 +1,25 @@
 package com.company.parsing;
 
+import com.company.ComputeOperator;
 import com.company.ConfigContext;
 import com.company.MultiKeySetMap;
+import com.company.element.CheckDefinition;
 import com.company.element.ClassDefinition;
-import com.company.element.ConditionDefinition;
 import com.company.element.ConditionField;
 import com.company.element.ValidationDefinition;
-import com.company.enums.ConditionTypeEnum;
-import com.company.enums.LogicComputeOperator;
-import com.company.enums.Operator;
+import com.company.enums.*;
 import com.company.utils.Assert;
+import com.company.utils.CollectionUtils;
 import com.company.utils.StringUtils;
 import com.google.common.collect.Sets;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
+
+import static com.company.utils.Assert.runtimeException;
 
 /**
  * Created by henry on 15/11/16.
@@ -24,7 +27,6 @@ import java.util.*;
 public class ConfigReader {
 
     private static MultiKeySetMap<Class, Class> parentClassMap = new MultiKeySetMap<Class, Class>();
-
 
     static {
         parentClassMap.put(Sets.newHashSet(new Class[]{Integer.class, Float.class, Double.class, Long.class, Short.class, Byte.class, BigDecimal.class, BigInteger.class}), Number.class);
@@ -35,9 +37,10 @@ public class ConfigReader {
     }
 
     private ConfigContext context;
+    private List<Entity> entities;
 
-    Map<String, ClassDefinition> classes = new HashMap<String, ClassDefinition>();
-    Map<String, ConditionDefinition> refConditions = new HashMap<String, ConditionDefinition>();
+    Map<String, ClassDefinition> classes = new HashMap<>();
+    Map<String, CheckDefinition> refConditions = new HashMap<String, CheckDefinition>();
     Map<String, ValidationDefinition> validations = new HashMap<String, ValidationDefinition>();
 
     Map<String, ClassEntity> classEntities = new HashMap<String, ClassEntity>();
@@ -53,7 +56,16 @@ public class ConfigReader {
     }
 
     public void read() {
-        for (Entity entity : context.getEntities()) {
+        for (Entity entity : entities) {
+            String name = entity.getName();
+            switch (ElementType.fromString(name)) {
+                case ClASS:
+                    readClasses(entity);
+                case NUMBER:
+                    readRefChecks(entity);
+                case VALIDATION:
+                    readValidations(entity);
+            }
             if (entity instanceof ClassEntity) {
                 if (StringUtils.isEmpty(entity.getId()))
                     continue;
@@ -76,153 +88,135 @@ public class ConfigReader {
         }
     }
 
-    private void readClasses() {
-        for (String s : classEntities.keySet()) {
-            ClassEntity entity = classEntities.get(s);
-            ClassDefinition cd = new ClassDefinition(entity.getId(), entity.getLineNum());
+    private void readClasses(Entity entity) {
+        ClassDefinition cd = new ClassDefinition(entity.getId(), entity.getLineNum());
+        try {
+            cd.setClazz(Class.forName(entity.getProperty().get("class")));
+        } catch (ClassNotFoundException e) {
+            Assert.runtimeException("a class definition should specify id and a class name of an existing Class. At line " + entity.getLineNum());
+        }
+        if (classes.containsKey(cd.getId()))
+            Assert.runtimeException("duplicated class id definition:'" + cd.getId() + "', at line " + cd.getLineNum());
+        classes.put(cd.getId(), cd);
+    }
+
+    private void readRefChecks(Entity entity) {
+        CheckDefinition cd = new CheckDefinition(entity.getId(), entity.getLineNum());
+        Map<String, String> property = entity.getProperty();
+        cd.setType(SupportedType.fromName(property.get("name")));
+        cd.setFields(property.get("field").split(""));
+
+
+        Operator operator = Operator.getOperator(entity.getOptr());
+        if (operator.equals(Operator.UNKNOWN))
+            Assert.runtimeException("unsupported operator type " + entity.getOptr() + " at line " + entity.getLineNum());
+        cd.setOperator(operator);
+
+    }
+
+    private void readValidations(Entity entity) {
+        ValidationDefinition vd = new ValidationDefinition(entity.getId(), entity.getLineNum());
+
+        if (validations.containsKey(entity.getId()))
+            Assert.runtimeException("duplicated validation id definition:'" + entity.getId() + "' at line " + entity.getLineNum());
+
+        Map<String, Class> classMap = new HashMap<String, Class>();
+        String[] classNames = entity.getProperty().get("class").split(",");
+        for (String name : classNames)
             try {
-                cd.setClazz(Class.forName(entity.getClassName()));
+                Class clazz = Class.forName(name);
+                classMap.put(name.substring(name.lastIndexOf(".") + 1, name.length()), clazz);
             } catch (ClassNotFoundException e) {
-                Assert.runtimeException("a class definition should specify id and a class name of an existing Class. At line " + entity.getLineNum());
+                ClassDefinition clazz = classes.get(name);
+                if (clazz == null)
+                    Assert.runtimeException("class name:'" + name + "' defined in validation id:" + entity.getId() + " does not refer to an class definition or existing Class, at line " + entity.getLineNum());
+                classMap.put(name, clazz.getClazz());
             }
-            classes.put(s, cd);
+        vd.setClasses(classMap);
+
+        vd.setConditions(resolveCondition(entity.getSubs(), vd));
+        validations.put(vd.getId(), vd);
+    }
+
+    private void checkParamsLegal(CheckDefinition cd) {
+        if (cd.getType().equals(SupportedType.NUMBER)) {
+            for (String s : cd.getVals())
+                if (!StringUtils.isDigit(s))
+                    runtimeException("the " + s + " is not a digit in val, at line " + cd.getLineNum());
+            for (String s : cd.get_vals())
+                if (!StringUtils.isDigit(s))
+                    runtimeException("the " + s + " is not a digit in _val, at line " + cd.getLineNum());
+
+            if (!Arrays.asList(cd.getType().getSupportedOperators()).contains(cd.getOperator()))
+                runtimeException("unsupported operator:'" + cd.getOperator().getValue() + "' in check type " + cd.getType().getName() + " ,at line " + cd.getLineNum());
+
+
         }
     }
 
-    private void readRefConditions() {
-        for (String s : refConditionEntities.keySet()) {
-            ConditionEntity entity = refConditionEntities.get(s);
-            ConditionDefinition ced = new ConditionDefinition();
-            ced.setId(entity.getId());
+    private CheckDefinition[] resolveCondition(List<Entity> entities, ValidationDefinition ved) {
+        List<CheckDefinition> cds = new ArrayList<CheckDefinition>();
+        for (Entity entity : entities) {
+            int lineNum = entity.getLineNum();
+            CheckDefinition cd = new CheckDefinition(entity.getId(), entity.getLineNum());
+            Map<String, String> property = entity.getProperty();
 
-            Operator operator = Operator.getOperator(entity.getOptr());
+//            if (StringUtils.isNotEmpty(entity.getRef())) {
+//                String[] refIDs = entity.getRef().split(",");
+//                for (String id : refIDs) {
+//
+//                }
+//                ConditionEntity ref = refConditionEntities.get(entity.getRef());
+//                if (ref == null) {
+//                    Assert.runtimeException("reference condition id:'" + entity.getRef() + "' does not exist, at line " + entity.getLineNum());
+//                } else {
+//                    overrideAndExtendCondition(ref, entity);
+//                }
+//            }
+            SupportedType type = SupportedType.fromName(property.get("name"));
+            if (type == null || type.equals(SupportedType.UNKNOWN))
+                Assert.runtimeException("unknown check type at line " + lineNum);
+            cd.setType(SupportedType.fromName(property.get("name")));
+
+            cd.setFields(resolveFields(property.get("field"), ved.getClasses(), entity.getLineNum()));
+            cd.set_fields(resolveFields(property.get("_field"), ved.getClasses(), entity.getLineNum()));
+            cd.setVals(property.get("val").split(","));
+            cd.set_vals(property.get("val").split(","));
+
+//            ComputeOperator co = ComputeOperator.f
+
+            Operator operator = Operator.getOperator(property.get("optr"));
+            if (operator == null)
+                Assert.runtimeException("operator not specified at line " + lineNum);
             if (operator.equals(Operator.UNKNOWN))
-                Assert.runtimeException("unsupported operator type " + entity.getOptr() + " at line " + entity.getLineNum());
-            ced.setOperator(operator);
+                Assert.runtimeException("unsupported operator '" + operator + "' at line " + lineNum);
+            cd.setOperator(operator);
 
 
-        }
-    }
-
-    private void readValidations() {
-        for (String s : validationEntities.keySet()) {
-            ValidationEntity entity = validationEntities.get(s);
-            ValidationDefinition vd = new ValidationDefinition(entity.getId(), entity.getLineNum());
-
-            Map<String, Class> classMap = new HashMap<String, Class>();
-            String[] classNames = entity.getClassName().split(",");
-            for (String name : classNames) {
-                try {
-                    Class clazz = Class.forName(name);
-                    classMap.put(name.substring(name.lastIndexOf(".") + 1, name.length()), clazz);
-                } catch (ClassNotFoundException e) {
-                    ClassDefinition clazz = classes.get(name);
-                    if (clazz == null)
-                        Assert.runtimeException("class name:'" + name + "' defined in validation id:" + entity.getId() + " does not refer to an class definition or existing Class, at line " + entity.getLineNum());
-                    classMap.put(name, clazz.getClazz());
-                }
+            LogicComputeOperator logicOperator = LogicComputeOperator.fromValue(property.get("logic"));
+            if (logicOperator != null) {
+                if (logicOperator.equals(LogicComputeOperator.UNKNOWN))
+                    Assert.runtimeException("unknown logic operator:'" + property.get("logic") + "' at line " + lineNum);
+                else
+                    cd.setLogic(logicOperator);
             }
-            vd.setClasses(classMap);
-            vd.setConditions(resolveCondition(entity.getConditions(), vd));
-            validations.put(vd.getId(), vd);
-        }
-    }
-
-    private void checkTypeCompatible(ConditionDefinition ced) {
-        List<Field> fields = new ArrayList<Field>();
-        for (ConditionField cf : ced.getFields())
-            fields.add(cf.getFields().get(cf.getFields().size() - 1));
-        for (ConditionField cf : ced.getOtherFields())
-            fields.add(cf.getFields().get(cf.getFields().size() - 1));
-
-        Class clazz = parentClassMap.get(fields.get(0).getType());
-        for (Field field : fields) {
-            if (!clazz.equals(parentClassMap.get(field.getType())))
-                Assert.runtimeException("incompatible type " + clazz + " and " + field.getType() + " in comparison, at line " + ced.getLineNum());
-        }
-
-        List<String> value = Arrays.asList(ced.getValue().split(","));
-        for (String v : value)
-            if (clazz.equals(Number.class) && !StringUtils.isDigit(v))
-                Assert.runtimeException("incompatible type:'" + clazz + "' and value:'" + v + "' , at line " + ced.getLineNum());
-    }
-
-    private void checkOperatorCompatible(ConditionDefinition ced) {
-        //todo
-    }
-
-    private ConditionDefinition[] resolveCondition(List<ConditionEntity> entities, ValidationDefinition ved) {
-        List<ConditionDefinition> cds = new ArrayList<ConditionDefinition>();
-        for (ConditionEntity entity : entities) {
-            ConditionDefinition ced = new ConditionDefinition(entity.getId(), entity.getLineNum());
-
-            if (StringUtils.isNotEmpty(entity.getRef())) {
-                String[] refIDs = entity.getRef().split(",");
-                for (String id : refIDs) {
-
-                }
-                ConditionEntity ref = refConditionEntities.get(entity.getRef());
-                if (ref == null) {
-                    Assert.runtimeException("reference condition id:'" + entity.getRef() + "' does not exist, at line " + entity.getLineNum());
-                } else {
-                    overrideAndExtendCondition(ref, entity);
-                }
+            LogicComputeOperator _logicOperator = LogicComputeOperator.fromValue(property.get("_logic"));
+            if (_logicOperator != null) {
+                if (_logicOperator.equals(LogicComputeOperator.UNKNOWN))
+                    Assert.runtimeException("unknown logic operator:'" + property.get("_logic") + "' at line " + lineNum);
+                else
+                    cd.setLogic(_logicOperator);
             }
 
-            ced.setFields(resolveFields(entity.getFields(), ved.getClasses(), entity.getLineNum()));
-
-            Operator operator = Operator.getOperator(entity.getOperator());
-            if (operator == null || operator.equals(Operator.UNKNOWN))
-                Assert.runtimeException("unsupported operator '" + entity.getOperator() + "' at line " + entity.getLineNum());
-            ced.setOperator(operator);
-
-            ced.setValue(entity.getValue());
-            ced.setOtherFields(resolveFields(entity.getOtherFields(), ved.getClasses(), entity.getLineNum()));
-
-            LogicComputeOperator logicOperator = LogicComputeOperator.AND;
-            if (StringUtils.isNotEmpty(entity.getLogic())) {
-                logicOperator = LogicComputeOperator.fromValue(entity.getLogic());
-                if (logicOperator == null)
-                    Assert.runtimeException("unsupported logic operator:'" + entity.getLogic() + "', at line " + entity.getLineNum());
-            }
-            ced.setLogic(logicOperator);
-
-            ced.setMsg(entity.getMsg());
-            ced.setConditionType(entity.getConditionType());
-            ced.setLineNum(entity.getLineNum());
-            cds.add(ced);
-            if (ced.getConditionType().equals(ConditionTypeEnum.IF)) {
-                ced.setSubConditions(resolveCondition(entity.getSubConditions(), ved));
-            }
+            cd.setMsg(property.get("msg"));
+            checkParamsLegal(cd);
+//            ced.setConditionType(entity.getConditionType());
+            if (CollectionUtils.isNotEmpty(entity.getSubs()))
+                cd.setSubConditions(resolveCondition(entity.getSubs(), ved));
+            cds.add(cd);
         }
 
-        return cds.toArray(new ConditionDefinition[cds.size()]);
-    }
-
-    private List<ConditionField> resolveFields(String fieldName, Map<String, Class> classMap, int lineNum) {
-        List<ConditionField> fieldList = new ArrayList<ConditionField>();
-        List<String> fieldNames = Arrays.asList(fieldName.split(","));
-
-        for (String s : fieldNames) {
-            ConditionField conditionField = new ConditionField();
-            //多类比较必须指定Class
-            String clazzName = StringUtils.firstToCapital(s.substring(0, s.indexOf(".")));
-            if (classMap.get(clazzName) == null) {
-                if (classMap.size() > 1) {
-                    Assert.runtimeException("class not specified in multi Classes validation or" +
-                            "reference class:'" + s + "' does not exist, at line " + lineNum);
-                } else {
-                    conditionField.setClazz((Class) classMap.values().toArray()[0]);
-                    conditionField.setFields(checkFieldExist((Class) classMap.values().toArray()[0], s.substring(s.indexOf(".") + 1, s.length()), lineNum));
-                }
-            } else {
-                conditionField.setClazz(classMap.get(clazzName));
-                conditionField.setFields(checkFieldExist(classMap.get(clazzName), s.substring(s.indexOf(".") + 1, s.length()), lineNum));
-            }
-            fieldList.add(conditionField);
-        }
-
-        return fieldList;
+        return cds.toArray(new CheckDefinition[cds.size()]);
     }
 
     private ConditionEntity overrideAndExtendCondition(ConditionEntity ref, ConditionEntity target) {
@@ -235,7 +229,36 @@ public class ConfigReader {
         return target;
     }
 
-    private List<Field> checkFieldExist(Class clazz, String fieldNameStr, int line) {
+    private ConditionField[] resolveFields(String fieldProperty, Map<String, Class> classMap, int lineNum) {
+        List<ConditionField> fieldList = new ArrayList<ConditionField>();
+
+        if (StringUtils.isNotEmpty(fieldProperty)) {
+            String[] fieldNames = fieldProperty.split(",");
+            for (String s : fieldNames) {
+                ConditionField conditionField = new ConditionField();
+                //多类比较必须指定Class
+                String clazzName = StringUtils.firstToCapital(s.substring(0, s.indexOf(".")));
+                if (classMap.get(clazzName) == null) {
+                    if (classMap.size() > 1) {
+                        Assert.runtimeException("class not specified in multi Classes validation or" +
+                                "reference class:'" + s + "' does not exist, at line " + lineNum);
+                    } else {
+                        checkFieldAccessible((Class) classMap.values().toArray()[0], s, lineNum);
+                        conditionField.setClazz((Class) classMap.values().toArray()[0]);
+                        conditionField.setFields(s.split("."));
+                    }
+                } else {
+                    conditionField.setClazz(classMap.get(clazzName));
+                    conditionField.setFields(checkFieldAccessible(classMap.get(clazzName), s.substring(s.indexOf(".") + 1, s.length()), lineNum));
+                }
+                fieldList.add(conditionField);
+            }
+        }
+
+        return fieldList.toArray(new ConditionField[fieldList.size()]);
+    }
+
+    private List<Field> checkFieldAccessible(Class clazz, String fieldNameStr, int line) {
         String[] fieldName = fieldNameStr.split("[.]");
         List<Field> fields = new ArrayList<Field>();
 
@@ -243,18 +266,29 @@ public class ConfigReader {
             Field field = null;
             try {
                 field = clazz.getField(fieldName[i]);
-                fields.add(field);
-                clazz.getMethod(StringUtils.genGetMethod(fieldName[i]));
+                if (!Modifier.isPublic(field.getModifiers()))
+                    clazz.getMethod(StringUtils.genGetMethod(fieldName[i]));
+                if (isMapClass(field.getType()))
+                    break;
             } catch (NoSuchFieldException e) {
                 Assert.runtimeException("field '" + fieldName[i] + "' in Class " + clazz.toString() + " does not exist, at line " + line);
             } catch (NoSuchMethodException e) {
-                Assert.runtimeException("field '" + fieldName[i] + "' in Class " + clazz.toString() + " is private or cannot be accessed, " +
+                Assert.runtimeException("cannot access field '" + fieldName[i] + "' in Class " + clazz.toString() + ", the field is neither public or without " +
                         "a get method " + StringUtils.genGetMethod(fieldName[i]) + "may be set, at line " + line);
             }
             clazz = field.getType();
         }
 
         return fields;
+    }
+
+    private boolean isMapClass(Class clazz) {
+        while (!clazz.equals(Object.class)) {
+            if (Arrays.asList(clazz.getInterfaces()).contains(Map.class))
+                return true;
+            clazz = clazz.getSuperclass();
+        }
+        return false;
     }
 
 

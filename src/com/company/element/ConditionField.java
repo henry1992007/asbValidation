@@ -1,14 +1,11 @@
 package com.company.element;
 
-import java.lang.reflect.Field;
-import java.util.List;
-
 /**
  * Created by henry on 15/11/19.
  */
 public class ConditionField {
     private Class clazz;
-    private Field[] fields;
+    private String[] fields;
 
     public Class getClazz() {
         return clazz;
@@ -18,21 +15,11 @@ public class ConditionField {
         this.clazz = clazz;
     }
 
-    public Field[] getFields() {
+    public String[] getFields() {
         return fields;
     }
 
-    public void setFields(Field[] fields) {
+    public void setFields(String[] fields) {
         this.fields = fields;
     }
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder().append(clazz.toString()).append(".");
-        for (Field field : fields)
-            sb.append(".").append(field.getName());
-
-        return sb.toString();
-    }
-
 }
