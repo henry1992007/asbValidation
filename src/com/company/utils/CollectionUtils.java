@@ -35,6 +35,10 @@ public abstract class CollectionUtils {
         return res;
     }
 
+    public static <T> T[] listToArray(List<T> list) {
+        return (T[]) list.toArray();
+    }
+
     public static <T> T[] listsToArray(List<T>... lists) {
         List<T> res = new ArrayList<>();
         for (List<T> list : lists)

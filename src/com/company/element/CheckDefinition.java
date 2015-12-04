@@ -1,17 +1,14 @@
 package com.company.element;
 
 import com.company.ComputeOperator;
-import com.company.enums.ConditionTypeEnum;
-import com.company.enums.LogicComputeOperator;
-import com.company.enums.Operator;
-import com.company.enums.SupportedType;
+import com.company.enums.*;
 
 /**
  * Created by henry on 15/11/16.
  */
 public class CheckDefinition extends AbstractElementDefinition {
-    private Object[] checkObjects;
-    private SupportedType type;
+    private DefinitionType definitionType;
+    private CheckType checkType;
     private ConditionField[] fields;
     private String[] vals;
     private ComputeOperator cmpt;
@@ -24,20 +21,29 @@ public class CheckDefinition extends AbstractElementDefinition {
     private String msg;
     private CheckDefinition[] subConditions;
     private CheckDefinition[] refConditions;
-    private ConditionTypeEnum conditionType;
 
 
-    public CheckDefinition(String id, int lineNum) {
+    public CheckDefinition(String id, int lineNum,String docName) {
         setId(id);
         setLineNum(lineNum);
+        setDocName(docName);
     }
 
-    public SupportedType getType() {
-        return type;
+
+    public DefinitionType getDefinitionType() {
+        return definitionType;
     }
 
-    public void setType(SupportedType type) {
-        this.type = type;
+    public void setDefinitionType(DefinitionType definitionType) {
+        this.definitionType = definitionType;
+    }
+
+    public CheckType getCheckType() {
+        return checkType;
+    }
+
+    public void setCheckType(CheckType checkType) {
+        this.checkType = checkType;
     }
 
     public ConditionField[] getFields() {
@@ -134,13 +140,5 @@ public class CheckDefinition extends AbstractElementDefinition {
 
     public void setRefConditions(CheckDefinition[] refConditions) {
         this.refConditions = refConditions;
-    }
-
-    public ConditionTypeEnum getConditionType() {
-        return conditionType;
-    }
-
-    public void setConditionType(ConditionTypeEnum conditionType) {
-        this.conditionType = conditionType;
     }
 }

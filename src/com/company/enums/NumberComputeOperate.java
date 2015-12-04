@@ -56,6 +56,12 @@ public enum NumberComputeOperate implements ComputeOperator<BigDecimal> {
             }
             return res;
         }
+    },
+    UNKNOWN("unknown"){
+        @Override
+        public BigDecimal[] operate(BigDecimal... var) {
+            return null;
+        }
     };
 
 

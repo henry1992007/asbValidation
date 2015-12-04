@@ -12,15 +12,22 @@ public class Entity {
     private String name;
     private String id;
     private int lineNum;
+    private String docName;
     private Map<String, String> property = new HashMap<>();
     private List<Entity> subs = new ArrayList<>();
 
-    public Entity() {
-    }
-
-    public Entity(String name, int lineNum) {
+    public Entity(String name, int lineNum, String docName) {
         this.name = name;
         this.lineNum = lineNum;
+        this.docName = docName;
+    }
+
+    public String getDocName() {
+        return docName;
+    }
+
+    public void setDocName(String docName) {
+        this.docName = docName;
     }
 
     public String getId() {

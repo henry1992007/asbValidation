@@ -5,6 +5,7 @@ import com.company.element.ConditionField;
 import com.company.element.ValidationDefinition;
 import com.company.utils.Assert;
 import com.company.utils.CollectionUtils;
+import com.company.utils.ReflectUtils;
 import com.company.utils.StringUtils;
 import com.company.validations.NumberValidator;
 import com.google.common.collect.Sets;
@@ -32,7 +33,7 @@ public class ValidationContext {
     public void validate(Object... objs) {
         for (Object obj : objs) {
             if (!objectClassMap.containsKey(obj.getClass())) {
-                Set<Object> set = new HashSet<Object>();
+                Set<Object> set = new HashSet<>();
                 set.add(obj);
                 objectClassMap.put(obj.getClass(), set);
             }
@@ -53,6 +54,12 @@ public class ValidationContext {
                 }
             }
         }
+    }
+
+    List<CheckDefinition> definitions;
+
+    public void entry() {
+
     }
 
     public void validateNormal(CheckDefinition ced, Object... objs) {
@@ -77,18 +84,27 @@ public class ValidationContext {
 
     }
 
-    private Object getFieldValue(Object checkObj, List<Field> fields) {
+    private Object getFieldValue(Object checkObj, String[] path) {
         Object target = checkObj;
         String getMethodName = "";
 
         try {
-            for (int i = 0; i < fields.size(); i++) {
+            for (int i = 0; i < path.length; i++) {
                 if (i != 0) {
-                    target = target.getClass().getMethod(getMethodName).invoke(target);
+                    if (ReflectUtils.isMapClass(target.getClass())) {
+                        target = ((Map) target).get(path[i]);
+                    } else {
+                        target = target.getClass().getMethod(getMethodName).invoke(target);
+                    }
                     if (target == null)
                         Assert.runtimeException("null object");
                 }
-                getMethodName = "get" + StringUtils.firstToCapital(fields.get(i).getName());
+
+                if (ReflectUtils.isMapClass(target.getClass())) {
+
+                } else {
+                    getMethodName = "get" + StringUtils.firstToCapital(path[i]);
+                }
             }
 
             return target.getClass().getMethod(getMethodName).invoke(target);

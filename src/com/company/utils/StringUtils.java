@@ -30,6 +30,12 @@ public abstract class StringUtils {
         return true;
     }
 
+    public static String firstToLowerCase(String s) {
+        if (isEmpty(s))
+            return s;
+        return s.substring(0, 1).toLowerCase().concat(s.substring(1, s.length()));
+    }
+
     public static String firstToCapital(String s) {
         if (isEmpty(s))
             return s;
@@ -63,4 +69,6 @@ public abstract class StringUtils {
     public static boolean equals(String var1, String var2) {
         return var1.equals(var2);
     }
+
+
 }

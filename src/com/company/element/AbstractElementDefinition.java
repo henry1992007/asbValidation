@@ -6,6 +6,7 @@ package com.company.element;
 public abstract class AbstractElementDefinition implements ElementDefinition {
     protected String id;
     protected int lineNum;
+    protected String docName;
 
     protected AbstractElementDefinition() {
     }
@@ -24,5 +25,13 @@ public abstract class AbstractElementDefinition implements ElementDefinition {
 
     public void setLineNum(int lineNum) {
         this.lineNum = lineNum;
+    }
+
+    public String getDocName() {
+        return docName;
+    }
+
+    public void setDocName(String docName) {
+        this.docName = docName;
     }
 }

@@ -32,21 +32,22 @@ public class XMLConfigParser2 {
         saxReader.setEncoding("UTF-8");
         Document document = saxReader.read(file);
 
-        List<Entity> entities = getEntities((LocatingElement) document.getRootElement());
+
+        List<Entity> entities = getEntities((LocatingElement) document.getRootElement(),document.getName());
 
         return new ConfigContext(entities);
     }
 
-    public static List<Entity> getEntities(LocatingElement rootElement) {
+    public static List<Entity> getEntities(LocatingElement rootElement, String docName) {
         List<Entity> entities = new ArrayList<>();
         for (Iterator<LocatingElement> i = rootElement.elementIterator(); i.hasNext(); ) {
             LocatingElement element = i.next();
             if (ElementType.fromString(element.getName().toLowerCase()) == null)
                 Assert.runtimeException("unknown element '" + element.getName() + "', at line " + element.getLineNum());
-            Entity entity = new Entity(element.getName(), element.getLineNum());
+            Entity entity = new Entity(element.getName(), element.getLineNum(), docName);
             for (Attribute attribute : (List<Attribute>) element.attributes())
                 entity.getProperty().put(attribute.getName(), attribute.getValue());
-            entity.setSubs(getEntities(element));
+            entity.setSubs(getEntities(element,docName));
             entities.add(entity);
         }
 

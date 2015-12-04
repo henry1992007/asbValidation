@@ -1,6 +1,5 @@
 package com.company.enums;
 
-
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -10,8 +9,9 @@ import static com.company.enums.Operator.*;
 /**
  * Created by henry on 15/11/10.
  */
-public enum SupportedType {
+public enum CheckType {
 
+    OBJECT("object", Object.class),
     NUMBER("number", Number.class,
             LARGER_THAN,
             LARGER_OR_EQUAL,
@@ -43,23 +43,23 @@ public enum SupportedType {
     private Class clazz;
     private Operator[] supportedOperators;
 
-    SupportedType(String name, Class clazz, Operator... operators) {
+    CheckType(String name, Class clazz, Operator... operators) {
         this.name = name;
         this.clazz = clazz;
         this.supportedOperators = operators;
     }
 
-    public static SupportedType fromName(String name) {
+    public static CheckType fromName(String name) {
         if (name == null)
             return null;
-        for (SupportedType e : values())
-            if (e.getName().equals(name))
+        for (CheckType e : values())
+            if (e.getName().equals(name.toLowerCase()))
                 return e;
         return UNKNOWN;
     }
 
-    public static SupportedType fromClass(Class<?> clazz) {
-        for (SupportedType e : values())
+    public static CheckType fromClass(Class<?> clazz) {
+        for (CheckType e : values())
             if (e.getClazz().equals(clazz))
                 return e;
         return null;

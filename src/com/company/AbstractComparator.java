@@ -2,9 +2,7 @@ package com.company;
 
 import com.company.enums.LogicComputeOperator;
 import com.company.enums.Operator;
-import com.company.enums.SupportedType;
-import com.sun.tools.corba.se.idl.constExpr.LessThan;
-import sun.tools.tree.LessOrEqualExpression;
+import com.company.enums.CheckType;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -12,7 +10,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.company.enums.SupportedType.*;
+import static com.company.enums.CheckType.*;
 import static com.company.enums.Operator.*;
 
 /**
@@ -20,7 +18,7 @@ import static com.company.enums.Operator.*;
  */
 public abstract class AbstractComparator<T> implements Comparator<T>, MapAccessor {
 
-    static RelationSheet<SupportedType, Operator, Operatable> operatables = new RelationSheet<>();
+    static RelationSheet<CheckType, Operator, Operatable> operatables = new RelationSheet<>();
 
     static {
         operatables.put((Operatable<Boolean, BigDecimal>) (var1, var2) -> var1.compareTo(var2) > 0, NUMBER, LARGER_THAN);
