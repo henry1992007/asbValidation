@@ -1,5 +1,8 @@
 package com.company.enums;
 
+import com.company.MapValidator;
+import com.company.validations.*;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -11,8 +14,8 @@ import static com.company.enums.Operator.*;
  */
 public enum CheckType {
 
-    OBJECT("object", Object.class),
-    NUMBER("number", Number.class,
+    OBJECT("object", null),
+    NUMBER("number", new NumberValidator(),
             LARGER_THAN,
             LARGER_OR_EQUAL,
             EQUAL,
@@ -25,27 +28,28 @@ public enum CheckType {
             SUM,
             PRODUCT,
             INTERSECT),
-    STRING("string", String.class,
+    STRING("string", new StringValidator(),
             EQUAL,
             NOT_EQUAL,
             IN,
             NOT_IN,
             INTERSECT),
-    BOOLEAN("boolean", Boolean.class,
+    BOOLEAN("boolean", new BooleanValidator(),
             EQUAL,
             NOT_EQUAL),
-    DATE("date", Date.class),
-    LIST("list", List.class),
-    MAP("map", Map.class),
+    DATE("date", new DateValidator()),
+    LIST("list", new ListValidator()),
+    MAP("map", new MapValidator()),
     UNKNOWN("", null);
 
     private String name;
-    private Class clazz;
+    //    private Class clazz;
+    private TypeValidator typeValidator;
     private Operator[] supportedOperators;
 
-    CheckType(String name, Class clazz, Operator... operators) {
+    CheckType(String name, TypeValidator typeValidator, Operator... operators) {
         this.name = name;
-        this.clazz = clazz;
+        this.typeValidator = typeValidator;
         this.supportedOperators = operators;
     }
 
@@ -58,22 +62,27 @@ public enum CheckType {
         return UNKNOWN;
     }
 
-    public static CheckType fromClass(Class<?> clazz) {
-        for (CheckType e : values())
-            if (e.getClazz().equals(clazz))
-                return e;
-        return null;
-    }
+//    public static CheckType fromClass(Class<?> clazz) {
+//        for (CheckType e : values())
+//            if (e.getClazz().equals(clazz))
+//                return e;
+//        return null;
+//    }
 
     public String getName() {
         return name;
     }
 
-    public Class getClazz() {
-        return clazz;
+//    public Class getClazz() {
+//        return clazz;
+//    }
+
+    public TypeValidator getTypeValidator() {
+        return typeValidator;
     }
 
     public Operator[] getSupportedOperators() {
         return supportedOperators;
     }
+
 }

@@ -55,7 +55,7 @@ public abstract class AbstractComparator<T> implements Comparator<T>, MapAccesso
     }
 
     @Override
-    public boolean compare(CompareObject<T> co) {
+    public List<Object> compare(CompareObject<T> co) {
         List<Boolean> res1 = new ArrayList<>();
         for (T var1 : co.getVals()) {
             List<Boolean> res2 = new ArrayList<>();

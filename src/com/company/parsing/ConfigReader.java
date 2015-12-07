@@ -2,10 +2,7 @@ package com.company.parsing;
 
 import com.company.ConfigContext;
 import com.company.MultiKeySetMap;
-import com.company.element.CheckDefinition;
-import com.company.element.ClassDefinition;
-import com.company.element.ConditionField;
-import com.company.element.ValidationDefinition;
+import com.company.element.*;
 import com.company.enums.*;
 import com.company.utils.Assert;
 import com.company.utils.CollectionUtils;
@@ -137,20 +134,22 @@ public class ConfigReader {
             runtimeException("unsupported operator:'" + cd.getOperator().getValue() + "' in check type " + cd.getCheckType().getName() + " ,at line " + cd.getLineNum());
     }
 
-    private CheckDefinition[] resolveCondition(List<Entity> entities, ValidationDefinition vd) {
-        List<CheckDefinition> cds = new ArrayList<CheckDefinition>();
+    private AbstractElementDefinition[] resolveCondition(List<Entity> entities, ValidationDefinition vd) {
+        List<AbstractElementDefinition> cds = new ArrayList<>();
 
         next:
         for (Entity entity : entities) {
-            CheckDefinition cd = new CheckDefinition(entity.getId(), entity.getLineNum(), entity.getDocName());
+            AbstractElementDefinition aed = null;
             DefinitionType definitionType = DefinitionType.fromName(entity.getName());
             switch (definitionType) {
                 case CHECK:
-                    setCheckProperty(entity, cd, vd);
+                    aed = new CheckDefinition(entity.getId(), entity.getLineNum(), entity.getDocName());
+                    setCheckProperty(entity, (CheckDefinition) aed, vd);
                     break;
                 case CONDITION:
+                    aed = new ConditionDefinition(entity.getId(), entity.getLineNum(), entity.getDocName());
                     if (entity.getProperty().containsKey("ref")) {
-                        setConditionProperty(entity, cd, vd);
+                        setConditionProperty(entity, aed, vd);
                     } else {
                         if (entity.getProperty().containsKey("id")) {
                             String id = entity.getProperty().get("id");
@@ -158,7 +157,7 @@ public class ConfigReader {
                                 Assert.entityIDException("duplicated check id defined", id, entity.getLineNum(), entity.getDocName());
                             conditionIdMap.put(id, cd);
                         }
-                        setCheckProperty(entity, cd, vd);
+                        setCheckProperty(entity, aed);
                     }
                     if (CollectionUtils.isNotEmpty(entity.getSubs()))
                         cd.setSubConditions(resolveCondition(entity.getSubs(), vd));
@@ -166,8 +165,7 @@ public class ConfigReader {
                 case UNKNOWN:
                     break next;
             }
-            cd.setDefinitionType(definitionType);
-            cds.add(cd);
+            cds.add(aed);
         }
 
         return CollectionUtils.listToArray(cds);
@@ -238,11 +236,12 @@ public class ConfigReader {
             Assert.runtimeException("unsupported operator '" + operator + "' at line " + lineNum);
         cd.setOperator(operator);
 
-        cd.setMsg(property.get("msg"));
+        if (property.containsKey("msg"))
+            cd.setMsg(property.get("msg"));
         checkParamsLegal(cd);
     }
 
-    private void setConditionProperty(Entity entity, CheckDefinition cd, ValidationDefinition vd) {
+    private void setConditionProperty(Entity entity, ConditionDefinition cd) {
         String[] refIDs = entity.getProperty().get("ref").split(",");
         List<CheckDefinition> refs = new ArrayList<>();
         for (String s : refIDs) {
@@ -250,6 +249,8 @@ public class ConfigReader {
                 Assert.entityIDException("cannot find check with specified id.", s, entity.getLineNum(), entity.getDocName());
             refs.add(conditionIdMap.get(s));
         }
+        if (entity.getProperty().containsKey("msg"))
+            cd.setMsg(entity.getProperty().get("msg"));
         cd.setRefConditions(CollectionUtils.listToArray(refs));
     }
 

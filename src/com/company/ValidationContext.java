@@ -1,8 +1,8 @@
 package com.company;
 
-import com.company.element.CheckDefinition;
-import com.company.element.ConditionField;
-import com.company.element.ValidationDefinition;
+import com.company.element.*;
+import com.company.enums.CheckType;
+import com.company.enums.DefinitionType;
 import com.company.utils.Assert;
 import com.company.utils.CollectionUtils;
 import com.company.utils.ReflectUtils;
@@ -32,12 +32,10 @@ public class ValidationContext {
 
     public void validate(Object... objs) {
         for (Object obj : objs) {
-            if (!objectClassMap.containsKey(obj.getClass())) {
-                Set<Object> set = new HashSet<>();
-                set.add(obj);
-                objectClassMap.put(obj.getClass(), set);
-            }
-            objectClassMap.get(obj.getClass()).add(obj);
+            if (!objectClassMap.containsKey(obj.getClass()))
+                objectClassMap.put(obj.getClass(), Sets.newHashSet(obj));
+            else
+                objectClassMap.get(obj.getClass()).add(obj);
         }
 
         if (CollectionUtils.isNotEmpty(ved.getConditions())) {
@@ -58,8 +56,22 @@ public class ValidationContext {
 
     List<CheckDefinition> definitions;
 
-    public void entry() {
-
+    public void entry(AbstractElementDefinition[] aeds, Object... objs) {
+        for (AbstractElementDefinition aed : aeds) {
+            if (aed instanceof CheckDefinition) {
+                //todo: 抽象
+                ((CheckDefinition) aed).getCheckType().getTypeValidator().validate();
+            } else if (aed instanceof ConditionDefinition) {
+                boolean flag = true;
+                CheckDefinition[] checkDefinitions = ((ConditionDefinition) aed).getRefConditions();
+                for (CheckDefinition cd : checkDefinitions) {
+                    if (!cd.getCheckType().getTypeValidator().validate(aed, objs))
+                        flag = false;
+                }
+                if (flag)
+                    entry(((ConditionDefinition) aed).getSubConditions());
+            }
+        }
     }
 
     public void validateNormal(CheckDefinition ced, Object... objs) {
@@ -108,9 +120,8 @@ public class ValidationContext {
             }
 
             return target.getClass().getMethod(getMethodName).invoke(target);
-        } catch (IllegalAccessException e) {
-        } catch (InvocationTargetException e) {
-        } catch (NoSuchMethodException e) {
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+
         }
 
         return null;
@@ -118,25 +129,6 @@ public class ValidationContext {
 
     public void setValidation(ValidationDefinition ved) {
         this.ved = ved;
-    }
-
-    private void checkTypeCompatible(List<Object> list) {
-        Class clazz = parentClassMap.get(list.get(0).getClass());
-        for (Object o : list) {
-            if (!clazz.equals(parentClassMap.get(o.getClass()))) {
-                Assert.runtimeException("incompatible type " + clazz + " and " + parentClassMap.get(o.getClass()) +);
-            }
-        }
-    }
-
-    private static MultiKeySetMap<Class, Class> parentClassMap = new MultiKeySetMap<Class, Class>();
-
-    static {
-        parentClassMap.put(Sets.newHashSet(new Class[]{Integer.class, Float.class, Double.class, Long.class, Short.class, Byte.class, BigDecimal.class, BigInteger.class}), Number.class);
-        parentClassMap.put(Sets.newHashSet(new Class[]{Boolean.class}), Boolean.class);
-        parentClassMap.put(Sets.newHashSet(new Class[]{String.class}), String.class);
-        parentClassMap.put(Sets.newHashSet(new Class[]{HashMap.class, LinkedHashMap.class}), Map.class);
-        parentClassMap.put(Sets.newHashSet(new Class[]{ArrayList.class}), List.class);
     }
 
 
