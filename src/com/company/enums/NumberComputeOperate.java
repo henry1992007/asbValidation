@@ -1,7 +1,6 @@
 package com.company.enums;
 
 import com.company.ComputeOperator;
-import com.company.utils.Utils;
 
 import java.math.BigDecimal;
 
@@ -81,4 +80,5 @@ public enum NumberComputeOperate implements ComputeOperator<BigDecimal> {
     public String getName() {
         return name;
     }
+
 }

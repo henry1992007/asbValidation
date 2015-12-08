@@ -31,6 +31,12 @@ public class CompareObject<T> {
         this._logic = _logic;
     }
 
+    public CompareObject(T[] vals,  Operator operator, T[] _vals,) {
+        this.vals = vals;
+        this.operator = operator;
+        this._vals = _vals;
+    }
+
     public T[] getVals() {
         return vals;
     }

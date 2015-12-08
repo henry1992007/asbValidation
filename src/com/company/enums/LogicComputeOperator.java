@@ -1,31 +1,30 @@
 package com.company.enums;
 
-import com.company.ComputeOperator;
-import jdk.nashorn.internal.objects.NativeUint16Array;
+import com.company.LogicOperator;
 
 import java.util.Arrays;
 
 /**
  * Created by henry on 15/11/19.
  */
-public enum LogicComputeOperator implements ComputeOperator<Boolean> {
+public enum LogicComputeOperator implements LogicOperator {
 
     AND("and", "&&", "&") {
-        public Boolean operate(Boolean... var) {
+        public Boolean compute(Boolean... var) {
             for (boolean b : var)
                 if (!b) return false;
             return true;
         }
     },
     OR("or", "||", "|") {
-        public Boolean operate(Boolean... var) {
+        public Boolean compute(Boolean... var) {
             for (boolean b : var)
                 if (b) return true;
             return false;
         }
     },
     XOR("xor") {
-        public Boolean operate(Boolean... var) {
+        public Boolean compute(Boolean... var) {
             for (boolean b : var)
                 if (var[0] != b) return true;
             return false;
@@ -33,7 +32,7 @@ public enum LogicComputeOperator implements ComputeOperator<Boolean> {
     },
     UNKNOWN("") {
         @Override
-        public Boolean[] operate(Boolean... var) {
+        public Boolean compute(Boolean... var) {
             return null;
         }
     };
@@ -50,7 +49,7 @@ public enum LogicComputeOperator implements ComputeOperator<Boolean> {
         for (LogicComputeOperator e : values())
             if (Arrays.asList(e.getValue()).contains(value.toLowerCase()))
                 return e;
-        return nuUNKNOWNll;
+        return UNKNOWN;
     }
 
 

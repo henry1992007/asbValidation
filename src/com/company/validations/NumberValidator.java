@@ -9,6 +9,8 @@ import com.company.utils.Assert;
 import com.company.utils.CollectionUtils;
 import com.company.utils.ReflectUtils;
 import com.company.utils.StringUtils;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
@@ -23,21 +25,7 @@ public class NumberValidator implements TypeValidator {
 
     private final static NumberComparator comparator = new NumberComparator();
 
-    public List<String> validate(ConditionValidateObject cvo) {
-        List<String> validateResult = new ArrayList<>();
-
-        List<BigDecimal> fieldValues = parseObject(cvo.getFieldObjs().values().toArray());
-        List<BigDecimal> values = parseString(cvo.getConditionStrs());
-        List<BigDecimal> _fieldValues = parseObject(cvo.get_fieldObjs().values().toArray());
-        List<BigDecimal> _values = parseString(cvo.get_conditionStrs());
-
-        NumberComparator comparator = new NumberComparator();
-        comparator.compare(CollectionUtils.listsToArray(fieldValues, values), LogicComputeOperator.AND, cvo.getOperator(), CollectionUtils.listsToArray(_fieldValues, _values), LogicComputeOperator.OR);
-
-        return validateResult;
-    }
-
-    public Map<String, Set<Object>> validate(CheckDefinition cd, Map<Class, Set<Object>> objectClassMap) {
+    public boolean validate(CheckDefinition cd, Map<Class, Set<Object>> objectClassMap) {
         ConditionField[] fields = cd.getFields();
         Map<String, Object> fieldValues = new HashMap<>();
         for (ConditionField conditionField : fields)
@@ -58,7 +46,26 @@ public class NumberValidator implements TypeValidator {
         BigDecimal[] _val = CollectionUtils.listsToArray(parseObject(_fieldValues.values().toArray()), parseString(_vals));
 
         CompareObject<BigDecimal> co = new CompareObject<>(val, cd.getLogic(), cd.getOperator(), _val, cd.get_logic());
-        comparator.doCompare(co);
+        return comparator.doCompare(co);
+    }
+
+    public Map<Class, Set<Object>> filter(CheckDefinition cd, Map<Class, Set<Object>> objectClassMap) {
+        for (Class clazz : objectClassMap.keySet()) {
+            List<Object> objects = Lists.newArrayList(objectClassMap.get(clazz));
+            Iterator i = objects.iterator();
+            while (i.hasNext()) {
+                Object o = i.next();
+                BigDecimal[] val = CollectionUtils.listsToArray(parseObject(new Object[]{getFieldValue(o, cd.getFields()[0].getFields())}));
+                BigDecimal[] _val = CollectionUtils.listsToArray(parseString(cd.get_vals()));
+                CompareObject<BigDecimal> co = new CompareObject<>(val, cd.getOperator(), _val);
+                if (!comparator.doCompare(co)) {
+                    i.remove();
+                }
+            }
+            objectClassMap.put(clazz, Sets.newHashSet(objects));
+        }
+
+        return objectClassMap;
     }
 
     private List<BigDecimal> parseObject(Object[] list) {

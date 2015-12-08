@@ -55,17 +55,17 @@ public abstract class AbstractComparator<T> implements Comparator<T>, MapAccesso
     }
 
     @Override
-    public List<Object> compare(CompareObject<T> co) {
+    public boolean compare(CompareObject<T> co) {
         List<Boolean> res1 = new ArrayList<>();
         for (T var1 : co.getVals()) {
             List<Boolean> res2 = new ArrayList<>();
             for (T var2 : co.get_vals()) {
                 res2.add((Boolean) (opertableMap.get(co.getOperator())).operate(var1, var2));
             }
-            res1.add(co.get_logic().operate(res2.toArray(new Boolean[res2.size()])));
+            res1.add(co.get_logic().compute(res2.toArray(new Boolean[res2.size()])));
         }
 
-        return co.getLogic().operate(res1.toArray(new Boolean[res1.size()]));
+        return co.getLogic().compute(res1.toArray(new Boolean[res1.size()]));
     }
 
     @Override

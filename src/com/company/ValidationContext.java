@@ -38,62 +38,27 @@ public class ValidationContext {
                 objectClassMap.get(obj.getClass()).add(obj);
         }
 
-        if (CollectionUtils.isNotEmpty(ved.getConditions())) {
-            ceds = ved.getConditions();
-            classMap = ved.getClasses();
-
-            for (CheckDefinition ced : ceds) {
-                switch (ced.getConditionType()) {
-                    case NORMAL:
-
-                        break;
-                    case IF:
-                        break;
-                }
-            }
-        }
     }
 
     List<CheckDefinition> definitions;
 
-    public void entry(AbstractElementDefinition[] aeds, Object... objs) {
+    public List<String> entry(AbstractElementDefinition[] aeds, Map<Class, Set<Object>> objectClassMap) {
+        List<String> result = new ArrayList<>();
         for (AbstractElementDefinition aed : aeds) {
             if (aed instanceof CheckDefinition) {
                 //todo: 抽象
-                ((CheckDefinition) aed).getCheckType().getTypeValidator().validate();
-            } else if (aed instanceof ConditionDefinition) {
-                boolean flag = true;
-                CheckDefinition[] checkDefinitions = ((ConditionDefinition) aed).getRefConditions();
-                for (CheckDefinition cd : checkDefinitions) {
-                    if (!cd.getCheckType().getTypeValidator().validate(aed, objs))
-                        flag = false;
+                if (!((CheckDefinition) aed).getCheckType().getTypeValidator().validate()) {
+                    result.add(((CheckDefinition) aed).getMsg());
                 }
-                if (flag)
-                    entry(((ConditionDefinition) aed).getSubConditions());
+            } else if (aed instanceof ConditionDefinition) {
+                CheckDefinition[] checkDefinitions = ((ConditionDefinition) aed).getRefConditions();
+                for (CheckDefinition cd : checkDefinitions)
+                    objectClassMap = cd.getCheckType().getTypeValidator().filter(cd, objectClassMap);
+                entry(((ConditionDefinition) aed).getSubConditions(), objectClassMap);
             }
         }
-    }
 
-    public void validateNormal(CheckDefinition ced, Object... objs) {
-        ConditionField[] fields = ced.getFields();
-        Map<String, Object> fieldValues = new HashMap<>();
-
-        ConditionField[] _fields = ced.get_fields();
-        Map<String, Object> otherFieldValues = new HashMap<>();
-
-        String[] vals = ced.getVals();
-        String[] _vals = ced.get_vals();
-
-        for (ConditionField conditionField : fields)
-            for (Object obj : objectClassMap.get(conditionField.getClazz()))
-                fieldValues.put(conditionField.toString(), getFieldValue(obj, conditionField.getFields()));
-        for (ConditionField conditionField : _fields)
-            for (Object obj : objectClassMap.get(conditionField.getClazz()))
-                otherFieldValues.put(conditionField.toString(), getFieldValue(obj, conditionField.getFields()));
-
-        NumberValidator numberValidator = new NumberValidator();
-        numberValidator.validate(fieldValues, ced.getOperator(), values, otherFieldValues);
-
+        return result;
     }
 
     private Object getFieldValue(Object checkObj, String[] path) {
