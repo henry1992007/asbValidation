@@ -1,6 +1,7 @@
 package com.company.utils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -24,7 +25,7 @@ public abstract class CollectionUtils {
         return a == null || a.length == 0;
     }
 
-    public static <T> boolean ArrayNotEmpty(T[] a) {
+    public static <T> boolean isNotEmpty(T[] a) {
         return !ArrayEmpty(a);
     }
 
@@ -35,15 +36,12 @@ public abstract class CollectionUtils {
         return res;
     }
 
-    public static <T> T[] listToArray(List<T> list) {
-        return (T[]) list.toArray();
-    }
-
-    public static <T> T[] listsToArray(List<T>... lists) {
-        List<T> res = new ArrayList<>();
-        for (List<T> list : lists)
-            res.addAll(list);
-        return (T[]) res.toArray();
+    public static <T> List<T> concat(T[]... arrays) {
+        List<T> list = new ArrayList<>();
+        for (T[] array : arrays)
+            if (isNotEmpty(array))
+                list.addAll(Arrays.asList(array));
+        return list;
     }
 
 }

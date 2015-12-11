@@ -14,27 +14,27 @@ import java.util.Set;
  */
 public class BooleanValidator implements TypeValidator {
 
-    public List<String> validate(ConditionValidateObject cvo) {
-        List<String> validateResult = new ArrayList<String>();
-
-        boolean conditionValue = Boolean.parseBoolean(conditionValueStr[0]);
-        boolean fieldValue = (Boolean) fieldValueObj;
-        Operator operator = Operator.getOperator(condition.getOperator());
-        switch (operator) {
-            case EQUAL:
-                if (conditionValue != fieldValue)
-                    validateResult.add(condition.getFieldName() + " must be " + conditionValue);
-                break;
-            case NOT_EQUAL:
-                if (conditionValue == fieldValue)
-                    validateResult.add(condition.getFieldName() + " must be " + conditionValue);
-                break;
-            default:
-                throw new RuntimeException("unsupported operator \"" + condition.getOperator() + "\"in type boolean");
-        }
-
-        return validateResult;
-    }
+//    public List<String> validate(ConditionValidateObject cvo) {
+//        List<String> validateResult = new ArrayList<String>();
+//
+//        boolean conditionValue = Boolean.parseBoolean(conditionValueStr[0]);
+//        boolean fieldValue = (Boolean) fieldValueObj;
+//        Operator operator = Operator.getOperator(condition.getOperator());
+//        switch (operator) {
+//            case EQUAL:
+//                if (conditionValue != fieldValue)
+//                    validateResult.add(condition.getFieldName() + " must be " + conditionValue);
+//                break;
+//            case NOT_EQUAL:
+//                if (conditionValue == fieldValue)
+//                    validateResult.add(condition.getFieldName() + " must be " + conditionValue);
+//                break;
+//            default:
+//                throw new RuntimeException("unsupported operator \"" + condition.getOperator() + "\"in type boolean");
+//        }
+//
+//        return validateResult;
+//    }
 
     @Override
     public boolean validate(CheckDefinition cd, Map<Class, Set<Object>> objectClassMap) {

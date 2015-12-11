@@ -3,6 +3,8 @@ package com.company;
 import com.company.enums.LogicComputeOperator;
 import com.company.enums.Operator;
 import com.company.enums.CheckType;
+import com.company.utils.MultiKeySetMap;
+import com.company.utils.RelationSheet;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -18,7 +20,7 @@ import static com.company.enums.Operator.*;
  */
 public abstract class AbstractComparator<T> implements Comparator<T>, MapAccessor {
 
-    static RelationSheet<CheckType, Operator, Operatable> operatables = new RelationSheet<>();
+    static RelationSheet<Operatable, CheckType, Operator> operatables = new RelationSheet<>();
 
     static {
         operatables.put((Operatable<Boolean, BigDecimal>) (var1, var2) -> var1.compareTo(var2) > 0, NUMBER, LARGER_THAN);

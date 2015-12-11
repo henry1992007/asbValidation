@@ -2,7 +2,7 @@ package com.company.validations;
 
 import com.company.AbstractComparator;
 import com.company.CompareObject;
-import com.company.MultiKeySetMap;
+import com.company.utils.MultiKeySetMap;
 import com.company.Operatable;
 import com.company.enums.LogicComputeOperator;
 import com.company.enums.Operator;

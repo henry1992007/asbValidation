@@ -3,7 +3,7 @@ package com.company.utils;
 /**
  * Created by henry on 15/11/12.
  */
-public abstract class StringUtils{
+public abstract class StringUtils {
 
     public StringUtils() {
     }
@@ -14,20 +14,6 @@ public abstract class StringUtils{
 
     public static boolean isNotEmpty(Object string) {
         return !isEmpty(string);
-    }
-
-    public static boolean allEmpty(Object... string) {
-        for (Object s : string)
-            if (isNotEmpty(s))
-                return false;
-        return true;
-    }
-
-    public static boolean allNotEmpty(Object... string) {
-        for (Object s : string)
-            if (isEmpty(s))
-                return false;
-        return true;
     }
 
     public static String firstToLowerCase(String s) {
@@ -62,5 +48,11 @@ public abstract class StringUtils{
         return var1.equals(var2);
     }
 
+    public static String[] splitContainRegex(String s, String regex) {
+        String[] strings = s.split(regex);
+        for (int i = 0; i < strings.length; i++)
+            strings[i] = strings[i].concat(regex);
+        return strings;
+    }
 
 }

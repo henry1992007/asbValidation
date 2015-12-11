@@ -1,11 +1,7 @@
 package com.company.enums;
 
-import com.company.MapValidator;
+import com.company.validations.MapValidator;
 import com.company.validations.*;
-
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 import static com.company.enums.Operator.*;
 
@@ -39,9 +35,18 @@ public enum CheckType {
     BOOLEAN("boolean", new BooleanValidator(),
             EQUAL,
             NOT_EQUAL),
-    DATE("date", new DateValidator()),
-    LIST("list", new ListValidator()),
-    MAP("map", new MapValidator()),
+    DATE("date", new DateValidator(),
+            EQUAL,
+            NOT_EQUAL,
+            BEFORE,
+            AFTER,
+            BETWEEN),
+    LIST("list", new ListValidator(),
+            EQUAL,
+            NOT_EQUAL),
+    MAP("map", new MapValidator(),
+            EQUAL,
+            NOT_EQUAL),
     UNKNOWN("", null);
 
     private String name;

@@ -7,7 +7,7 @@ public enum Operator {
 
     LARGER_THAN(">", " must be larger than "),
     LARGER_OR_EQUAL(">=", " must be larger than or equal to "),
-    EQUAL("==", " must be equal to "),
+    EQUAL("=", " must be equal to "),
     LESS_OR_EQUAL("l=", " must be less than or equal to "),
     LESS_THAN("l", " must be less than "),
     NOT_EQUAL("!=", " must not be equal to "),

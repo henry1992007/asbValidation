@@ -13,8 +13,8 @@ import java.util.Map;
  */
 public class ConfigContext {
 
-    String docName;
-    Entity[] entities;
+    private String docName;
+    private Entity[] entities;
     Map<String, ClassDefinition> classes = new HashMap<>();
 
 

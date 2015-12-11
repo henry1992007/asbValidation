@@ -1,8 +1,6 @@
 package com.company.parsing;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -10,11 +8,10 @@ import java.util.Map;
  */
 public class Entity {
     private String name;
-    private String id;
     private int lineNum;
     private String docName;
     private Map<String, String> property = new HashMap<>();
-    private List<Entity> subs = new ArrayList<>();
+    private Entity[] subs;
 
     public Entity(String name, int lineNum, String docName) {
         this.name = name;
@@ -22,51 +19,31 @@ public class Entity {
         this.docName = docName;
     }
 
-    public String getDocName() {
-        return docName;
-    }
-
-    public void setDocName(String docName) {
-        this.docName = docName;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public int getLineNum() {
         return lineNum;
     }
 
-    public void setLineNum(int lineNum) {
-        this.lineNum = lineNum;
+    public String getDocName() {
+        return docName;
     }
 
     public Map<String, String> getProperty() {
         return property;
     }
 
-    public void setProperty(Map<String, String> property) {
-        this.property = property;
+    public void setProperty(String key, String value) {
+        property.put(key, value);
     }
 
-    public List<Entity> getSubs() {
+    public Entity[] getSubs() {
         return subs;
     }
 
-    public void setSubs(List<Entity> subs) {
+    public void setSubs(Entity[] subs) {
         this.subs = subs;
     }
 }

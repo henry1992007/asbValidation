@@ -1,5 +1,6 @@
 package com.company.utils;
 
+import javax.sql.rowset.serial.SerialArray;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -29,8 +30,23 @@ public abstract class ReflectUtils {
     }
 
     public static boolean isMapClass(Class clazz) {
-        while (!clazz.equals(Object.class)) {
-            if (Arrays.asList(clazz.getInterfaces()).contains(Map.class))
+        if (clazz.isInterface()) {
+            return clazz.equals(Map.class) || searchInterface(clazz.getInterfaces());
+        } else {
+            return searchClass(clazz);
+        }
+    }
+
+    public static boolean searchInterface(Class[] clazzes) {
+        for (Class clazz1 : clazzes)
+            if (clazz1.equals(Map.class) || searchInterface(clazz1.getInterfaces()))
+                return true;
+        return false;
+    }
+
+    public static boolean searchClass(Class clazz) {
+        while (clazz != null) {
+            if (searchInterface(clazz.getInterfaces()))
                 return true;
             clazz = clazz.getSuperclass();
         }
