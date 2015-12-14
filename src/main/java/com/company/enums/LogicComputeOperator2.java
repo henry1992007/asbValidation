@@ -14,16 +14,7 @@ public abstract class LogicComputeOperator2 {
 
     private static Map<String, LogicComputeOperator2> values = new HashMap<>();
 
-    public static LogicComputeOperator2 AND = new LogicComputeOperator2("and") {
-        @Override
-        public Boolean[] operate(Boolean... var) {
-            for (boolean b : var)
-                if (!b) return getRes(false);
-            return getRes(true);
-        }
-    };
-
-    public static ComputeOperator test = (ComputeOperator<Boolean>) var -> {
+    public static ComputeOperator AND = (ComputeOperator<Boolean>) var -> {
         for (boolean b : var)
             if (b) return getRes(true);
         return getRes(false);
