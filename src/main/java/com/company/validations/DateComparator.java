@@ -36,10 +36,11 @@ public class DateComparator extends AbstractComparator<Date> {
     @Override
     public CompareObject<Date> preProcess(CompareObject<Date> co) {
         if (co.getOperator().equals(Operator.BETWEEN)) {
-            Date foo = new Date(((Date) Utils.getMax(co.get_vals())).getTime() + 1);
-            List<Date> res = Arrays.asList(co.get_vals());
+//            Date foo = new Date(((Date) Utils.getMax(co.get_vals())).getTime() + 1);
+            Date foo = null;
+            List<Date> res = co.get_vals();
             res.add(foo);
-            co.set_vals(res.toArray(new Date[res.size()]));
+            co.set_vals(res);
         }
         return co;
     }

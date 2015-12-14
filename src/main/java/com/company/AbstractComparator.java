@@ -64,10 +64,10 @@ public abstract class AbstractComparator<T> implements Comparator<T>, MapAccesso
             for (T var2 : co.get_vals()) {
                 res2.add((Boolean) (opertableMap.get(co.getOperator())).operate(var1, var2));
             }
-            res1.add(co.get_logic().compute(res2.toArray(new Boolean[res2.size()])));
+            res1.add(((Boolean[]) co.get_logic().operate(res2.toArray(new Boolean[res2.size()])))[0]);
         }
 
-        return co.getLogic().compute(res1.toArray(new Boolean[res1.size()]));
+        return ((Boolean[]) co.getLogic().operate(res1.toArray(new Boolean[res1.size()])))[0];
     }
 
     @Override

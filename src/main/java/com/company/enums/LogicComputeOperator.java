@@ -28,11 +28,6 @@ public enum LogicComputeOperator implements ComputeOperator<Boolean>, OperatorAt
                 if (b) return getRes(true);
             return getRes(false);
         }
-
-        @Override
-        public ComputeOperator getdefault() {
-            return AND;
-        }
     },
     XOR("xor") {
         public Boolean[] operate(Boolean... var) {

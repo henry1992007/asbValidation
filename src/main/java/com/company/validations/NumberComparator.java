@@ -43,9 +43,9 @@ public class NumberComparator extends AbstractComparator<BigDecimal> {
 
     public CompareObject<BigDecimal> preProcess(CompareObject<BigDecimal> co) {
         if (co.getOperator().equals(Operator.BETWEEN)) {
-            List<BigDecimal> res = Arrays.asList(co.get_vals());
-            res.add(((BigDecimal) Utils.getMax(co.get_vals())).add(new BigDecimal(1)));
-            co.set_vals(res.toArray(new BigDecimal[res.size()]));
+            List<BigDecimal> res = co.get_vals();
+            res.add(((BigDecimal) Utils.getMax(co.get_vals().toArray(new BigDecimal[co.get_vals().size()]))).add(new BigDecimal(1)));
+            co.set_vals(res);
         }
         return co;
     }

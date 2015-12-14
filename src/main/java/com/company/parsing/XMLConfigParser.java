@@ -36,7 +36,7 @@ public class XMLConfigParser {
 
     public ConfigContext parse(InputStream inputStream, String docName) throws DocumentException {
         Document document = saxReader.read(inputStream);
-        return new ConfigContext(document.getName(), getEntities((LocatingElement) document.getRootElement(), docName));
+        return new ConfigContext(docName, getEntities((LocatingElement) document.getRootElement(), docName));
     }
 
     public static List<Entity> getEntities(LocatingElement rootElement, String docName) {

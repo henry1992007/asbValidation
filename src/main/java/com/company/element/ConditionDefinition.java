@@ -8,7 +8,7 @@ import java.util.List;
  */
 public class ConditionDefinition extends AbstractElementDefinition implements ParentElement {
     private String msg;
-    private List<CheckDefinition> refConditions = new ArrayList<>();
+    private List<CheckDefinition> refChecks = new ArrayList<>();
     private List<CheckDefinition> subChecks = new ArrayList<>();
     private List<ConditionDefinition> subConditions = new ArrayList<>();
 
@@ -24,16 +24,24 @@ public class ConditionDefinition extends AbstractElementDefinition implements Pa
         this.msg = msg;
     }
 
-    public List<CheckDefinition> getRefConditions() {
-        return refConditions;
+    public void addRefCheck(CheckDefinition cd) {
+        refChecks.add(cd);
     }
 
-    public void setRefConditions(List<CheckDefinition> refConditions) {
-        this.refConditions = refConditions;
+    public List<CheckDefinition> getRefChecks() {
+        return refChecks;
     }
 
-    public void addRefCondition(CheckDefinition cd) {
-        refConditions.add(cd);
+    public void setRefChecks(List<CheckDefinition> refChecks) {
+        this.refChecks = refChecks;
+    }
+
+    public List<CheckDefinition> getSubChecks() {
+        return subChecks;
+    }
+
+    public List<ConditionDefinition> getSubConditions() {
+        return subConditions;
     }
 
     @Override

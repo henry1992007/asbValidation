@@ -2,8 +2,6 @@ package com.company.validations;
 
 import com.company.CompareObject;
 import com.company.element.CheckDefinition;
-import com.company.element.ConditionField;
-import com.company.element.ConditionValidateObject;
 import com.company.utils.Assert;
 import com.company.utils.CollectionUtils;
 import com.company.utils.ReflectUtils;
@@ -14,6 +12,8 @@ import com.google.common.collect.Sets;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Created by henry on 15/11/5.
@@ -25,29 +25,26 @@ public class NumberValidator implements TypeValidator {
     private NumberComparator comparator;
 
     public boolean validate(CheckDefinition cd, Map<Class, Set<Object>> objectClassMap) {
-        ConditionField[] fields = cd.getFields();
+        Map<Class, String[]> fields = cd.getFields();
         Map<String, Object> fieldValues = new HashMap<>();
-        for (ConditionField conditionField : fields)
-            for (Object obj : objectClassMap.get(conditionField.getClazz()))
-                fieldValues.put(conditionField.toString(), getFieldValue(obj, conditionField.getFields()));
+        for (Class clazz : fields.keySet())
+            for (Object obj : objectClassMap.get(clazz))
+                fieldValues.put(Arrays.toString(fields.get(clazz)), getFieldValue(obj, fields.get(clazz)));
 
-        ConditionField[] _fields = cd.get_fields();
+        Map<Class, String[]> _fields = cd.get_fields();
         Map<String, Object> _fieldValues = new HashMap<>();
-        for (ConditionField conditionField : _fields)
-            for (Object obj : objectClassMap.get(conditionField.getClazz()))
-                _fieldValues.put(conditionField.toString(), getFieldValue(obj, conditionField.getFields()));
+        for (Class clazz : _fields.keySet())
+            for (Object obj : objectClassMap.get(clazz))
+                _fieldValues.put(Arrays.toString(_fields.get(clazz)), getFieldValue(obj, _fields.get(clazz)));
 
-        String[] vals = cd.getVals();
-        String[] _vals = cd.get_vals();
-
-        List<BigDecimal> valList = CollectionUtils.concat(parseObject(fieldValues.values().toArray()), parseString(vals));
-        BigDecimal[] val = valList.toArray(new BigDecimal[valList.size()]);
-        List<BigDecimal> _valList = CollectionUtils.concat(parseObject(_fieldValues.values().toArray()), parseString(_vals));
-        BigDecimal[] _val = _valList.toArray(new BigDecimal[_valList.size()]);
+        List<BigDecimal> val = parseObject(fieldValues.values());
+        val.addAll(parseString(cd.getVals()));
+        List<BigDecimal> _val = parseObject(_fieldValues.values());
+        _val.addAll(parseString(cd.get_vals()));
 
 
         CompareObject<BigDecimal> co = new CompareObject<>(val, cd.getLogic(), cd.getOperator(), _val, cd.get_logic());
-        if (comparator==null)
+        if (comparator == null)
             comparator = new NumberComparator();
         return comparator.doCompare(co);
     }
@@ -73,23 +70,18 @@ public class NumberValidator implements TypeValidator {
         return objectClassMap;
     }
 
-    private BigDecimal[] parseObject(Object[] list) {
+    private List<BigDecimal> parseObject(Collection<Object> list) {
         List<BigDecimal> res = new ArrayList<>();
         for (Object o : list) {
             if (!o.getClass().equals(BigDecimal.class))
                 o = new BigDecimal(((Number) o).doubleValue());
             res.add((BigDecimal) o);
         }
-
-        return res.toArray(new BigDecimal[res.size()]);
+        return res;
     }
 
-    private BigDecimal[] parseString(String[] list) {
-        List<BigDecimal> res = new ArrayList<>();
-        for (String s : list)
-            res.add(new BigDecimal(s));
-
-        return res.toArray(new BigDecimal[res.size()]);
+    private List<BigDecimal> parseString(List<String> list) {
+        return list.stream().map(BigDecimal::new).collect(Collectors.toList());
     }
 
     private Object getFieldValue(Object checkObj, String[] path) {

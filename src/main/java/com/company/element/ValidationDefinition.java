@@ -11,7 +11,7 @@ import java.util.Map;
 /**
  * Created by henry on 15/11/16.
  */
-public class ValidationDefinition extends AbstractElementDefinition implements ParentElement{
+public class ValidationDefinition extends AbstractElementDefinition implements ParentElement {
     private Map<String, Class> classes;
     private List<CheckDefinition> checks = new ArrayList<>();
     private List<ConditionDefinition> conditions = new ArrayList<>();
@@ -33,6 +33,11 @@ public class ValidationDefinition extends AbstractElementDefinition implements P
         conditions.add(cd);
     }
 
+    @Override
+    public List<CheckDefinition> getRefChecks() {
+        return new ArrayList<>();
+    }
+
     public Map<String, Class> getClasses() {
         return classes;
     }
@@ -41,16 +46,12 @@ public class ValidationDefinition extends AbstractElementDefinition implements P
         this.classes = classes;
     }
 
-    public List<CheckDefinition> getChecks() {
+    public List<CheckDefinition> getSubChecks() {
         return checks;
     }
 
-    public List<ConditionDefinition> getConditions() {
+    public List<ConditionDefinition> getSubConditions() {
         return conditions;
-    }
-
-    public void setConditions(List<ConditionDefinition> conditions) {
-        this.conditions = conditions;
     }
 
     public void setIdMap(Map<String, ConditionDefinition> conditionIdMap) {
@@ -60,4 +61,5 @@ public class ValidationDefinition extends AbstractElementDefinition implements P
     public Map<String, ConditionDefinition> getConditionIdMap() {
         return conditionIdMap;
     }
+
 }

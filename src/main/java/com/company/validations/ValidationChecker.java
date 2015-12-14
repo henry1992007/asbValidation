@@ -1,25 +1,31 @@
 package com.company.validations;
 
-import com.company.element.*;
+import com.company.element.CheckDefinition;
+import com.company.element.ConditionDefinition;
+import com.company.element.ParentElement;
+import com.company.element.ValidationDefinition;
 import com.company.utils.Assert;
 import com.google.common.collect.Sets;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by henry on 15/11/17.
  */
 public class ValidationChecker {
 
-    static Map<String, ValidationDefinition> validations = new HashMap<>();
+    //todo:change modifier to default
+    public static Map<String, ValidationDefinition> validations = new HashMap<>();
 
-    private ValidationDefinition ved;
-    private Map<Class, Set<Object>> objectClassMap = new HashMap<Class, Set<Object>>();
+    private ValidationDefinition vd;
+    private Map<Class, Set<Object>> objectClassMap = new HashMap<>();
 
 
     private ValidationChecker(String id) {
-        preCheck(id);
-        ved = validations.get(id);
+        if (validations.get(id) == null)
+            Assert.runtimeException("validation id:'" + id + "' not found");
+        vd = validations.get(id);
     }
 
     public static ValidationChecker get(String id) {
@@ -28,7 +34,8 @@ public class ValidationChecker {
 
     public List<String> check(Object... objects) {
         resolveObjectClass(objects);
-        return doCheck(ved.getDefinitions(), objectClassMap);
+        doCheck(vd, objectClassMap);
+        return results;
     }
 
     private void resolveObjectClass(Object... objs) {
@@ -38,34 +45,30 @@ public class ValidationChecker {
             else
                 objectClassMap.get(obj.getClass()).add(obj);
         }
-        if (!Sets.newHashSet(ved.getClasses().values()).equals(objectClassMap.keySet())) {
+        if (!Sets.newHashSet(vd.getClasses().values()).equals(objectClassMap.keySet())) {
             Assert.runtimeException("classes of the passed in check objects:" + Arrays.toString(objectClassMap.keySet().toArray()) +
-                    "does not match the validation definition class pattern " + Arrays.toString(ved.getClasses().values().toArray()));
+                    "does not match the validation definition class pattern " + Arrays.toString(vd.getClasses().values().toArray()));
         }
     }
 
-    private List<String> doCheck(AbstractElementDefinition[] aeds, Map<Class, Set<Object>> objectClassMap) {
-        List<String> result = new ArrayList<>();
-        for (AbstractElementDefinition aed : aeds) {
-            if (aed instanceof CheckDefinition) {
-                //todo: 抽象
-                if (!((CheckDefinition) aed).getCheckType().getTypeValidator().validate((CheckDefinition) aed, objectClassMap)) {
-                    result.add(((CheckDefinition) aed).getMsg());
-                }
-            } else if (aed instanceof ConditionDefinition) {
-                CheckDefinition[] checkDefinitions = ((ConditionDefinition) aed).getRefConditions();
-                for (CheckDefinition cd : checkDefinitions)
-                    objectClassMap = cd.getCheckType().getTypeValidator().filter(cd, objectClassMap);
-                doCheck(((ConditionDefinition) aed).getSubConditions(), objectClassMap);
-            }
-        }
+    List<String> results = new ArrayList<>();
 
-        return result;
+    private void doCheck(ParentElement element, Map<Class, Set<Object>> objectClassMap) {
+        for (CheckDefinition check : element.getRefChecks())
+            objectClassMap = check.getCheckType().getTypeValidator().filter(check, objectClassMap);
+
+        results.addAll(processChecks(element.getSubChecks(), objectClassMap));
+
+        for (ConditionDefinition subCd : element.getSubConditions())
+            doCheck(subCd, objectClassMap);
     }
 
-    private void preCheck(String id) {
-        if (validations.get(id) == null)
-            Assert.runtimeException("validation id:'" + id + "' not found");
+    private List<String> processChecks(List<CheckDefinition> cds, Map<Class, Set<Object>> objectClassMap) {
+        return cds.stream().filter(
+                cd -> !cd.getCheckType().getTypeValidator().validate(cd, objectClassMap)).map(
+                CheckDefinition::getMsg).collect(
+                Collectors.toList());
     }
+
 
 }

@@ -2,18 +2,19 @@ package com.company.validations;
 
 import com.company.ComputeOperator;
 import com.company.ConfigContext;
-import com.company.OperatorAttribute;
 import com.company.element.*;
 import com.company.enums.*;
 import com.company.parsing.Entity;
-import com.company.utils.*;
-import sun.nio.cs.ext.JIS_X_0201;
+import com.company.utils.Assert;
+import com.company.utils.CollectionUtils;
+import com.company.utils.ReflectUtils;
+import com.company.utils.StringUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
 
-import static com.company.utils.Assert.*;
+import static com.company.utils.Assert.runtimeException;
 
 /**
  * Created by henry on 15/11/16.
@@ -31,8 +32,8 @@ public class ConfigReader {
     public final static String PROPERTY_TYPE = "type";
     public final static String PROPERTY_FIELD = "field";
     public final static String PROPERTY__FIELD = "_field";
-    public final static String PROPERTY_VALUE = "val";
-    public final static String PROPERTY__VALUE = "_val";
+    public final static String PROPERTY_VALUE = "value";
+    public final static String PROPERTY__VALUE = "_value";
     public final static String PROPERTY_CMPT = "cmpt";
     public final static String PROPERTY__CMPT = "_cmpt";
     public final static String PROPERTY_LOGIC = "logic";
@@ -49,6 +50,8 @@ public class ConfigReader {
     ConfigContext[] configContexts;
 
     private ValidationDefinition vd;
+    private int lineNum;
+    private String docName;
 
 
     Map<String, CheckDefinition> conditionIdMap = new HashMap<>();
@@ -57,6 +60,7 @@ public class ConfigReader {
     public void read(ConfigContext[] contexts) {
         this.configContexts = contexts;
         for (ConfigContext context : configContexts) {
+            docName = context.getDocName();
             for (Entity entity : context.getEntities()) {
                 String name = entity.getName();
                 switch (ElementType.fromString(name)) {
@@ -73,17 +77,18 @@ public class ConfigReader {
 
     private void readClasses(Entity entity, ConfigContext context) {
         Map<String, String> property = entity.getProperty();
+        lineNum = entity.getLineNum();
 
         ClassDefinition cd = new ClassDefinition(property.get(PROPERTY_ID), entity.getLineNum(), entity.getDocName());
         if (context.getClasses().containsKey(cd.getId()))
-            Assert.entityIDException(Assert.DUPLICATED_CLASS_ID, cd.getId(), cd.getLineNum(), cd.getDocName());
+            Assert.entityIDException(Assert.DUPLICATED_CLASS_ID, cd.getId(), lineNum, docName);
 
         try {
             if (StringUtils.isEmpty(property.get("class")))
-                Assert.illegalDefinitionException(Assert.CLASS_NAME_UNSPECIFIED, entity.getLineNum(), entity.getDocName());
+                Assert.illegalDefinitionException(Assert.CLASS_NAME_UNSPECIFIED, lineNum, docName);
             cd.setClazz(Class.forName(property.get("class")));
         } catch (ClassNotFoundException e) {
-            Assert.illegalDefinitionException(Assert.CLASS_NOT_FOUND + ":'" + property.get("class") + "'", entity.getLineNum(), entity.getDocName());
+            Assert.illegalDefinitionException(Assert.CLASS_NOT_FOUND + ":'" + property.get("class") + "'", lineNum, docName);
         }
 
         context.getClasses().put(cd.getId(), cd);
@@ -92,6 +97,7 @@ public class ConfigReader {
 
     private void readValidations(Entity entity, ConfigContext context) {
         Map<String, String> property = entity.getProperty();
+        lineNum = entity.getLineNum();
 
         ValidationDefinition vd = new ValidationDefinition(property.get(PROPERTY_ID), entity.getLineNum(), entity.getDocName());
         this.vd = vd;
@@ -123,14 +129,15 @@ public class ConfigReader {
         next:
         for (Entity entity : entities) {
             Map<String, String> property = entity.getProperty();
+            lineNum = entity.getLineNum();
             switch (DefinitionType.fromName(entity.getName())) {
                 case CHECK:
-                    CheckDefinition check = new CheckDefinition(entity.getLineNum(), entity.getDocName());
+                    CheckDefinition check = new CheckDefinition(lineNum, docName);
                     setCheckProperty(entity, check, vd.getClasses());
                     pe.addCheck(check);
                     break;
                 case CONDITION:
-                    ConditionDefinition condition = new ConditionDefinition(entity.getLineNum(), entity.getDocName());
+                    ConditionDefinition condition = new ConditionDefinition(lineNum, docName);
                     if (StringUtils.isNotEmpty(property.get(PROPERTY_REF))) {
                         setConditionProperty(entity, condition, vd);
                     }
@@ -140,10 +147,11 @@ public class ConfigReader {
                             Assert.entityIDException("duplicated check id defined", id, entity.getLineNum(), entity.getDocName());
                         vd.getConditionIdMap().put(id, condition);
                     }
-                    if (property.containsKey()) {
+                    //todo:change to
+                    if (property.containsKey(PROPERTY_FIELD)) {
                         CheckDefinition subCd = new CheckDefinition(entity.getLineNum(), entity.getDocName());
                         setCheckProperty(entity, subCd, vd.getClasses());
-                        condition.addRefCondition(subCd);
+                        condition.addRefCheck(subCd);
                     }
                     if (CollectionUtils.isNotEmpty(entity.getSubs()))
                         resolveDefinition(entity.getSubs(), condition);
@@ -158,6 +166,8 @@ public class ConfigReader {
 
     private void setCheckProperty(Entity entity, CheckDefinition cd, Map<String, Class> classMap) {
         Map<String, String> property = entity.getProperty();
+        checkDefinitionLegal(property);
+
         int lineNum = entity.getLineNum();
         String docName = entity.getDocName();
 
@@ -168,28 +178,32 @@ public class ConfigReader {
             Assert.illegalDefinitionException("unknown check type:'" + type.getName() + "'", lineNum, docName);
         cd.setCheckType(type);
 
-        checkDefinitionLegal(cd);
 
-        cd.setFields(resolveFields(property.get(PROPERTY_FIELD), classMap, lineNum, docName));
-        cd.set_fields(resolveFields(property.get(PROPERTY__FIELD), classMap, lineNum, docName));
+        cd.setFields(resolveFields(property.get(PROPERTY_FIELD), classMap));
+        cd.set_fields(resolveFields(property.get(PROPERTY__FIELD), classMap));
         cd.setVals(resolveValue(property.get(PROPERTY_VALUE)));
         cd.set_vals(resolveValue(property.get(PROPERTY__VALUE)));
 
-        cd.setCmpt(resolve(property.get(PROPERTY_CMPT), NumberComputeOperate.class,lineNum, docName));
-        cd.setCmpt(resolveCmpt(property.get(PROPERTY_CMPT), lineNum, docName));
-        cd.set_cmpt(resolveCmpt(property.get(PROPERTY__CMPT), lineNum, docName));
-        cd.setLogic(resolveLogic(property.get(PROPERTY_LOGIC), lineNum, docName));
-        cd.set_logic(resolveLogic(property.get(PROPERTY__LOGIC), lineNum, docName));
+        cd.setCmpt(resolve(property.get(PROPERTY_CMPT), NumberComputeOperate.class));
+        cd.set_cmpt(resolve(property.get(PROPERTY__CMPT), NumberComputeOperate.class));
+        cd.setLogic(resolve(property.get(PROPERTY_LOGIC), LogicComputeOperator.class));
+        cd.set_logic(resolve(property.get(PROPERTY__LOGIC), LogicComputeOperator.class));
+
+//        cd.setCmpt(resolveCmpt(property.get(PROPERTY_CMPT), lineNum, docName));
+//        cd.set_cmpt(resolveCmpt(property.get(PROPERTY__CMPT), lineNum, docName));
+//        cd.setLogic(resolveLogic(property.get(PROPERTY_LOGIC), lineNum, docName));
+//        cd.set_logic(resolveLogic(property.get(PROPERTY__LOGIC), lineNum, docName));
+
         cd.setOperator(resolveOperator(property.get(PROPERTY_OPERATOR), lineNum, docName));
         cd.setMsg(property.get("msg"));
 
         checkParamsLegal(cd);
     }
 
-    private void checkDefinitionLegal(CheckDefinition cd) {
-        if ((MapUtils.isEmpty(cd.getFields()) && CollectionUtils.isEmpty(cd.getVals())) ||
-                (MapUtils.isEmpty(cd.get_fields()) && CollectionUtils.isEmpty(cd.get_vals()))) {
-            Assert.illegalDefinitionException("check definition illegal, compare value expected for the operator", cd.getLineNum(), cd.getDocName());
+    private void checkDefinitionLegal(Map<String, String> map) {
+        if ((StringUtils.isEmpty(map.get(PROPERTY_FIELD)) && StringUtils.isEmpty(map.get(PROPERTY_VALUE))) ||
+                (StringUtils.isEmpty(map.get(PROPERTY__FIELD)) && StringUtils.isEmpty(map.get(PROPERTY__VALUE)))) {
+            Assert.illegalDefinitionException("check definition illegal, compare value expected for the operator", lineNum, docName);
         }
     }
 
@@ -209,13 +223,13 @@ public class ConfigReader {
         for (String s : refIDs) {
             if (vd.getConditionIdMap().get(s) == null)
                 Assert.entityIDException("cannot find check with specified id.", s, entity.getLineNum(), entity.getDocName());
-            refs.addAll(vd.getConditionIdMap().get(s).getRefConditions());
+            refs.addAll(vd.getConditionIdMap().get(s).getRefChecks());
         }
         if (property.containsKey(PROPERTY_MSG))
             cd.setMsg(property.get(PROPERTY_MSG));
         else
             cd.setMsg(refs.get(0).getMsg());
-        cd.setRefConditions(refs);
+        cd.setRefChecks(refs);
     }
 
 //    private ConditionEntity overrideAndExtendCondition(ConditionEntity ref, ConditionEntity target) {
@@ -229,7 +243,7 @@ public class ConfigReader {
 //    }
 
     /* 在String.split()中使用"."作为分隔符，必须写成"[.]"的形式 */
-    private Map<Class, String[]> resolveFields(String fieldProperty, Map<String, Class> classMap, int lineNum, String docName) {
+    private Map<Class, String[]> resolveFields(String fieldProperty, Map<String, Class> classMap) {
         Map<Class, String[]> fieldMap = new HashMap<>();
 
         if (StringUtils.isNotEmpty(fieldProperty)) {
@@ -275,7 +289,7 @@ public class ConfigReader {
         return vals;
     }
 
-    public ComputeOperator resolve(String attr, Class clazz, int lineNum, String docName) {
+    public ComputeOperator resolve(String attr, Class clazz) {
         if (StringUtils.isEmpty(attr))
             return (ComputeOperator) ReflectUtils.invokeStatic(clazz, "getDefault");
         ComputeOperator operator = (ComputeOperator) ReflectUtils.invokeStatic(clazz, "fromName", attr);
@@ -284,28 +298,28 @@ public class ConfigReader {
         return operator;
     }
 
-    private NumberComputeOperate resolveCmpt(String s, int lineNum, String docName) {
-        if (StringUtils.isEmpty(s))
-            return NumberComputeOperate.UNKNOWN;
-        NumberComputeOperate operate = NumberComputeOperate.fromName(s);
-        if (operate.equals(NumberComputeOperate.UNKNOWN))
-            Assert.runtimeException("unknown compute operator:'" + s + "' at line " + lineNum + " in " + docName);
-        return operate;
-    }
+//    private NumberComputeOperate resolveCmpt(String s, int lineNum, String docName) {
+//        if (StringUtils.isEmpty(s))
+//            return NumberComputeOperate.UNKNOWN;
+//        NumberComputeOperate operate = NumberComputeOperate.fromName(s);
+//        if (operate.equals(NumberComputeOperate.UNKNOWN))
+//            Assert.runtimeException("unknown compute operator:'" + s + "' at line " + lineNum + " in " + docName);
+//        return operate;
+//    }
 
-    private OperatorAttribute resolveOptr(String s) {
-        if (StringUtils.isEmpty(s))
-            return OperatorAttribute.getDefault();
-    }
+//    private OperatorAttribute resolveOptr(String s) {
+//        if (StringUtils.isEmpty(s))
+//            return OperatorAttribute.getDefault();
+//    }
 
-    private LogicComputeOperator resolveLogic(String s, int lineNum, String docName) {
-        if (StringUtils.isEmpty(s))
-            return LogicComputeOperator.AND;
-        LogicComputeOperator logic = LogicComputeOperator.fromName(s);
-        if (logic.equals(LogicComputeOperator.UNKNOWN))
-            Assert.runtimeException("unknown logic operator:'" + s + "' at line " + lineNum + " in " + docName);
-        return logic;
-    }
+//    private LogicComputeOperator resolveLogic(String s, int lineNum, String docName) {
+//        if (StringUtils.isEmpty(s))
+//            return LogicComputeOperator.AND;
+//        LogicComputeOperator logic = LogicComputeOperator.fromName(s);
+//        if (logic.equals(LogicComputeOperator.UNKNOWN))
+//            Assert.runtimeException("unknown logic operator:'" + s + "' at line " + lineNum + " in " + docName);
+//        return logic;
+//    }
 
     private Operator resolveOperator(String s, int lineNum, String docName) {
         if (StringUtils.isEmpty(s))

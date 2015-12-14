@@ -24,8 +24,6 @@ public enum CheckType implements EntityAttribute {
             IN,
             NOT_IN,
             BETWEEN,
-            SUM,
-            PRODUCT,
             INTERSECT),
     STRING("string", new StringValidator(),
             EQUAL,

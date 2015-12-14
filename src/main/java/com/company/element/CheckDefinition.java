@@ -15,12 +15,12 @@ public class CheckDefinition extends AbstractElementDefinition {
     private Map<Class, String[]> fields;
     private List<String> vals = new ArrayList<>();
     private ComputeOperator cmpt;
-    private LogicComputeOperator logic;
+    private ComputeOperator logic;
     private Operator operator;
     private Map<Class, String[]> _fields;
     private List<String> _vals = new ArrayList<>();
     private ComputeOperator _cmpt;
-    private LogicComputeOperator _logic;
+    private ComputeOperator _logic;
     private String msg;
 
 
@@ -60,11 +60,11 @@ public class CheckDefinition extends AbstractElementDefinition {
         this.cmpt = cmpt;
     }
 
-    public LogicComputeOperator getLogic() {
+    public ComputeOperator getLogic() {
         return logic;
     }
 
-    public void setLogic(LogicComputeOperator logic) {
+    public void setLogic(ComputeOperator logic) {
         this.logic = logic;
     }
 
@@ -101,11 +101,11 @@ public class CheckDefinition extends AbstractElementDefinition {
         this._cmpt = _cmpt;
     }
 
-    public LogicComputeOperator get_logic() {
+    public ComputeOperator get_logic() {
         return _logic;
     }
 
-    public void set_logic(LogicComputeOperator _logic) {
+    public void set_logic(ComputeOperator _logic) {
         this._logic = _logic;
     }
 
