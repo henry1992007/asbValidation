@@ -1,5 +1,6 @@
 package com.company.enums;
 
+import com.company.EntityAttribute;
 import com.company.validations.MapValidator;
 import com.company.validations.*;
 
@@ -8,7 +9,7 @@ import static com.company.enums.Operator.*;
 /**
  * Created by henry on 15/11/10.
  */
-public enum CheckType {
+public enum CheckType implements EntityAttribute {
 
     OBJECT("object", null,
             EQUAL,

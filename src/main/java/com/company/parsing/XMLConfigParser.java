@@ -39,7 +39,7 @@ public class XMLConfigParser {
         return new ConfigContext(document.getName(), getEntities((LocatingElement) document.getRootElement(), docName));
     }
 
-    public static Entity[] getEntities(LocatingElement rootElement, String docName) {
+    public static List<Entity> getEntities(LocatingElement rootElement, String docName) {
         List<Entity> entities = new ArrayList<>();
         for (Iterator<LocatingElement> i = rootElement.elementIterator(); i.hasNext(); ) {
             LocatingElement element = i.next();
@@ -51,8 +51,7 @@ public class XMLConfigParser {
             entity.setSubs(getEntities(element, docName));
             entities.add(entity);
         }
-//        return CollectionUtils.listToArray(entities);
-        return entities.toArray(new Entity[entities.size()]);
+        return entities;
     }
 
 }

@@ -1,9 +1,7 @@
 package com.company.validations;
 
 import com.company.element.CheckDefinition;
-import com.company.element.ConditionValidateObject;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 

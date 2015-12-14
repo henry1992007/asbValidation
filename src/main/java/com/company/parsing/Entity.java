@@ -1,6 +1,7 @@
 package com.company.parsing;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -11,7 +12,7 @@ public class Entity {
     private int lineNum;
     private String docName;
     private Map<String, String> property = new HashMap<>();
-    private Entity[] subs;
+    private List<Entity> subs;
 
     public Entity(String name, int lineNum, String docName) {
         this.name = name;
@@ -39,11 +40,11 @@ public class Entity {
         property.put(key, value);
     }
 
-    public Entity[] getSubs() {
+    public List<Entity> getSubs() {
         return subs;
     }
 
-    public void setSubs(Entity[] subs) {
+    public void setSubs(List<Entity> subs) {
         this.subs = subs;
     }
 }

@@ -1,59 +1,70 @@
 package com.company.enums;
 
+import com.company.ComputeOperator;
 import com.company.LogicOperator;
+import com.company.OperatorAttribute;
 
 import java.util.Arrays;
 
 /**
  * Created by henry on 15/11/19.
  */
-public enum LogicComputeOperator implements LogicOperator {
+public enum LogicComputeOperator implements ComputeOperator<Boolean>, OperatorAttribute {
 
     AND("and", "&&", "&") {
-        public Boolean compute(Boolean... var) {
+        public Boolean[] operate(Boolean... var) {
             for (boolean b : var)
-                if (!b) return false;
-            return true;
+                if (!b) return getRes(false);
+            return getRes(true);
+        }
+
+        public ComputeOperator getdefault() {
+            return this;
         }
     },
     OR("or", "||", "|") {
-        public Boolean compute(Boolean... var) {
+        public Boolean[] operate(Boolean... var) {
             for (boolean b : var)
-                if (b) return true;
-            return false;
+                if (b) return getRes(true);
+            return getRes(false);
+        }
+
+        @Override
+        public ComputeOperator getdefault() {
+            return AND;
         }
     },
     XOR("xor") {
-        public Boolean compute(Boolean... var) {
+        public Boolean[] operate(Boolean... var) {
             for (boolean b : var)
-                if (var[0] != b) return true;
-            return false;
-        }
-    },
-    UNKNOWN("") {
-        @Override
-        public Boolean compute(Boolean... var) {
-            return null;
+                if (var[0] != b) return getRes(true);
+            return getRes(false);
         }
     };
 
-    private String[] values;
+    private String[] names;
 
-    LogicComputeOperator(String... values) {
-        this.values = values;
+    LogicComputeOperator(String... names) {
+        this.names = names;
     }
 
-    public static LogicComputeOperator fromValue(String value) {
-        if (value == null)
-            return null;
+    public static LogicComputeOperator fromName(String name) {
         for (LogicComputeOperator e : values())
-            if (Arrays.asList(e.getValue()).contains(value.toLowerCase()))
+            if (Arrays.asList(e.getNames()).contains(name.toLowerCase()))
                 return e;
-        return UNKNOWN;
+        return null;
+    }
+
+    public static LogicComputeOperator getDefault() {
+        return AND;
     }
 
 
-    public String[] getValue() {
-        return values;
+    public String[] getNames() {
+        return names;
+    }
+
+    private static Boolean[] getRes(boolean b) {
+        return new Boolean[]{b};
     }
 }

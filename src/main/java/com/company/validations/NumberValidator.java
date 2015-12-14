@@ -4,17 +4,13 @@ import com.company.CompareObject;
 import com.company.element.CheckDefinition;
 import com.company.element.ConditionField;
 import com.company.element.ConditionValidateObject;
-import com.company.enums.LogicComputeOperator;
 import com.company.utils.Assert;
 import com.company.utils.CollectionUtils;
 import com.company.utils.ReflectUtils;
 import com.company.utils.StringUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.sun.deploy.util.ArrayUtil;
-import com.sun.tools.javac.util.ArrayUtils;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.*;

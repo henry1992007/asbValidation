@@ -6,4 +6,6 @@ package com.company;
 @SuppressWarnings("unchecked")
 public interface ComputeOperator<T> {
     T[] operate(T... var);
+
+//    ComputeOperator getdefault();
 }

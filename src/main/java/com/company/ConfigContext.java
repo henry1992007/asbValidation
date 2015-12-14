@@ -14,11 +14,11 @@ import java.util.Map;
 public class ConfigContext {
 
     private String docName;
-    private Entity[] entities;
+    private List<Entity> entities;
     Map<String, ClassDefinition> classes = new HashMap<>();
 
 
-    public ConfigContext(String docName, Entity[] entities) {
+    public ConfigContext(String docName, List<Entity> entities) {
         this.docName = docName;
         this.entities = entities;
     }
@@ -31,7 +31,7 @@ public class ConfigContext {
         this.classes = classes;
     }
 
-    public Entity[] getEntities() {
+    public List<Entity> getEntities() {
         return entities;
     }
 

@@ -8,6 +8,13 @@ import com.company.Exceptions.IllegalDefinitionException;
  */
 public abstract class Assert {
 
+    public final static String CLASS_ID_UNSPECIFIED = "class definition id unspecified.";
+    public final static String CLASS_NAME_UNSPECIFIED = "class definition Class unspecified.";
+    public final static String CLASS_NOT_FOUND = "referenced class not found.";
+    public final static String DUPLICATED_CLASS_ID = "duplicated class definition id, there is already class definition with";
+
+    public final static String VALIDATION_ID_UNSPECIFIED = "validation definition id unspecified.";
+    public final static String DUPLICATED_VALIDATION_ID = "duplicated class definition id, there is already class definition with";
     public final static String UNKNOWN_ELEMENT = "unknown element defined";
 
     public Assert() {

@@ -14,9 +14,6 @@ public enum Operator {
     IN("in", " must be one of "),
     NOT_IN("not", " must not be any of "),
     BETWEEN("between", ""),
-    CHANGE("change", ""),
-    SUM("sum", ""),
-    PRODUCT("product", ""),
     INTERSECT("intersect", ""),
     CONTAINS_KEY("key", " contains key "),
     CONTAINS_KEY_VALUE("kv", " must contains kv pairs "),
@@ -34,9 +31,7 @@ public enum Operator {
         this.desc = desc;
     }
 
-    public static Operator getOperator(String operator) {
-        if (operator == null)
-            return null;
+    public static Operator fromName(String operator) {
         String str = operator.toLowerCase();
         for (Operator e : values()) {
             if (str.equals("=>"))

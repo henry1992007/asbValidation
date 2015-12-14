@@ -8,14 +8,17 @@ public abstract class AbstractElementDefinition {
     protected int lineNum;
     protected String docName;
 
-    protected AbstractElementDefinition(String id, int lineNum, String docName) {
-        this.id = id;
+    protected AbstractElementDefinition(int lineNum, String docName) {
         this.lineNum = lineNum;
         this.docName = docName;
     }
 
     public String getId() {
         return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public int getLineNum() {

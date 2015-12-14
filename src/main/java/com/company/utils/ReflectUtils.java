@@ -1,8 +1,9 @@
 package com.company.utils;
 
 import javax.sql.rowset.serial.SerialArray;
-import java.util.Arrays;
-import java.util.Map;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.*;
 
 /**
  * Created by henry on 15/12/3.
@@ -55,6 +56,30 @@ public abstract class ReflectUtils {
 
     public static String getRefClassName(String s) {
         return StringUtils.firstToLowerCase(s.substring(s.lastIndexOf(".") + 1, s.length()));
+    }
+
+    public static Object invokeStatic(Class clazz, String mName, Object... args) {
+        return invoke(null, clazz, mName, args);
+    }
+
+    public static Object invoke(Object target, String mName, Object... args) {
+        return invoke(target, target.getClass(), mName, args);
+    }
+
+    public static Object invoke(Object target, Class<?> clazz, String mName, Object... args) {
+        try {
+            Method method = clazz.getDeclaredMethod(mName, getParamClass(args));
+            return method.invoke(target, args);
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Class[] getParamClass(Object... args) {
+        List<Class> classes = new ArrayList<>();
+        for (Object o : args)
+            classes.add(o.getClass());
+        return classes.toArray(new Class[classes.size()]);
     }
 
 }

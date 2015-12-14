@@ -3,35 +3,46 @@ package com.company.element;
 import com.company.ComputeOperator;
 import com.company.enums.*;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Created by henry on 15/11/16.
  */
 public class CheckDefinition extends AbstractElementDefinition {
-    //    private DefinitionType definitionType;
     private CheckType checkType;
-    private ConditionField[] fields;
-    private String[] vals;
+    private Map<Class, String[]> fields;
+    private List<String> vals = new ArrayList<>();
     private ComputeOperator cmpt;
     private LogicComputeOperator logic;
     private Operator operator;
-    private ConditionField[] _fields;
-    private String[] _vals;
+    private Map<Class, String[]> _fields;
+    private List<String> _vals = new ArrayList<>();
     private ComputeOperator _cmpt;
     private LogicComputeOperator _logic;
     private String msg;
 
 
-    public CheckDefinition(String id, int lineNum, String docName) {
-        super(id, lineNum, docName);
+    public CheckDefinition(int lineNum, String docName) {
+        super(lineNum, docName);
     }
 
-//    public DefinitionType getDefinitionType() {
-//        return definitionType;
-//    }
-//
-//    public void setDefinitionType(DefinitionType definitionType) {
-//        this.definitionType = definitionType;
-//    }
+    public List<String> getVals() {
+        return vals;
+    }
+
+    public void setVals(List<String> vals) {
+        this.vals = vals;
+    }
+
+    public List<String> get_vals() {
+        return _vals;
+    }
+
+    public void set_vals(List<String> _vals) {
+        this._vals = _vals;
+    }
 
     public CheckType getCheckType() {
         return checkType;
@@ -39,22 +50,6 @@ public class CheckDefinition extends AbstractElementDefinition {
 
     public void setCheckType(CheckType checkType) {
         this.checkType = checkType;
-    }
-
-    public ConditionField[] getFields() {
-        return fields;
-    }
-
-    public void setFields(ConditionField[] fields) {
-        this.fields = fields;
-    }
-
-    public String[] getVals() {
-        return vals;
-    }
-
-    public void setVals(String[] vals) {
-        this.vals = vals;
     }
 
     public ComputeOperator getCmpt() {
@@ -81,21 +76,22 @@ public class CheckDefinition extends AbstractElementDefinition {
         this.operator = operator;
     }
 
-    public ConditionField[] get_fields() {
+    public Map<Class, String[]> getFields() {
+        return fields;
+    }
+
+    public void setFields(Map<Class, String[]> fields) {
+        this.fields = fields;
+    }
+
+    public Map<Class, String[]> get_fields() {
         return _fields;
     }
 
-    public void set_fields(ConditionField[] _fields) {
+    public void set_fields(Map<Class, String[]> _fields) {
         this._fields = _fields;
     }
 
-    public String[] get_vals() {
-        return _vals;
-    }
-
-    public void set_vals(String[] _vals) {
-        this._vals = _vals;
-    }
 
     public ComputeOperator get_cmpt() {
         return _cmpt;

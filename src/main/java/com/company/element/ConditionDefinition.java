@@ -1,15 +1,19 @@
 package com.company.element;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by henry on 15/12/4.
  */
-public class ConditionDefinition extends AbstractElementDefinition {
+public class ConditionDefinition extends AbstractElementDefinition implements ParentElement {
     private String msg;
-    private CheckDefinition[] refConditions;
-    private AbstractElementDefinition[] subConditions;
+    private List<CheckDefinition> refConditions = new ArrayList<>();
+    private List<CheckDefinition> subChecks = new ArrayList<>();
+    private List<ConditionDefinition> subConditions = new ArrayList<>();
 
-    public  ConditionDefinition(String id, int lineNum, String docName) {
-        super(id, lineNum, docName);
+    public ConditionDefinition(int lineNum, String docName) {
+        super(lineNum, docName);
     }
 
     public String getMsg() {
@@ -20,20 +24,25 @@ public class ConditionDefinition extends AbstractElementDefinition {
         this.msg = msg;
     }
 
-    public CheckDefinition[] getRefConditions() {
+    public List<CheckDefinition> getRefConditions() {
         return refConditions;
     }
 
-    public void setRefConditions(CheckDefinition[] refConditions) {
+    public void setRefConditions(List<CheckDefinition> refConditions) {
         this.refConditions = refConditions;
     }
 
-    public AbstractElementDefinition[] getSubConditions() {
-        return subConditions;
+    public void addRefCondition(CheckDefinition cd) {
+        refConditions.add(cd);
     }
 
-    public void setSubConditions(AbstractElementDefinition[] subConditions) {
-        this.subConditions = subConditions;
+    @Override
+    public void addCheck(CheckDefinition definition) {
+        subChecks.add(definition);
     }
 
+    @Override
+    public void addCondition(ConditionDefinition definition) {
+        subConditions.add(definition);
+    }
 }

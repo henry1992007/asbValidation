@@ -1,13 +1,14 @@
 package com.company.enums;
 
 import com.company.ComputeOperator;
+import com.company.EntityAttribute;
 
 import java.math.BigDecimal;
 
 /**
  * Created by henry on 15/11/21.
  */
-public enum NumberComputeOperate implements ComputeOperator<BigDecimal> {
+public enum NumberComputeOperate implements ComputeOperator<BigDecimal>, EntityAttribute {
 
     SUM("sum") {
         public BigDecimal[] operate(BigDecimal... var) {
@@ -56,10 +57,10 @@ public enum NumberComputeOperate implements ComputeOperator<BigDecimal> {
             return res;
         }
     },
-    UNKNOWN("unknown"){
+    DEFAULT("unknown") {
         @Override
         public BigDecimal[] operate(BigDecimal... var) {
-            return null;
+            return var;
         }
     };
 
@@ -75,6 +76,10 @@ public enum NumberComputeOperate implements ComputeOperator<BigDecimal> {
             if (e.getName().equals(name))
                 return e;
         return null;
+    }
+
+    public static NumberComputeOperate getDefault() {
+        return DEFAULT;
     }
 
     public String getName() {
