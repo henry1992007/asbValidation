@@ -3,49 +3,42 @@ package com.company.enums;
 import com.company.ComputeOperator;
 import com.company.LogicOperator;
 import com.company.OperatorAttribute;
+import com.company.utils.CollectionUtils;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by henry on 15/11/19.
  */
 public enum LogicComputeOperator implements ComputeOperator<Boolean>, OperatorAttribute {
 
-    AND("and", "&&", "&") {
-        public Boolean[] operate(Boolean... var) {
-            for (boolean b : var)
-                if (!b) return getRes(false);
-            return getRes(true);
-        }
-
-        public ComputeOperator getdefault() {
-            return this;
+    AND("and") {
+        public List<Boolean> operate(List<Boolean> var) {
+            return CollectionUtils.reduce(var, Boolean::logicalAnd);
         }
     },
-    OR("or", "||", "|") {
-        public Boolean[] operate(Boolean... var) {
-            for (boolean b : var)
-                if (b) return getRes(true);
-            return getRes(false);
+    OR("or") {
+        public List<Boolean> operate(List<Boolean> var) {
+            return CollectionUtils.reduce(var, Boolean::logicalOr);
         }
     },
     XOR("xor") {
-        public Boolean[] operate(Boolean... var) {
-            for (boolean b : var)
-                if (var[0] != b) return getRes(true);
-            return getRes(false);
+        public List<Boolean> operate(List<Boolean> var) {
+            return Collections.singletonList(!CollectionUtils.equal(var));
         }
     };
 
-    private String[] names;
+    private String name;
 
-    LogicComputeOperator(String... names) {
-        this.names = names;
+    LogicComputeOperator(String name) {
+        this.name = name;
     }
 
     public static LogicComputeOperator fromName(String name) {
         for (LogicComputeOperator e : values())
-            if (Arrays.asList(e.getNames()).contains(name.toLowerCase()))
+            if (e.getName().equals(name.toLowerCase()))
                 return e;
         return null;
     }
@@ -55,11 +48,8 @@ public enum LogicComputeOperator implements ComputeOperator<Boolean>, OperatorAt
     }
 
 
-    public String[] getNames() {
-        return names;
+    public String getName() {
+        return name;
     }
 
-    private static Boolean[] getRes(boolean b) {
-        return new Boolean[]{b};
-    }
 }

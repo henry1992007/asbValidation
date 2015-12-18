@@ -2,6 +2,9 @@ package com.company.utils;
 
 import com.company.Exceptions.EntityIDException;
 import com.company.Exceptions.IllegalDefinitionException;
+import com.company.Exceptions.UnsupportedOperatorException;
+import com.company.enums.CheckType;
+import com.company.enums.Operator;
 
 /**
  * Created by henry on 15/11/16.
@@ -32,12 +35,20 @@ public abstract class Assert {
         throw new IllegalDefinitionException(msg, lineNum, docName);
     }
 
+    public static void illegalDefinitionException(String msg, int lineNum, String docName, Throwable cause) {
+        throw new IllegalDefinitionException(msg, lineNum, docName, cause);
+    }
+
     public static void unknownElementException(String elementName, int lineNum, String docName) {
         illegalDefinitionException(UNKNOWN_ELEMENT + ":'" + elementName + "'", lineNum, docName);
     }
 
     public static void entityIDException(String msg, String id, int lineNum, String docName) {
         throw new EntityIDException(msg, id, lineNum, docName);
+    }
+
+    public static void unsupportedOperator(String operator, CheckType checkType, int lineNum, String docName) {
+        throw new UnsupportedOperatorException(operator, checkType, lineNum, docName);
     }
 
 }

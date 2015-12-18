@@ -1,5 +1,7 @@
 package com.company.utils;
 
+import java.util.function.Function;
+
 /**
  * Created by henry on 15/11/12.
  */

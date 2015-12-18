@@ -1,5 +1,9 @@
 package com.company;
 
+import com.company.enums.LogicComputeOperator;
+import com.company.enums.Operator;
+import com.company.utils.MultiKeySetMap;
+
 import java.util.Map;
 
 /**
@@ -7,9 +11,9 @@ import java.util.Map;
  */
 public interface MapAccessor {
 
-    void setOperatables(Map operatables);
+    MultiKeySetMap<Operator, Operatable> getOperatables();
 
-    void setLogic(Map logicMap);
+    Map<Operator, LogicComputeOperator> getLogic();
 
-    void set_Logic(Map _LogicMap);
+    Map<Operator, LogicComputeOperator> get_Logic();
 }

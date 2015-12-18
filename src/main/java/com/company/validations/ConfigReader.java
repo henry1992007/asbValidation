@@ -13,6 +13,8 @@ import com.company.utils.StringUtils;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static com.company.utils.Assert.runtimeException;
 
@@ -173,7 +175,9 @@ public class ConfigReader {
 
         if (StringUtils.isEmpty(property.get(PROPERTY_TYPE)))
             Assert.illegalDefinitionException("check type undefined", lineNum, docName);
-        CheckType type = CheckType.fromName(property.get(PROPERTY_TYPE));
+//        CheckType type = CheckType.fromName(property.get(PROPERTY_TYPE));
+        String s = property.get(PROPERTY_TYPE);
+        CheckType type = CheckType.fromName(s);
         if (type.equals(CheckType.UNKNOWN))
             Assert.illegalDefinitionException("unknown check type:'" + type.getName() + "'", lineNum, docName);
         cd.setCheckType(type);
@@ -184,10 +188,10 @@ public class ConfigReader {
         cd.setVals(resolveValue(property.get(PROPERTY_VALUE)));
         cd.set_vals(resolveValue(property.get(PROPERTY__VALUE)));
 
-        cd.setCmpt(resolve(property.get(PROPERTY_CMPT), NumberComputeOperate.class));
-        cd.set_cmpt(resolve(property.get(PROPERTY__CMPT), NumberComputeOperate.class));
-        cd.setLogic(resolve(property.get(PROPERTY_LOGIC), LogicComputeOperator.class));
-        cd.set_logic(resolve(property.get(PROPERTY__LOGIC), LogicComputeOperator.class));
+        cd.setCmpt(resolve(property.get(PROPERTY_CMPT), NumberComputeOperator.class, type));
+        cd.set_cmpt(resolve(property.get(PROPERTY__CMPT), NumberComputeOperator.class, type));
+        cd.setLogic(resolve(property.get(PROPERTY_LOGIC), LogicComputeOperator.class, type));
+        cd.set_logic(resolve(property.get(PROPERTY__LOGIC), LogicComputeOperator.class, type));
 
 //        cd.setCmpt(resolveCmpt(property.get(PROPERTY_CMPT), lineNum, docName));
 //        cd.set_cmpt(resolveCmpt(property.get(PROPERTY__CMPT), lineNum, docName));
@@ -208,12 +212,21 @@ public class ConfigReader {
     }
 
     private void checkParamsLegal(CheckDefinition cd) {
-        if (cd.getCheckType().equals(CheckType.NUMBER)) {
-            cd.getVals().stream().filter(s -> !StringUtils.isDigit(s)).forEach(s -> Assert.illegalDefinitionException("the " + s + " is not a digit in val", cd.getLineNum(), cd.getDocName()));
-            cd.get_vals().stream().filter(s -> !StringUtils.isDigit(s)).forEach(s -> Assert.illegalDefinitionException("the " + s + " is not a digit in _val", cd.getLineNum(), cd.getDocName()));
+        if (!vd.getClasses().values().containsAll(cd.getFields().keySet()) ||
+                !vd.getClasses().values().containsAll(cd.get_fields().keySet())) {
+            Assert.illegalDefinitionException("class definition error", vd.getLineNum(), vd.getDocName());
         }
-        if (!Arrays.asList(cd.getCheckType().getSupportedOperators()).contains(cd.getOperator()))
+        if (cd.getCheckType().equals(CheckType.NUMBER)) {
+            cd.getVals().stream().filter(s -> (!s.equals("null")) && (!StringUtils.isDigit(s))).forEach(s -> Assert.illegalDefinitionException("the value '" + s + "' is not a digit in val", cd.getLineNum(), cd.getDocName()));
+            cd.setVals(cd.getVals().stream().filter(s -> StringUtils.isDigit(s) || s.equals("null")).collect(Collectors.toList()));
+            cd.get_vals().stream().filter(s -> !s.equals("null") && !StringUtils.isDigit(s)).forEach(s -> Assert.illegalDefinitionException("the value '" + s + "' is not a digit in _val", cd.getLineNum(), cd.getDocName()));
+            cd.set_vals(cd.get_vals().stream().filter(s -> StringUtils.isDigit(s) || s.equals("null")).collect(Collectors.toList()));
+        }
+        if (!cd.getCheckType().getSupportedOperators().contains(cd.getOperator()))
             runtimeException("unsupported operator:'" + cd.getOperator().getValue() + "' in check type " + cd.getCheckType().getName() + " ,at line " + cd.getLineNum());
+        if (cd.get_vals().contains("null") && (cd.getOperator() != Operator.EQUAL && cd.getOperator() != Operator.NOT_EQUAL)) {
+            Assert.illegalDefinitionException("unsupported operator:'" + cd.getOperator().getValue() + "' in null checking", cd.getLineNum(), cd.getDocName());
+        }
     }
 
     private void setConditionProperty(Entity entity, ConditionDefinition cd, ValidationDefinition vd) {
@@ -289,20 +302,20 @@ public class ConfigReader {
         return vals;
     }
 
-    public ComputeOperator resolve(String attr, Class clazz) {
+    public ComputeOperator resolve(String attr, Class clazz, CheckType type) {
         if (StringUtils.isEmpty(attr))
             return (ComputeOperator) ReflectUtils.invokeStatic(clazz, "getDefault");
         ComputeOperator operator = (ComputeOperator) ReflectUtils.invokeStatic(clazz, "fromName", attr);
         if (operator == null)
-            Assert.runtimeException("unknown operator:'" + attr + "' at line " + lineNum + " in " + docName);
+            Assert.unsupportedOperator(attr, type, lineNum, docName);
         return operator;
     }
 
-//    private NumberComputeOperate resolveCmpt(String s, int lineNum, String docName) {
+//    private NumberComputeOperator resolveCmpt(String s, int lineNum, String docName) {
 //        if (StringUtils.isEmpty(s))
-//            return NumberComputeOperate.UNKNOWN;
-//        NumberComputeOperate operate = NumberComputeOperate.fromName(s);
-//        if (operate.equals(NumberComputeOperate.UNKNOWN))
+//            return NumberComputeOperator.UNKNOWN;
+//        NumberComputeOperator operate = NumberComputeOperator.fromName(s);
+//        if (operate.equals(NumberComputeOperator.UNKNOWN))
 //            Assert.runtimeException("unknown compute operator:'" + s + "' at line " + lineNum + " in " + docName);
 //        return operate;
 //    }

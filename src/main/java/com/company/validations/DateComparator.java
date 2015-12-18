@@ -2,6 +2,7 @@ package com.company.validations;
 
 import com.company.AbstractComparator;
 import com.company.CompareObject;
+import com.company.enums.LogicComputeOperator;
 import com.company.utils.MultiKeySetMap;
 import com.company.Operatable;
 import com.company.enums.Operator;
@@ -10,9 +11,7 @@ import com.company.utils.Utils;
 import com.google.common.collect.Sets;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by henry on 15/11/27.
@@ -43,6 +42,21 @@ public class DateComparator extends AbstractComparator<Date> {
             co.set_vals(res);
         }
         return co;
+    }
+
+    @Override
+    public MultiKeySetMap<Operator, Operatable> getOperatables() {
+        return opertableMap;
+    }
+
+    @Override
+    public Map<Operator, LogicComputeOperator> getLogic() {
+        return new HashMap<>();
+    }
+
+    @Override
+    public Map<Operator, LogicComputeOperator> get_Logic() {
+        return new HashMap<>();
     }
 
 }

@@ -1,62 +1,55 @@
 package com.company.enums;
 
+import com.company.ComputeOperator;
 import com.company.EntityAttribute;
 import com.company.validations.MapValidator;
 import com.company.validations.*;
+import com.google.common.collect.Lists;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static com.company.enums.Operator.*;
+import static com.company.enums.NumberComputeOperator.*;
 
 /**
  * Created by henry on 15/11/10.
  */
 public enum CheckType implements EntityAttribute {
 
-    OBJECT("object", null,
-            EQUAL,
-            NOT_EQUAL),
-    NUMBER("number", new NumberValidator(),
+    NUMBER("number", new NumberValidator(), NumberComputeOperator.values(),
             LARGER_THAN,
             LARGER_OR_EQUAL,
-            EQUAL,
             LESS_OR_EQUAL,
             LESS_THAN,
-            NOT_EQUAL,
             IN,
             NOT_IN,
             BETWEEN,
             INTERSECT),
-    STRING("string", new StringValidator(),
-            EQUAL,
-            NOT_EQUAL,
+    STRING("string", new StringValidator(), StringComputeOperator.values(),
             IN,
             NOT_IN,
             INTERSECT),
-    BOOLEAN("boolean", new BooleanValidator(),
-            EQUAL,
-            NOT_EQUAL),
-    DATE("date", new DateValidator(),
-            EQUAL,
-            NOT_EQUAL,
+    BOOLEAN("boolean", new BooleanValidator(), new ComputeOperator[]{}),
+    DATE("date", new DateValidator(), new ComputeOperator[]{},
             BEFORE,
             AFTER,
             BETWEEN),
-    LIST("list", new ListValidator(),
-            EQUAL,
-            NOT_EQUAL),
-    MAP("map", new MapValidator(),
-            EQUAL,
-            NOT_EQUAL),
-    UNKNOWN("", null);
+    LIST("list", new ListValidator(), new ComputeOperator[]{}),
+    MAP("map", new MapValidator(), new ComputeOperator[]{}),
+    UNKNOWN("", null, new ComputeOperator[]{});
 
     private String name;
-    //    private Class clazz;
     private TypeValidator typeValidator;
-    private Operator[] supportedOperators;
+    private List<Operator> supportedOperators = Lists.newArrayList(EQUAL, NOT_EQUAL);
+    private List<ComputeOperator> computeOperators;
 
-    CheckType(String name, TypeValidator typeValidator, Operator... operators) {
+    CheckType(String name, TypeValidator typeValidator, ComputeOperator[] computeOperators, Operator... operators) {
         this.name = name;
         this.typeValidator = typeValidator;
-        this.supportedOperators = operators;
+        supportedOperators.addAll(Arrays.asList(operators));
+        this.computeOperators = Arrays.asList(computeOperators);
     }
 
     public static CheckType fromName(String name) {
@@ -68,27 +61,20 @@ public enum CheckType implements EntityAttribute {
         return UNKNOWN;
     }
 
-//    public static CheckType fromClass(Class<?> clazz) {
-//        for (CheckType e : values())
-//            if (e.getClazz().equals(clazz))
-//                return e;
-//        return null;
-//    }
-
     public String getName() {
         return name;
     }
-
-//    public Class getClazz() {
-//        return clazz;
-//    }
 
     public TypeValidator getTypeValidator() {
         return typeValidator;
     }
 
-    public Operator[] getSupportedOperators() {
+    public List<Operator> getSupportedOperators() {
         return supportedOperators;
+    }
+
+    public List<ComputeOperator> getComputeOperators() {
+        return computeOperators;
     }
 
 }

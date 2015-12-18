@@ -3,13 +3,14 @@ package com.company.test;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-public class CouponOfferDTO implements Serializable{
+public class CouponOfferDTO implements Serializable, Cloneable {
     private String title; //优惠标题
-    private int maxInventory;//最大库存
+    private BigInteger maxInventory;//最大库存
     private Date beginDate;//有效期开始时间
     private Date endDate;//有效期结束时间
     private ViewTimePeriodDTO viewTimePeriod;//时间段
@@ -21,7 +22,7 @@ public class CouponOfferDTO implements Serializable{
     private BigDecimal ticketIssueThreshold;// 发券的金额 比如满200发券
     private Map<String, Object> businessAttribute;
 
-    public ViewTimePeriodDTO getViewTimePeriod(){
+    public ViewTimePeriodDTO getViewTimePeriod() {
         return viewTimePeriod;
     }
 
@@ -35,11 +36,11 @@ public class CouponOfferDTO implements Serializable{
     }
 
 
-    public int getMaxInventory() {
+    public BigInteger getMaxInventory() {
         return maxInventory;
     }
 
-    public void setMaxInventory(int maxInventory) {
+    public void setMaxInventory(BigInteger maxInventory) {
         this.maxInventory = maxInventory;
     }
 
@@ -120,4 +121,13 @@ public class CouponOfferDTO implements Serializable{
         this.businessAttribute = businessAttribute;
     }
 
+    @Override
+    public CouponOfferDTO clone() {
+        try {
+            return (CouponOfferDTO) super.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

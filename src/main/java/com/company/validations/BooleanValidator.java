@@ -1,14 +1,18 @@
 package com.company.validations;
 
+import com.company.Comparator;
+import com.company.Operatable;
 import com.company.element.CheckDefinition;
+import com.company.enums.LogicComputeOperator;
+import com.company.enums.Operator;
+import com.company.utils.MultiKeySetMap;
 
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by henry on 15/11/5.
  */
-public class BooleanValidator implements TypeValidator {
+public class BooleanValidator extends AbstractValidator<Boolean> {
 
 //    public List<String> validate(ConditionValidateObject cvo) {
 //        List<String> validateResult = new ArrayList<String>();
@@ -41,4 +45,20 @@ public class BooleanValidator implements TypeValidator {
     public Map<Class, Set<Object>> filter(CheckDefinition cd, Map<Class, Set<Object>> objectClassMap) {
         return null;
     }
+
+    @Override
+    protected Comparator<Boolean> getComparator() {
+        return null;
+    }
+
+    @Override
+    protected List<Boolean> parseObject(Collection<Object> list) {
+        return null;
+    }
+
+    @Override
+    protected List<Boolean> parseString(List<String> list) {
+        return null;
+    }
+
 }

@@ -3,6 +3,7 @@ package com.company.test;
 import com.google.common.collect.Lists;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,7 +15,7 @@ public class Mock {
     public static CouponOfferDTO mock() {
         CouponOfferDTO couponOfferDTO = new CouponOfferDTO();
         couponOfferDTO.setTitle("你个大西瓜");
-        couponOfferDTO.setMaxInventory(890);
+//        couponOfferDTO.setMaxInventory(4);
         couponOfferDTO.setBeginDate(new Date());
         couponOfferDTO.setEndDate(new Date());
 
@@ -45,5 +46,24 @@ public class Mock {
         map.put("quotaType", 2);
         couponOfferDTO.setBusinessAttribute(map);
         return couponOfferDTO;
+    }
+
+    public static CouponOfferDTO[] mocks() {
+        CouponOfferDTO couponOfferDTO = mock();
+        couponOfferDTO.setMaxInventory(new BigInteger("77"));
+
+        CouponOfferDTO couponOfferDTO1 = couponOfferDTO.clone();
+        couponOfferDTO1.setMaxInventory(new BigInteger("7"));
+
+        CouponOfferDTO couponOfferDTO2 = couponOfferDTO.clone();
+        couponOfferDTO2.setMaxInventory(new BigInteger("127"));
+
+        CouponOfferDTO couponOfferDTO3 = couponOfferDTO.clone();
+        couponOfferDTO3.setMaxInventory(new BigInteger("333"));
+
+        CouponOfferDTO couponOfferDTO4 = couponOfferDTO.clone();
+        couponOfferDTO4.setMaxInventory(new BigInteger("67"));
+
+        return new CouponOfferDTO[]{couponOfferDTO, couponOfferDTO1, couponOfferDTO2, couponOfferDTO3, couponOfferDTO4};
     }
 }

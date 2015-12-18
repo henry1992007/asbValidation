@@ -13,30 +13,38 @@ public class CompareObject<T> {
     /**
      * 分别代表操作符operator前后的值数组
      */
-    List<T> vals, _vals;
+    private List<T> vals, _vals;
 
     /**
      * 操作符前后多值分别单独比较的结果集的处理逻辑
      */
-    ComputeOperator logic, _logic;
+    private ComputeOperator logic, _logic;
 
     /**
      * 操作符
      */
-    Operator operator;
+    private Operator operator;
 
-    public CompareObject(List<T> vals, ComputeOperator logic, Operator operator, List<T> _vals, ComputeOperator _logic) {
+    private boolean checkNull = false;
+
+    public CompareObject(List<T> vals, ComputeOperator logic, Operator operator, List<T> _vals, ComputeOperator _logic, boolean checkNull) {
         this.vals = vals;
         this.logic = logic;
         this.operator = operator;
         this._vals = _vals;
         this._logic = _logic;
+        this.checkNull = checkNull;
     }
 
-    public CompareObject(List<T> vals, Operator operator, List<T> _vals) {
+    public CompareObject(List<T> vals, Operator operator, List<T> _vals, boolean checkNull) {
         this.vals = vals;
         this.operator = operator;
         this._vals = _vals;
+        this.checkNull = checkNull;
+    }
+
+    public boolean getCheckNull() {
+        return checkNull;
     }
 
     public void setVals(List<T> vals) {
@@ -73,5 +81,12 @@ public class CompareObject<T> {
 
     public Operator getOperator() {
         return operator;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("values:").append(vals).append(" operator:").append(operator.getValue()).append(" _values:").append(_vals);
+        return sb.toString();
     }
 }

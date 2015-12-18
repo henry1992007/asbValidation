@@ -9,6 +9,7 @@ import com.company.enums.Operator;
 import com.company.utils.MapUtils;
 import com.google.common.collect.Sets;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -34,5 +35,18 @@ public class BooleanComparator extends AbstractComparator<Boolean> {
         return co;
     }
 
+    @Override
+    public MultiKeySetMap<Operator, Operatable> getOperatables() {
+        return opertableMap;
+    }
 
+    @Override
+    public Map<Operator, LogicComputeOperator> getLogic() {
+        return new HashMap<>();
+    }
+
+    @Override
+    public Map<Operator, LogicComputeOperator> get_Logic() {
+        return new HashMap<>();
+    }
 }

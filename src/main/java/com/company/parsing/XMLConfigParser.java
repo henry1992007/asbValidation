@@ -20,6 +20,8 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.*;
 
+import static com.company.utils.Utils.info;
+
 /**
  * Created by henry on 15/11/4.
  */
@@ -36,7 +38,9 @@ public class XMLConfigParser {
 
     public ConfigContext parse(InputStream inputStream, String docName) throws DocumentException {
         Document document = saxReader.read(inputStream);
-        return new ConfigContext(docName, getEntities((LocatingElement) document.getRootElement(), docName));
+        ConfigContext configContext = new ConfigContext(docName, getEntities((LocatingElement) document.getRootElement(), docName));
+        info("在" + docName + "中读取到" + configContext.getEntities().size() + "条entities:\n"+ Arrays.toString(configContext.getEntities().toArray()));
+        return configContext;
     }
 
     public static List<Entity> getEntities(LocatingElement rootElement, String docName) {
@@ -51,6 +55,7 @@ public class XMLConfigParser {
             entity.setSubs(getEntities(element, docName));
             entities.add(entity);
         }
+
         return entities;
     }
 

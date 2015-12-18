@@ -38,17 +38,29 @@ public class NumberComparator extends AbstractComparator<BigDecimal> {
 
     @Override
     protected void init() {
-
     }
 
     public CompareObject<BigDecimal> preProcess(CompareObject<BigDecimal> co) {
         if (co.getOperator().equals(Operator.BETWEEN)) {
             List<BigDecimal> res = co.get_vals();
-            res.add(((BigDecimal) Utils.getMax(co.get_vals().toArray(new BigDecimal[co.get_vals().size()]))).add(new BigDecimal(1)));
-            co.set_vals(res);
+            res.add(Utils.getMax(co.get_vals()).add(new BigDecimal(1)));
         }
         return co;
     }
 
 
+    @Override
+    public MultiKeySetMap<Operator, Operatable> getOperatables() {
+        return opertableMap;
+    }
+
+    @Override
+    public Map<Operator, LogicComputeOperator> getLogic() {
+        return logicOptrMap;
+    }
+
+    @Override
+    public Map<Operator, LogicComputeOperator> get_Logic() {
+        return _logicOptrMap;
+    }
 }

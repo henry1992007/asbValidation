@@ -12,4 +12,9 @@ public class IllegalDefinitionException extends RuntimeException {
     public IllegalDefinitionException(String msg, int lineNum, String docName) {
         super(msg + ", at line " + lineNum + " in " + docName);
     }
+
+    public IllegalDefinitionException(String msg, int lineNum, String docName, Throwable cause) {
+        super(msg + ", at line " + lineNum + " in " + docName, cause);
+    }
+
 }

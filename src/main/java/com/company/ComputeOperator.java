@@ -1,11 +1,11 @@
 package com.company;
 
+import java.util.List;
+
 /**
  * Created by henry on 15/11/20.
  */
 @SuppressWarnings("unchecked")
 public interface ComputeOperator<T> {
-    T[] operate(T... var);
-
-//    ComputeOperator getdefault();
+    List<T> operate(List<T> var);
 }

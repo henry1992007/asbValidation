@@ -10,6 +10,9 @@ import com.google.common.collect.Sets;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.company.utils.Utils.info;
+import static com.company.utils.Utils.err;
+
 /**
  * Created by henry on 15/11/17.
  */
@@ -19,7 +22,6 @@ public class ValidationChecker {
     public static Map<String, ValidationDefinition> validations = new HashMap<>();
 
     private ValidationDefinition vd;
-    private Map<Class, Set<Object>> objectClassMap = new HashMap<>();
 
 
     private ValidationChecker(String id) {
@@ -28,27 +30,36 @@ public class ValidationChecker {
         vd = validations.get(id);
     }
 
+    public String getID() {
+        return vd.getId();
+    }
+
     public static ValidationChecker get(String id) {
         return new ValidationChecker(id);
     }
 
     public List<String> check(Object... objects) {
-        resolveObjectClass(objects);
-        doCheck(vd, objectClassMap);
+        doCheck(vd, resolveObjectClass(objects));
         return results;
     }
 
-    private void resolveObjectClass(Object... objs) {
+    private Map<Class, Set<Object>> resolveObjectClass(Object... objs) {
+        Map<Class, Set<Object>> objectClassMap = new HashMap<>();
+        info("resolving object class...");
         for (Object obj : objs) {
             if (!objectClassMap.containsKey(obj.getClass()))
                 objectClassMap.put(obj.getClass(), Sets.newHashSet(obj));
             else
                 objectClassMap.get(obj.getClass()).add(obj);
         }
+        for (Class clazz : objectClassMap.keySet()) {
+            info(clazz.toString() + " size:" + objectClassMap.get(clazz).size());
+        }
         if (!Sets.newHashSet(vd.getClasses().values()).equals(objectClassMap.keySet())) {
             Assert.runtimeException("classes of the passed in check objects:" + Arrays.toString(objectClassMap.keySet().toArray()) +
                     "does not match the validation definition class pattern " + Arrays.toString(vd.getClasses().values().toArray()));
         }
+        return objectClassMap;
     }
 
     List<String> results = new ArrayList<>();
@@ -69,6 +80,5 @@ public class ValidationChecker {
                 CheckDefinition::getMsg).collect(
                 Collectors.toList());
     }
-
 
 }

@@ -47,4 +47,9 @@ public class Entity {
     public void setSubs(List<Entity> subs) {
         this.subs = subs;
     }
+
+    @Override
+    public String toString() {
+        return "name:" + name + ", line:" + lineNum + ", docName:" + docName + "\n";
+    }
 }
