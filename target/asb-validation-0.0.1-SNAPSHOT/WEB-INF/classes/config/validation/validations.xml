@@ -8,8 +8,8 @@
 
     <!--<validation id="couponFieldsCheck" class="coupon,solution">-->
     <validation id="couponFieldsCheck" class="coupon">
-        <check type="number" field="coupon.maxInventory" value="2" operator=">" _value="-2,7" _logic="or" msg="what the hell"/>
-        <!--<check type="number" field="coupon.maxInventory" operator="!=" _value="null" _logic="and" msg="这样做人是不行的"/>-->
+        <!--<check type="number" field="coupon.maxInventory" operator=">" _value="-2,7" _logic="or" msg="what the hell"/>-->
+        <check type="number" field="coupon.maxInventory" operator="between" _value="7,333.5" _logic="and" msg="这样做人是不行的"/>
         <!--<check type="date" field="coupon.beginDate" operator="!=" _value="null" msg="优惠有效期开始时间不能为空"/>-->
         <!--<check type="date" field="coupon.endDate" operator="!=" _value="null" msg="优惠有效期结束时间不能为空"/>-->
         <!--<check type="date" field="coupon.beginDate" operator="before" _field="coupon.endDate" msg="优惠有效期开始时间不能早于优惠有效期结束时间"/>-->
