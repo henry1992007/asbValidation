@@ -38,12 +38,12 @@ public class StringComparator extends AbstractComparator<String> {
 
     @Override
     public Map<Operator, LogicComputeOperator> getLogic() {
-        return new HashMap<>();
+        return logicOptrMap;
     }
 
     @Override
     public Map<Operator, LogicComputeOperator> get_Logic() {
-        return new HashMap<>();
+        return _logicOptrMap;
     }
 
 

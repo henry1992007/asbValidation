@@ -2,7 +2,7 @@ package com.company.test;
 
 import java.io.Serializable;
 
-public class ViewTimePeriodDTO implements Serializable {
+public class ViewTimePeriodDTO implements Serializable, Cloneable {
     private String timePeriod; //早市 午时  晚市 等
     private String beginTime;//开始时间的小时
     private String endTime; //结束时间的小时
@@ -59,4 +59,15 @@ public class ViewTimePeriodDTO implements Serializable {
                 ", endDay=" + endDay +
                 '}';
     }
+
+    @Override
+    public ViewTimePeriodDTO clone() {
+        try {
+            return (ViewTimePeriodDTO) super.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 }

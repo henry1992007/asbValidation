@@ -12,7 +12,9 @@ import com.company.utils.StringUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.math.BigDecimal;
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -63,17 +65,9 @@ public class ConfigReader {
         this.configContexts = contexts;
         for (ConfigContext context : configContexts) {
             docName = context.getDocName();
-            for (Entity entity : context.getEntities()) {
-                String name = entity.getName();
-                switch (ElementType.fromString(name)) {
-                    case ClASS:
-                        readClasses(entity, context);
-                        break;
-                    case VALIDATION:
-                        readValidations(entity, context);
-                        break;
-                }
-            }
+            context.getEntities().stream().filter(e -> e.getName().equals("class")).forEach(e -> readClasses(e, context));
+            context.getEntities().stream().filter(e -> e.getName().equals("constant")).forEach(e -> readConstant(e, context));
+            context.getEntities().stream().filter(e -> e.getName().equals("validation")).forEach(e -> readValidations(e, context));
         }
     }
 
@@ -94,6 +88,20 @@ public class ConfigReader {
         }
 
         context.getClasses().put(cd.getId(), cd);
+    }
+
+    private void readConstant(Entity entity, ConfigContext context) {
+        Map<String, String> property = entity.getProperty();
+        lineNum = entity.getLineNum();
+
+        ConstantDefinition cd;
+        if (StringUtils.isEmpty(property.get(PROPERTY_ID)))
+            Assert.illegalDefinitionException(Assert.VALIDATION_ID_UNSPECIFIED, lineNum, docName);
+        cd.setId(property.get(PROPERTY_ID));
+
+        CheckType type = CheckType.fromName(property.get(PROPERTY_TYPE));
+        if (true)
+        cd.setValue(new Object());
     }
 
 

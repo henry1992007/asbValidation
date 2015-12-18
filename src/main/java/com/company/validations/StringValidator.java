@@ -6,6 +6,7 @@ import com.company.element.CheckDefinition;
 import com.company.enums.Operator;
 import com.company.utils.CollectionUtils;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.locks.Condition;
 import java.util.function.Function;
@@ -16,10 +17,13 @@ import java.util.stream.Collectors;
  */
 public class StringValidator extends AbstractValidator<String> {
 
+    StringComparator comparator;
 
     @Override
     protected Comparator<String> getComparator() {
-        return null;
+        if (comparator == null)
+            comparator = new StringComparator();
+        return comparator;
     }
 
     @Override
@@ -29,8 +33,20 @@ public class StringValidator extends AbstractValidator<String> {
 
     @Override
     protected List<String> parseString(List<String> list) {
-        return CollectionUtils.anyMatchAndThen(list, s -> s.equals("/null"), (Function<AbstractValidator, Boolean>) o -> o.setCheckNull(true), this) ?
-                list.stream().filter(s -> s.equals("/null")).collect(Collectors.toList()) : list;
+        List<String> res = new ArrayList<>();
+        for (String s : list)
+            switch (s) {
+                case "null":
+                    setCheckNull(true);
+                    break;
+                case "\\null":
+                    res.add("null");
+                    break;
+                default:
+                    res.add(s);
+                    break;
+            }
+        return res;
     }
 
 }

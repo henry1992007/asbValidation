@@ -77,4 +77,13 @@ public enum CheckType implements EntityAttribute {
         return computeOperators;
     }
 
+    @Override
+    public EntityAttribute[] getValues() {
+        return values();
+    }
+
+    @Override
+    public EntityAttribute getDefault() {
+        return null;
+    }
 }

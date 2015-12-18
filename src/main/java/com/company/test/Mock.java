@@ -50,19 +50,33 @@ public class Mock {
 
     public static CouponOfferDTO[] mocks() {
         CouponOfferDTO couponOfferDTO = mock();
-        couponOfferDTO.setMaxInventory(new BigInteger("77"));
+//        couponOfferDTO.setMaxInventory(new BigInteger("77"));
+        couponOfferDTO.getViewTimePeriod().setTimePeriod("test");
+        couponOfferDTO.getViewTimePeriod().setTimePeriod("qita");
 
-        CouponOfferDTO couponOfferDTO1 = couponOfferDTO.clone();
+        CouponOfferDTO couponOfferDTO1 = new CouponOfferDTO();
         couponOfferDTO1.setMaxInventory(new BigInteger("7"));
+        ViewTimePeriodDTO viewTimePeriodDTO1 = new ViewTimePeriodDTO();
+        viewTimePeriodDTO1.setTimePeriod("wushi");
+        couponOfferDTO1.setViewTimePeriod(viewTimePeriodDTO1);
 
-        CouponOfferDTO couponOfferDTO2 = couponOfferDTO.clone();
-        couponOfferDTO2.setMaxInventory(new BigInteger("127"));
+        CouponOfferDTO couponOfferDTO2 = new CouponOfferDTO();
+        couponOfferDTO2.setMaxInventory(new BigInteger("7"));
+        ViewTimePeriodDTO viewTimePeriodDTO2 = new ViewTimePeriodDTO();
+        viewTimePeriodDTO2.setTimePeriod("wushi");
+        couponOfferDTO2.setViewTimePeriod(viewTimePeriodDTO2);
 
-        CouponOfferDTO couponOfferDTO3 = couponOfferDTO.clone();
-        couponOfferDTO3.setMaxInventory(new BigInteger("333"));
+        CouponOfferDTO couponOfferDTO3 = new CouponOfferDTO();
+        couponOfferDTO3.setMaxInventory(new BigInteger("7"));
+        ViewTimePeriodDTO viewTimePeriodDTO3 = new ViewTimePeriodDTO();
+        viewTimePeriodDTO3.setTimePeriod("wanshi");
+        couponOfferDTO3.setViewTimePeriod(viewTimePeriodDTO3);
 
-        CouponOfferDTO couponOfferDTO4 = couponOfferDTO.clone();
-        couponOfferDTO4.setMaxInventory(new BigInteger("67"));
+        CouponOfferDTO couponOfferDTO4 = new CouponOfferDTO();
+        couponOfferDTO4.setMaxInventory(new BigInteger("7"));
+        ViewTimePeriodDTO viewTimePeriodDTO4 = new ViewTimePeriodDTO();
+        viewTimePeriodDTO4.setTimePeriod("wushi");
+        couponOfferDTO4.setViewTimePeriod(viewTimePeriodDTO4);
 
         return new CouponOfferDTO[]{couponOfferDTO, couponOfferDTO1, couponOfferDTO2, couponOfferDTO3, couponOfferDTO4};
     }

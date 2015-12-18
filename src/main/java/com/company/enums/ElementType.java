@@ -7,6 +7,7 @@ public enum ElementType {
 
     ClASS("class"),
     CONDITION("condition"),
+    CONSTANT("constant"),
     VALIDATION("validation"),
     CHECK("check");
 
