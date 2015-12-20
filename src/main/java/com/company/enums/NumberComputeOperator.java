@@ -1,9 +1,8 @@
 package com.company.enums;
 
 import com.company.ComputeOperator;
-import com.company.EntityAttribute;
+import com.company.CommonEnum;
 import com.company.utils.CollectionUtils;
-import com.company.validations.FunctionXY;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -12,7 +11,7 @@ import java.util.function.Function;
 /**
  * Created by henry on 15/11/21.
  */
-public enum NumberComputeOperator implements ComputeOperator<BigDecimal>, EntityAttribute {
+public enum NumberComputeOperator implements ComputeOperator<BigDecimal>, CommonEnum {
 
     SUM("sum") {
         public List<BigDecimal> operate(List<BigDecimal> var) {
@@ -46,7 +45,6 @@ public enum NumberComputeOperator implements ComputeOperator<BigDecimal>, Entity
         }
     };
 
-
     private String name;
 
     NumberComputeOperator(String name) {
@@ -66,6 +64,10 @@ public enum NumberComputeOperator implements ComputeOperator<BigDecimal>, Entity
 
     public String getName() {
         return name;
+    }
+
+    public CommonEnum[] getValues() {
+        return values();
     }
 
 }

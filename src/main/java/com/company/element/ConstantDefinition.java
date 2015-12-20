@@ -7,10 +7,10 @@ import java.util.Map;
 /**
  * Created by henry on 15/12/18.
  */
-public class ConstantDefinition<T> extends AbstractElementDefinition {
+public class ConstantDefinition extends AbstractElementDefinition {
     private CheckType Type;
     private Map<Class, String[]> fields;
-    private T value;
+    private Object value;
 
     public ConstantDefinition(int lineNum, String docName) {
         super(lineNum, docName);
@@ -33,11 +33,11 @@ public class ConstantDefinition<T> extends AbstractElementDefinition {
         this.fields = fields;
     }
 
-    public T getValue() {
+    public Object getValue() {
         return value;
     }
 
-    public void setValue(T value) {
+    public void setValue(Object value) {
         this.value = value;
     }
 }

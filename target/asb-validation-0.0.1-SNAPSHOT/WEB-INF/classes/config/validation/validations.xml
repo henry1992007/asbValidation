@@ -3,7 +3,7 @@
 
     <class id="coupon" class="com.company.test.CouponOfferDTO"/>
     <class id="solution" class="com.company.test.SolutionDTO"/>
-    <!--<constant id="DINE" type="number" value=""/>-->
+    <constant id="DINGE" type="number" class="com.company.test.QuickhuiConstants" field="DINGE"/>
 
 
     <!--<validation id="couponFieldsCheck" class="coupon,solution">-->
@@ -11,7 +11,7 @@
         <!--<check type="number" field="coupon.maxInventory" operator=">" _value="-2,7" _logic="or" msg="what the hell"/>-->
         <!--<check type="number" field="coupon.maxInventory" operator="between" _value="7,333.5" _logic="and" msg="这样做人是不行的"/>-->
         <!--<check type="date" field="coupon.beginDate" operator="!=" _value="\null" msg="优惠有效期开始时间不能为空"/>-->
-        <check type="string" field="coupon.viewTimePeriod.timePeriod" operator="=" _value="wushi,wanshi,qita" _logic="and" msg="优惠时段类型有误"/>
+        <check type="string" field="coupon.viewTimePeriod.timePeriod" operator="=" _value="wushi,wanshi,DINGE" _logic="and" msg="优惠时段类型有误"/>
         <!--<check type="date" field="coupon.endDate" operator="!=" _value="null" msg="优惠有效期结束时间不能为空"/>-->
         <!--<check type="date" field="coupon.beginDate" operator="before" _field="coupon.endDate" msg="优惠有效期开始时间不能早于优惠有效期结束时间"/>-->
         <!--<check type="list" field="coupon.shopIds" operator="!=" _value="null" msg="优惠绑定的商店不能为空!"/>-->

@@ -3,9 +3,8 @@ package com.company;
 import java.util.List;
 
 /**
- * Created by henry on 15/11/20.
+ * @author Jianheng He
  */
-@SuppressWarnings("unchecked")
 public interface ComputeOperator<T> {
     List<T> operate(List<T> var);
 }

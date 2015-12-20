@@ -11,6 +11,7 @@ import com.company.utils.ReflectUtils;
 import com.company.utils.StringUtils;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.util.*;
@@ -56,6 +57,7 @@ public class ConfigReader {
     private ValidationDefinition vd;
     private int lineNum;
     private String docName;
+    ConfigContext context;
 
 
     Map<String, CheckDefinition> conditionIdMap = new HashMap<>();
@@ -64,6 +66,7 @@ public class ConfigReader {
     public void read(ConfigContext[] contexts) {
         this.configContexts = contexts;
         for (ConfigContext context : configContexts) {
+            this.context = context;
             docName = context.getDocName();
             context.getEntities().stream().filter(e -> e.getName().equals("class")).forEach(e -> readClasses(e, context));
             context.getEntities().stream().filter(e -> e.getName().equals("constant")).forEach(e -> readConstant(e, context));
@@ -94,14 +97,39 @@ public class ConfigReader {
         Map<String, String> property = entity.getProperty();
         lineNum = entity.getLineNum();
 
-        ConstantDefinition cd;
+        ConstantDefinition cd = new ConstantDefinition(entity.getLineNum(), entity.getDocName());
         if (StringUtils.isEmpty(property.get(PROPERTY_ID)))
             Assert.illegalDefinitionException(Assert.VALIDATION_ID_UNSPECIFIED, lineNum, docName);
         cd.setId(property.get(PROPERTY_ID));
 
         CheckType type = CheckType.fromName(property.get(PROPERTY_TYPE));
-        if (true)
-        cd.setValue(new Object());
+        // todo:type compatible
+//        if (type.equals())
+        // 不能同时定义field和value
+        if ((StringUtils.isNotEmpty(property.get(PROPERTY_CLASS)) || StringUtils.isNotEmpty(property.get(PROPERTY_FIELD))) && StringUtils.isNotEmpty(property.get(PROPERTY_VALUE))) {
+            Assert.illegalDefinitionException("only define either in constant definition", lineNum, docName);
+        }
+        String className = property.get(PROPERTY_CLASS);
+        String fieldName = property.get(PROPERTY_FIELD);
+        if (StringUtils.isNotEmpty(className) && StringUtils.isNotEmpty(fieldName)) {
+            Class clazz;
+            try {
+                clazz = Class.forName(className);
+            } catch (ClassNotFoundException e) {
+                clazz = context.getClasses().get(className).getClazz();
+                if (clazz == null)
+                    Assert.illegalDefinitionException("class '" + className + "' does not exist", lineNum, docName);
+            }
+            try {
+                cd.setValue(ReflectUtils.getConstantValue(clazz, fieldName));
+                context.getConstants().put(cd.getId(), cd);
+            } catch (IllegalAccessException e) {
+                Assert.runtimeException("field " + fieldName + " of object Class: " + clazz + " does not exist");
+            } catch (NoSuchFieldException e) {
+                Assert.runtimeException("couldn't access field " + fieldName + " of object Class: " + clazz);
+            }
+        }
+
     }
 
 
@@ -193,8 +221,9 @@ public class ConfigReader {
 
         cd.setFields(resolveFields(property.get(PROPERTY_FIELD), classMap));
         cd.set_fields(resolveFields(property.get(PROPERTY__FIELD), classMap));
-        cd.setVals(resolveValue(property.get(PROPERTY_VALUE)));
-        cd.set_vals(resolveValue(property.get(PROPERTY__VALUE)));
+        //todo:type compatible with checkDefinition type
+        cd.setVals(resolveValue(property.get(PROPERTY_VALUE), context.getConstants()));
+        cd.set_vals(resolveValue(property.get(PROPERTY__VALUE), context.getConstants()));
 
         cd.setCmpt(resolve(property.get(PROPERTY_CMPT), NumberComputeOperator.class, type));
         cd.set_cmpt(resolve(property.get(PROPERTY__CMPT), NumberComputeOperator.class, type));
@@ -303,10 +332,19 @@ public class ConfigReader {
         return fieldMap;
     }
 
-    private List<String> resolveValue(String s) {
+    private List<String> resolveValue(String value, Map<String, ConstantDefinition> map) {
         List<String> vals = new ArrayList<>();
-        if (StringUtils.isNotEmpty(s))
-            vals = Arrays.asList(s.split(SPLITTER));
+
+        if (StringUtils.isNotEmpty(value)) {
+            for (String s : value.split(SPLITTER)) {
+                ConstantDefinition cd = map.get(s);
+                if (cd != null)
+                    vals.add(cd.getValue().toString());
+                else
+                    vals.add(s);
+            }
+        }
+
         return vals;
     }
 

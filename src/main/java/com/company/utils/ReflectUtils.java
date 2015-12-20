@@ -1,8 +1,10 @@
 package com.company.utils;
 
 import javax.sql.rowset.serial.SerialArray;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.*;
 
 /**
@@ -81,5 +83,42 @@ public abstract class ReflectUtils {
             classes.add(o.getClass());
         return classes.toArray(new Class[classes.size()]);
     }
+
+    public static Object getObjectValue(Class clazz, Object checkObj, String[] fieldPath) throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+        Object target = checkObj;
+        Class objClass = clazz;
+
+        for (int i = 0; i < fieldPath.length; i++) {
+            if (ReflectUtils.isMapClass(objClass)) {
+                target = ((Map) target).get(fieldPath[i]);
+                //todo : handle null object
+            } else {
+                Field field = objClass.getDeclaredField(fieldPath[i]);
+                if (Modifier.isPublic(field.getModifiers())) {
+                    target = objClass.getField(fieldPath[i]).get(target);
+                } else {
+                    String getMethodName = ReflectUtils.genGetMethod(fieldPath[i]);
+                    target = objClass.getDeclaredMethod(getMethodName).invoke(target);
+                }
+            }
+            objClass = target.getClass();
+        }
+
+        return target;
+    }
+
+    public static Object getFieldValue(Object checkObj, String[] fieldPath) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException, NoSuchFieldException {
+        return getObjectValue(checkObj.getClass(), checkObj, fieldPath);
+    }
+
+    public static Object getConstantValue(Class clazz, String fieldName) throws NoSuchFieldException, IllegalAccessException {
+        Field field = clazz.getDeclaredField(fieldName);
+        int modifiers = field.getModifiers();
+        if (!(Modifier.isPublic(modifiers) && Modifier.isFinal(modifiers) && Modifier.isStatic(modifiers))) {
+
+        }
+        return field.get(null);
+    }
+
 
 }

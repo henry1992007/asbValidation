@@ -1,22 +1,20 @@
 package com.company.enums;
 
 import com.company.ComputeOperator;
-import com.company.EntityAttribute;
+import com.company.CommonEnum;
 import com.company.validations.MapValidator;
 import com.company.validations.*;
 import com.google.common.collect.Lists;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import static com.company.enums.Operator.*;
-import static com.company.enums.NumberComputeOperator.*;
 
 /**
  * Created by henry on 15/11/10.
  */
-public enum CheckType implements EntityAttribute {
+public enum CheckType implements CommonEnum {
 
     NUMBER("number", new NumberValidator(), NumberComputeOperator.values(),
             LARGER_THAN,
@@ -52,17 +50,16 @@ public enum CheckType implements EntityAttribute {
         this.computeOperators = Arrays.asList(computeOperators);
     }
 
-    public static CheckType fromName(String name) {
-        if (name == null)
-            return null;
-        for (CheckType e : values())
-            if (e.getName().equals(name.toLowerCase()))
-                return e;
-        return UNKNOWN;
-    }
 
     public String getName() {
         return name;
+    }
+
+    public static CheckType fromName(String name) {
+        for (CheckType e : values())
+            if (e.getName().equals(name))
+                return e;
+        return UNKNOWN;
     }
 
     public TypeValidator getTypeValidator() {
@@ -77,13 +74,11 @@ public enum CheckType implements EntityAttribute {
         return computeOperators;
     }
 
-    @Override
-    public EntityAttribute[] getValues() {
+    public CommonEnum[] getValues() {
         return values();
     }
 
-    @Override
-    public EntityAttribute getDefault() {
-        return null;
+    public CommonEnum getDefault() {
+        return UNKNOWN;
     }
 }
