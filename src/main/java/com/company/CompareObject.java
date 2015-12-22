@@ -1,6 +1,5 @@
 package com.company;
 
-import com.company.enums.LogicComputeOperator;
 import com.company.enums.Operator;
 
 import java.util.List;
@@ -18,7 +17,7 @@ public class CompareObject<T> {
     /**
      * 操作符前后多值分别单独比较的结果集的处理逻辑
      */
-    private ComputeOperator logic, _logic;
+    private AssociativeOperator logic, _logic;
 
     /**
      * 操作符
@@ -27,7 +26,7 @@ public class CompareObject<T> {
 
     private boolean checkNull = false;
 
-    public CompareObject(List<T> vals, ComputeOperator logic, Operator operator, List<T> _vals, ComputeOperator _logic, boolean checkNull) {
+    public CompareObject(List<T> vals, AssociativeOperator logic, Operator operator, List<T> _vals, AssociativeOperator _logic, boolean checkNull) {
         this.vals = vals;
         this.logic = logic;
         this.operator = operator;
@@ -55,11 +54,11 @@ public class CompareObject<T> {
         this._vals = _vals;
     }
 
-    public void set_logic(ComputeOperator _logic) {
+    public void set_logic(AssociativeOperator _logic) {
         this._logic = _logic;
     }
 
-    public void setLogic(ComputeOperator logic) {
+    public void setLogic(AssociativeOperator logic) {
         this.logic = logic;
     }
 
@@ -71,11 +70,11 @@ public class CompareObject<T> {
         return _vals;
     }
 
-    public ComputeOperator getLogic() {
+    public AssociativeOperator getLogic() {
         return logic;
     }
 
-    public ComputeOperator get_logic() {
+    public AssociativeOperator get_logic() {
         return _logic;
     }
 

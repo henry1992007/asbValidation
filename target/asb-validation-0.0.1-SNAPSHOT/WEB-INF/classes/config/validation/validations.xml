@@ -11,22 +11,22 @@
         <!--<check type="number" field="coupon.maxInventory" operator=">" _value="-2,7" _logic="or" msg="what the hell"/>-->
         <!--<check type="number" field="coupon.maxInventory" operator="between" _value="7,333.5" _logic="and" msg="这样做人是不行的"/>-->
         <!--<check type="date" field="coupon.beginDate" operator="!=" _value="\null" msg="优惠有效期开始时间不能为空"/>-->
-        <check type="string" field="coupon.viewTimePeriod.timePeriod" operator="=" _value="wushi,wanshi,DINGE" _logic="and" msg="优惠时段类型有误"/>
+        <!--<check type="string" field="coupon.viewTimePeriod.timePeriod" operator="=" _value="wushi,wanshi,DINGE" _logic="and" msg="优惠时段类型有误"/>-->
         <!--<check type="date" field="coupon.endDate" operator="!=" _value="null" msg="优惠有效期结束时间不能为空"/>-->
         <!--<check type="date" field="coupon.beginDate" operator="before" _field="coupon.endDate" msg="优惠有效期开始时间不能早于优惠有效期结束时间"/>-->
         <!--<check type="list" field="coupon.shopIds" operator="!=" _value="null" msg="优惠绑定的商店不能为空!"/>-->
         <!--<check type="object" field="coupon.viewTimePeriod" operator="!=" _value="null" msg="优惠未配置优惠时间!"/>-->
 
-        <!--&lt;!&ndash;<check type="date" field="coupon.beginDate,coupon.endDate" operator="between" _field="solution.effectiveBeginDate,solution.effectiveEndDate"/>&ndash;&gt;-->
+        <!--<check type="date" field="coupon.beginDate,coupon.endDate" operator="between" _field="solution.effectiveBeginDate,solution.effectiveEndDate"/>-->
 
-        <!--&lt;!&ndash;定额类型相关校验&ndash;&gt;-->
-        <!--<condition type="number" field="coupon.discount.redeemType" operator="=" _value="3">-->
-            <!--<check type="number" field="coupon.businessAttribute.retailPrice" operator="!=" _value="null"/>-->
-            <!--<check type="number" field="coupon.businessAttribute.salePrice" operator="!=" _value="null"/>-->
-            <!--<check type="number" field="coupon.businessAttribute.retailPrice" operator=">" _value="0" msg="优惠为定额类型，原价必须大于0!"/>-->
-            <!--<check type="number" field="coupon.businessAttribute.salePrice" operator=">" _value="0" msg="优惠为定额类型，原价必须大于0!"/>-->
-            <!--<check type="number" field="coupon.businessAttribute.retailPrice" cmpt="float" operator="l" _value="2" msg="优惠为定额类型，售价最多一位小数!"/>-->
-            <!--<check type="number" field="coupon.businessAttribute.salePrice" cmpt="float" operator="l" _value="2" msg="优惠为定额类型，后加最多一位小数!"/>-->
+        <!--定额类型相关校验-->
+        <condition type="number" field="coupon.discount.redeemType" operator="=" _value="3">
+            <!--<check type="number" field="coupon.businessAttribute.retailPrice" operator="!=" _value="null" msg="retail price not null"/>-->
+            <!--<check type="number" field="coupon.businessAttribute.salePrice" operator="!=" _value="null" msg="sale price not null"/>-->
+            <!--<check type="number" field="coupon.businessAttribute.retailPrice" operator=">" _value="0" msg="retail price must be larger than 0!"/>-->
+            <!--<check type="number" field="coupon.businessAttribute.salePrice" operator=">" _value="0" msg="sale price must be larger than 0!"/>-->
+            <check type="number" field="coupon.businessAttribute.retailPrice" cmpt="float" operator="l" _value="2" msg="retail price no more than two decimal"/>
+            <check type="number" field="coupon.businessAttribute.salePrice" cmpt="float" operator="l" _value="2" msg="sale price no more than two decimal"/>
 
 
             <!--<condition id="buffet" type="number" field="coupon.businessAttribute.quotaType" operator="=" _value="2" msg="自助餐"/>-->
@@ -58,7 +58,7 @@
                     <!--<check type="date" field="coupon.viewTimePeriod.beginTime,coupon.viewTimePeriod.endTime" operator="between" _value="15:00,24:00" msg=""/>-->
                 <!--</condition>-->
             <!--</condition>-->
-        <!--</condition>-->
+        </condition>
 
         <!--&lt;!&ndash;满减类型相关校验&ndash;&gt;-->
         <!--<condition type="number" field="coupon.discount.redeemType" operator="=" _value="5">-->

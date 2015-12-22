@@ -1,18 +1,15 @@
 package com.company.enums;
 
-import com.company.ComputeOperator;
-import com.company.LogicOperator;
+import com.company.AssociativeOperator;
 import com.company.OperatorAttribute;
 import com.company.utils.CollectionUtils;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
  * Created by henry on 15/11/19.
  */
-public enum LogicComputeOperator implements ComputeOperator<Boolean>, OperatorAttribute {
+public enum LogicAssociativeOperator implements AssociativeOperator<Boolean>, OperatorAttribute {
 
     AND("and") {
         public List<Boolean> operate(List<Boolean> var) {
@@ -26,27 +23,26 @@ public enum LogicComputeOperator implements ComputeOperator<Boolean>, OperatorAt
     },
     XOR("xor") {
         public List<Boolean> operate(List<Boolean> var) {
-            return Collections.singletonList(!CollectionUtils.equal(var));
+            return
         }
     };
 
     private String name;
 
-    LogicComputeOperator(String name) {
+    LogicAssociativeOperator(String name) {
         this.name = name;
     }
 
-    public static LogicComputeOperator fromName(String name) {
-        for (LogicComputeOperator e : values())
+    public static LogicAssociativeOperator fromName(String name) {
+        for (LogicAssociativeOperator e : values())
             if (e.getName().equals(name.toLowerCase()))
                 return e;
         return null;
     }
 
-    public static LogicComputeOperator getDefault() {
+    public static LogicAssociativeOperator getDefault() {
         return AND;
     }
-
 
     public String getName() {
         return name;

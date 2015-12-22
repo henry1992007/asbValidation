@@ -28,6 +28,7 @@ public abstract class AbstractValidator<T> implements TypeValidator {
 
     @Override
     public boolean validate(CheckDefinition cd, Map<Class, Set<Object>> objectClassMap) {
+        setCheckNull(false);
         Map<Class, String[]> fields = cd.getFields();
         Map<String, Object> fieldValues = new HashMap<>();
         for (Class clazz : fields.keySet())
@@ -45,6 +46,9 @@ public abstract class AbstractValidator<T> implements TypeValidator {
         List<T> _val = parseObject(_fieldValues.values());
         _val.addAll(parseString(cd.get_vals()));
 
+        val = cd.getCmpt().operate(val);
+        _val = cd.get_cmpt().operate(_val);
+
         CompareObject<T> co = new CompareObject<>(val, cd.getLogic(), cd.getOperator(), _val, cd.get_logic(), checkNull);
         info(co.toString());
         return getComparator().compare(co);
@@ -52,6 +56,7 @@ public abstract class AbstractValidator<T> implements TypeValidator {
 
     @Override
     public Map<Class, Set<Object>> filter(CheckDefinition cd, Map<Class, Set<Object>> objectClassMap) {
+        setCheckNull(false);
         for (Class clazz : cd.getFields().keySet()) {
             Set<Object> resultSet = new HashSet<>();
             for (Object o : objectClassMap.get(clazz)) {

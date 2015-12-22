@@ -4,7 +4,7 @@ import com.company.AbstractComparator;
 import com.company.CompareObject;
 import com.company.utils.MultiKeySetMap;
 import com.company.Operatable;
-import com.company.enums.LogicComputeOperator;
+import com.company.enums.LogicAssociativeOperator;
 import com.company.enums.Operator;
 import com.company.utils.MapUtils;
 import com.company.utils.Utils;
@@ -26,14 +26,14 @@ public class NumberComparator extends AbstractComparator<BigDecimal> {
             new MapUtils.Entry<>(Sets.newHashSet(Operator.LESS_THAN), (Operatable<Boolean, BigDecimal>) (var1, var2) -> var1.compareTo(var2) < 0),
             new MapUtils.Entry<>(Sets.newHashSet(Operator.NOT_EQUAL, Operator.NOT_IN), (Operatable<Boolean, BigDecimal>) (var1, var2) -> var1.compareTo(var2) != 0)
     );
-    Map<Operator, LogicComputeOperator> _logicOptrMap = MapUtils.newEnumMap(Operator.class,
-            new MapUtils.Entry<>(Operator.IN, LogicComputeOperator.OR),
-            new MapUtils.Entry<>(Operator.EQUAL, LogicComputeOperator.OR),
-            new MapUtils.Entry<>(Operator.NOT_IN, LogicComputeOperator.AND),
-            new MapUtils.Entry<>(Operator.INTERSECT, LogicComputeOperator.OR),
-            new MapUtils.Entry<>(Operator.BETWEEN, LogicComputeOperator.XOR)
+    Map<Operator, LogicAssociativeOperator> _logicOptrMap = MapUtils.newEnumMap(Operator.class,
+            new MapUtils.Entry<>(Operator.IN, LogicAssociativeOperator.OR),
+            new MapUtils.Entry<>(Operator.EQUAL, LogicAssociativeOperator.OR),
+            new MapUtils.Entry<>(Operator.NOT_IN, LogicAssociativeOperator.AND),
+            new MapUtils.Entry<>(Operator.INTERSECT, LogicAssociativeOperator.OR),
+            new MapUtils.Entry<>(Operator.BETWEEN, LogicAssociativeOperator.XOR)
     );
-    Map<Operator, LogicComputeOperator> logicOptrMap = MapUtils.newEnumMap(Operator.class);
+    Map<Operator, LogicAssociativeOperator> logicOptrMap = MapUtils.newEnumMap(Operator.class);
 
 
     @Override
@@ -55,12 +55,12 @@ public class NumberComparator extends AbstractComparator<BigDecimal> {
     }
 
     @Override
-    public Map<Operator, LogicComputeOperator> getLogic() {
+    public Map<Operator, LogicAssociativeOperator> getLogic() {
         return logicOptrMap;
     }
 
     @Override
-    public Map<Operator, LogicComputeOperator> get_Logic() {
+    public Map<Operator, LogicAssociativeOperator> get_Logic() {
         return _logicOptrMap;
     }
 }

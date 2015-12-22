@@ -2,12 +2,11 @@ package com.company.validations;
 
 import com.company.AbstractComparator;
 import com.company.CompareObject;
-import com.company.enums.LogicComputeOperator;
+import com.company.enums.LogicAssociativeOperator;
 import com.company.utils.MultiKeySetMap;
 import com.company.Operatable;
 import com.company.enums.Operator;
 import com.company.utils.MapUtils;
-import com.company.utils.Utils;
 import com.google.common.collect.Sets;
 
 import java.math.BigDecimal;
@@ -50,12 +49,12 @@ public class DateComparator extends AbstractComparator<Date> {
     }
 
     @Override
-    public Map<Operator, LogicComputeOperator> getLogic() {
+    public Map<Operator, LogicAssociativeOperator> getLogic() {
         return new HashMap<>();
     }
 
     @Override
-    public Map<Operator, LogicComputeOperator> get_Logic() {
+    public Map<Operator, LogicAssociativeOperator> get_Logic() {
         return new HashMap<>();
     }
 

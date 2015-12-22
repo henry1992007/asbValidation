@@ -32,7 +32,7 @@ public class BizCheckConfigListener implements ServletContextListener {
 //        Collection<ValidationDefinition> list = ValidationChecker.validations.values();
 //        System.out.println(list);
 
-        System.out.println(Arrays.toString(checker.check(Mock.mocks()).toArray()));
+        System.out.println(Arrays.toString(checker.check(Mock.mocks1()).toArray()));
     }
 
     @Override

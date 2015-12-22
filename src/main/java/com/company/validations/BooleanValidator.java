@@ -1,11 +1,7 @@
 package com.company.validations;
 
 import com.company.Comparator;
-import com.company.Operatable;
 import com.company.element.CheckDefinition;
-import com.company.enums.LogicComputeOperator;
-import com.company.enums.Operator;
-import com.company.utils.MultiKeySetMap;
 
 import java.util.*;
 

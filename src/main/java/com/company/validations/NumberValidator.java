@@ -38,9 +38,13 @@ public class NumberValidator extends AbstractValidator<BigDecimal> {
         for (Object o : list) {
             if (o == null) {
                 res.add(null);
-            } else if (!o.getClass().equals(BigDecimal.class)) {
-                o = new BigDecimal(((Number) o).doubleValue());
-                res.add((BigDecimal) o);
+            } else {
+                try {
+                    res.add(new BigDecimal(o.toString()));
+                } catch (NumberFormatException e) {
+                    //todo:exception
+                    throw new RuntimeException("incompatible type:" + o, e);
+                }
             }
         }
         return res;

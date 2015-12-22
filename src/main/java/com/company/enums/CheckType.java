@@ -1,6 +1,6 @@
 package com.company.enums;
 
-import com.company.ComputeOperator;
+import com.company.AssociativeOperator;
 import com.company.CommonEnum;
 import com.company.validations.MapValidator;
 import com.company.validations.*;
@@ -16,7 +16,7 @@ import static com.company.enums.Operator.*;
  */
 public enum CheckType implements CommonEnum {
 
-    NUMBER("number", new NumberValidator(), NumberComputeOperator.values(),
+    NUMBER("number", new NumberValidator(), NumberAssociativeOperator.values(),
             LARGER_THAN,
             LARGER_OR_EQUAL,
             LESS_OR_EQUAL,
@@ -25,29 +25,29 @@ public enum CheckType implements CommonEnum {
             NOT_IN,
             BETWEEN,
             INTERSECT),
-    STRING("string", new StringValidator(), StringComputeOperator.values(),
+    STRING("string", new StringValidator(), StringAssociativeOperator.values(),
             IN,
             NOT_IN,
             INTERSECT),
-    BOOLEAN("boolean", new BooleanValidator(), new ComputeOperator[]{}),
-    DATE("date", new DateValidator(), new ComputeOperator[]{},
+    BOOLEAN("boolean", new BooleanValidator(), new AssociativeOperator[]{}),
+    DATE("date", new DateValidator(), new AssociativeOperator[]{},
             BEFORE,
             AFTER,
             BETWEEN),
-    LIST("list", new ListValidator(), new ComputeOperator[]{}),
-    MAP("map", new MapValidator(), new ComputeOperator[]{}),
-    UNKNOWN("", null, new ComputeOperator[]{});
+    LIST("list", new ListValidator(), new AssociativeOperator[]{}),
+    MAP("map", new MapValidator(), new AssociativeOperator[]{}),
+    UNKNOWN("", null, new AssociativeOperator[]{});
 
     private String name;
     private TypeValidator typeValidator;
     private List<Operator> supportedOperators = Lists.newArrayList(EQUAL, NOT_EQUAL);
-    private List<ComputeOperator> computeOperators;
+    private List<AssociativeOperator> associativeOperators;
 
-    CheckType(String name, TypeValidator typeValidator, ComputeOperator[] computeOperators, Operator... operators) {
+    CheckType(String name, TypeValidator typeValidator, AssociativeOperator[] associativeOperators, Operator... operators) {
         this.name = name;
         this.typeValidator = typeValidator;
         supportedOperators.addAll(Arrays.asList(operators));
-        this.computeOperators = Arrays.asList(computeOperators);
+        this.associativeOperators = Arrays.asList(associativeOperators);
     }
 
 
@@ -70,8 +70,8 @@ public enum CheckType implements CommonEnum {
         return supportedOperators;
     }
 
-    public List<ComputeOperator> getComputeOperators() {
-        return computeOperators;
+    public List<AssociativeOperator> getAssociativeOperators() {
+        return associativeOperators;
     }
 
     public CommonEnum[] getValues() {

@@ -1,6 +1,6 @@
 package com.company.validations;
 
-import com.company.ComputeOperator;
+import com.company.AssociativeOperator;
 import com.company.ConfigContext;
 import com.company.element.*;
 import com.company.enums.*;
@@ -11,12 +11,8 @@ import com.company.utils.ReflectUtils;
 import com.company.utils.StringUtils;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
-import java.math.BigDecimal;
 import java.util.*;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static com.company.utils.Assert.runtimeException;
@@ -225,10 +221,10 @@ public class ConfigReader {
         cd.setVals(resolveValue(property.get(PROPERTY_VALUE), context.getConstants()));
         cd.set_vals(resolveValue(property.get(PROPERTY__VALUE), context.getConstants()));
 
-        cd.setCmpt(resolve(property.get(PROPERTY_CMPT), NumberComputeOperator.class, type));
-        cd.set_cmpt(resolve(property.get(PROPERTY__CMPT), NumberComputeOperator.class, type));
-        cd.setLogic(resolve(property.get(PROPERTY_LOGIC), LogicComputeOperator.class, type));
-        cd.set_logic(resolve(property.get(PROPERTY__LOGIC), LogicComputeOperator.class, type));
+        cd.setCmpt(resolve(property.get(PROPERTY_CMPT), NumberAssociativeOperator.class, type));
+        cd.set_cmpt(resolve(property.get(PROPERTY__CMPT), NumberAssociativeOperator.class, type));
+        cd.setLogic(resolve(property.get(PROPERTY_LOGIC), LogicAssociativeOperator.class, type));
+        cd.set_logic(resolve(property.get(PROPERTY__LOGIC), LogicAssociativeOperator.class, type));
 
 //        cd.setCmpt(resolveCmpt(property.get(PROPERTY_CMPT), lineNum, docName));
 //        cd.set_cmpt(resolveCmpt(property.get(PROPERTY__CMPT), lineNum, docName));
@@ -348,20 +344,20 @@ public class ConfigReader {
         return vals;
     }
 
-    public ComputeOperator resolve(String attr, Class clazz, CheckType type) {
+    public MultivariateOperator resolve(String attr, Class clazz, CheckType type) {
         if (StringUtils.isEmpty(attr))
-            return (ComputeOperator) ReflectUtils.invokeStatic(clazz, "getDefault");
-        ComputeOperator operator = (ComputeOperator) ReflectUtils.invokeStatic(clazz, "fromName", attr);
+            return (AssociativeOperator) ReflectUtils.invokeStatic(clazz, "getDefault");
+        AssociativeOperator operator = (AssociativeOperator) ReflectUtils.invokeStatic(clazz, "fromName", attr);
         if (operator == null)
             Assert.unsupportedOperator(attr, type, lineNum, docName);
         return operator;
     }
 
-//    private NumberComputeOperator resolveCmpt(String s, int lineNum, String docName) {
+//    private NumberAssociativeOperator resolveCmpt(String s, int lineNum, String docName) {
 //        if (StringUtils.isEmpty(s))
-//            return NumberComputeOperator.UNKNOWN;
-//        NumberComputeOperator operate = NumberComputeOperator.fromName(s);
-//        if (operate.equals(NumberComputeOperator.UNKNOWN))
+//            return NumberAssociativeOperator.UNKNOWN;
+//        NumberAssociativeOperator operate = NumberAssociativeOperator.fromName(s);
+//        if (operate.equals(NumberAssociativeOperator.UNKNOWN))
 //            Assert.runtimeException("unknown compute operator:'" + s + "' at line " + lineNum + " in " + docName);
 //        return operate;
 //    }
@@ -371,11 +367,11 @@ public class ConfigReader {
 //            return OperatorAttribute.getDefault();
 //    }
 
-//    private LogicComputeOperator resolveLogic(String s, int lineNum, String docName) {
+//    private LogicAssociativeOperator resolveLogic(String s, int lineNum, String docName) {
 //        if (StringUtils.isEmpty(s))
-//            return LogicComputeOperator.AND;
-//        LogicComputeOperator logic = LogicComputeOperator.fromName(s);
-//        if (logic.equals(LogicComputeOperator.UNKNOWN))
+//            return LogicAssociativeOperator.AND;
+//        LogicAssociativeOperator logic = LogicAssociativeOperator.fromName(s);
+//        if (logic.equals(LogicAssociativeOperator.UNKNOWN))
 //            Assert.runtimeException("unknown logic operator:'" + s + "' at line " + lineNum + " in " + docName);
 //        return logic;
 //    }

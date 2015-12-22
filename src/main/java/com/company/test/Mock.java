@@ -48,6 +48,37 @@ public class Mock {
         return couponOfferDTO;
     }
 
+    public static CouponOfferDTO[] mocks1() {
+        CouponOfferDTO couponOfferDTO = mock();
+        DiscountDTO discountDTO = new DiscountDTO();
+        discountDTO.setRedeemType(3);
+        couponOfferDTO.setDiscount(discountDTO);
+        Map<String, Object> map = new HashMap<>();
+        map.put("salePrice", new BigDecimal("8.8"));
+        map.put("retailPrice", new BigDecimal("18.8"));
+        couponOfferDTO.setBusinessAttribute(map);
+
+        CouponOfferDTO couponOfferDTO2 = mock();
+        DiscountDTO discountDTO2 = new DiscountDTO();
+        discountDTO2.setRedeemType(3);
+        couponOfferDTO2.setDiscount(discountDTO2);
+        Map<String, Object> map2 = new HashMap<>();
+        map2.put("salePrice", new BigDecimal("5.66"));
+        map2.put("retailPrice", new BigDecimal("38.8"));
+        couponOfferDTO2.setBusinessAttribute(map2);
+
+        CouponOfferDTO couponOfferDTO3 = mock();
+        DiscountDTO discountDTO3 = new DiscountDTO();
+        discountDTO3.setRedeemType(2);
+        couponOfferDTO3.setDiscount(discountDTO3);
+        Map<String, Object> map3 = new HashMap<>();
+        map3.put("salePrice", new BigDecimal("56.8"));
+        map3.put("retailPrice", new BigDecimal("7.4"));
+        couponOfferDTO3.setBusinessAttribute(map3);
+
+        return new CouponOfferDTO[]{couponOfferDTO, couponOfferDTO2, couponOfferDTO3};
+    }
+
     public static CouponOfferDTO[] mocks() {
         CouponOfferDTO couponOfferDTO = mock();
 //        couponOfferDTO.setMaxInventory(new BigInteger("77"));

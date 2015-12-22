@@ -2,9 +2,9 @@ package com.company.validations;
 
 import com.company.AbstractComparator;
 import com.company.CompareObject;
+import com.company.enums.LogicAssociativeOperator;
 import com.company.utils.MultiKeySetMap;
 import com.company.Operatable;
-import com.company.enums.LogicComputeOperator;
 import com.company.enums.Operator;
 import com.company.utils.MapUtils;
 import com.google.common.collect.Sets;
@@ -21,9 +21,9 @@ public class BooleanComparator extends AbstractComparator<Boolean> {
             new MapUtils.Entry<>(Sets.newHashSet(Operator.EQUAL), (Operatable<Boolean, Boolean>) Boolean::equals),
             new MapUtils.Entry<>(Sets.newHashSet(Operator.NOT_EQUAL), (Operatable<Boolean, Boolean>) (var1, var2) -> var1 != var2)
     );
-    Map<Operator, LogicComputeOperator> _logicOptrMap = MapUtils.newEnumMap(Operator.class,
-            new MapUtils.Entry<>(Operator.EQUAL, LogicComputeOperator.OR));
-    Map<Operator, LogicComputeOperator> logicOptrMap = MapUtils.newEnumMap(Operator.class);
+    Map<Operator, LogicAssociativeOperator> _logicOptrMap = MapUtils.newEnumMap(Operator.class,
+            new MapUtils.Entry<>(Operator.EQUAL, LogicAssociativeOperator.OR));
+    Map<Operator, LogicAssociativeOperator> logicOptrMap = MapUtils.newEnumMap(Operator.class);
 
     @Override
     protected void init() {
@@ -41,12 +41,12 @@ public class BooleanComparator extends AbstractComparator<Boolean> {
     }
 
     @Override
-    public Map<Operator, LogicComputeOperator> getLogic() {
+    public Map<Operator, LogicAssociativeOperator> getLogic() {
         return new HashMap<>();
     }
 
     @Override
-    public Map<Operator, LogicComputeOperator> get_Logic() {
+    public Map<Operator, LogicAssociativeOperator> get_Logic() {
         return new HashMap<>();
     }
 }

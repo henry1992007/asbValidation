@@ -1,6 +1,6 @@
 package com.company;
 
-import com.company.enums.LogicComputeOperator;
+import com.company.enums.LogicAssociativeOperator;
 import com.company.enums.Operator;
 
 import java.util.ArrayList;
@@ -38,11 +38,11 @@ public abstract class AbstractComparator<T> implements Comparator<T>, MapAccesso
         Operator operator = co.getOperator();
         if (getLogic().get(operator) != null) {
             co.setLogic(getLogic().get(operator));
-            info("logic operator override to '" + ((LogicComputeOperator) co.getLogic()).getName() + "' by checker because '" + co.getOperator().getValue() + "' does not support the origin logic operator");
+            info("logic operator override to '" + ((LogicAssociativeOperator) co.getLogic()).getName() + "' by checker because '" + co.getOperator().getValue() + "' does not support the origin logic operator");
         }
         if (get_Logic().get(operator) != null) {
             co.set_logic(get_Logic().get(operator));
-            info("_logic operator override to '" + ((LogicComputeOperator) co.get_logic()).getName() + "' by checker because '" + co.getOperator().getValue() + "' does not support the origin _logic operator");
+            info("_logic operator override to '" + ((LogicAssociativeOperator) co.get_logic()).getName() + "' by checker because '" + co.getOperator().getValue() + "' does not support the origin _logic operator");
         }
         return doCompare(preProcess(co));
     }

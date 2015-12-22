@@ -7,8 +7,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Created by henry on 15/11/12.
@@ -35,22 +37,22 @@ public abstract class CollectionUtils {
     }
 
     public static <T> List<T> map(List<T> a, Function<T, T> f) {
-        for (int i = 0; i < a.size(); i++)
-            a.set(i, f.apply(a.get(i)));
-        return a;
+        return a.stream().map(f).collect(Collectors.toList());
     }
 
-    public static <T> List<T> reduce(List<T> a, FunctionXY<T> f) {
-        for (int i = 1; i < a.size(); i++)
-            a.set(0, f.apply(a.get(0), a.get(i)));
-        return Collections.singletonList(a.get(0));
+//    public static <T> List<T> reduce(List<T> a, BinaryOperator<T> f) {
+//        return Collections.singletonList(a.stream().reduce(f).get());
+//    }
+
+    public static <T> T reduce(List<T> a, BinaryOperator<T> f) {
+        return a.stream().reduce(f).get();
     }
 
-    public static <T> boolean equal(List<T> a) {
+    public static <T> boolean xor(List<T> a) {
         for (int i = 1; i < a.size(); i++)
             if (!a.get(0).equals(a.get(i)))
-                return false;
-        return true;
+                return true;
+        return false;
     }
 
     public static <T, S, R> R anyMatchAndThen(List<T> list, Predicate<T> predicate, Function<S, R> andThen, S o) {
