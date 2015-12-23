@@ -46,12 +46,21 @@ public abstract class AbstractValidator<T> implements TypeValidator {
         List<T> _val = parseObject(_fieldValues.values());
         _val.addAll(parseString(cd.get_vals()));
 
-        val = cd.getCmpt().operate(val);
-        _val = cd.get_cmpt().operate(_val);
+        val = compute(val, cd.getCmpt());
+        _val = compute(_val, cd.get_cmpt());
 
         CompareObject<T> co = new CompareObject<>(val, cd.getLogic(), cd.getOperator(), _val, cd.get_logic(), checkNull);
         info(co.toString());
         return getComparator().compare(co);
+    }
+
+    private List<T> compute(List<T> val, MultivariateOperator mo) {
+        Object result = mo.operate(val);
+        if (mo instanceof AssociativeOperator) {
+            return Collections.singletonList((T) result);
+        } else {
+            return (List<T>) result;
+        }
     }
 
     @Override

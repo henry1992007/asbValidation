@@ -1,11 +1,6 @@
 package com.company.utils;
 
-import com.company.validations.FunctionXY;
-
-import javax.security.auth.callback.Callback;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;

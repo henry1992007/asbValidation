@@ -1,20 +1,16 @@
 package com.company.validations;
 
-import com.company.*;
 import com.company.Comparator;
-import com.company.element.CheckDefinition;
-import com.company.utils.Assert;
-import com.company.utils.CollectionUtils;
-import com.company.utils.ReflectUtils;
-import com.company.utils.StringUtils;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
+import com.company.CompareObject;
+import com.company.enums.CheckType;
+import com.company.enums.Operator;
+import com.company.utils.Utils;
 
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by henry on 15/11/5.
@@ -23,15 +19,21 @@ public class NumberValidator extends AbstractValidator<BigDecimal> {
 
     private static final String CONDITION_VALUE = "conditionValue";
 
-    private NumberComparator comparator;
+    private AbstractComparator<BigDecimal> comparator;
 
     @Override
     protected Comparator<BigDecimal> getComparator() {
-        if (comparator == null)
-            comparator = new NumberComparator();
-        return comparator;
+        return comparator == null ? comparator = new AbstractComparator<BigDecimal>(CheckType.NUMBER) {
+            @Override
+            public CompareObject<BigDecimal> preProcess(CompareObject<BigDecimal> co) {
+                if (co.getOperator().equals(Operator.BETWEEN)) {
+                    List<BigDecimal> res = co.get_vals();
+                    res.add(Utils.getMax(co.get_vals()).add(new BigDecimal(1)));
+                }
+                return co;
+            }
+        } : comparator;
     }
-
 
     public List<BigDecimal> parseObject(Collection<Object> list) {
         List<BigDecimal> res = new ArrayList<>();

@@ -207,11 +207,10 @@ public class ConfigReader {
 
         if (StringUtils.isEmpty(property.get(PROPERTY_TYPE)))
             Assert.illegalDefinitionException("check type undefined", lineNum, docName);
-//        CheckType type = CheckType.fromName(property.get(PROPERTY_TYPE));
         String s = property.get(PROPERTY_TYPE);
         CheckType type = CheckType.fromName(s);
-        if (type.equals(CheckType.UNKNOWN))
-            Assert.illegalDefinitionException("unknown check type:'" + type.getName() + "'", lineNum, docName);
+        if (type == null)
+            Assert.illegalDefinitionException("unknown check type:'" + s + "'", lineNum, docName);
         cd.setCheckType(type);
 
 
@@ -221,15 +220,10 @@ public class ConfigReader {
         cd.setVals(resolveValue(property.get(PROPERTY_VALUE), context.getConstants()));
         cd.set_vals(resolveValue(property.get(PROPERTY__VALUE), context.getConstants()));
 
-        cd.setCmpt(resolve(property.get(PROPERTY_CMPT), NumberAssociativeOperator.class, type));
-        cd.set_cmpt(resolve(property.get(PROPERTY__CMPT), NumberAssociativeOperator.class, type));
-        cd.setLogic(resolve(property.get(PROPERTY_LOGIC), LogicAssociativeOperator.class, type));
-        cd.set_logic(resolve(property.get(PROPERTY__LOGIC), LogicAssociativeOperator.class, type));
-
-//        cd.setCmpt(resolveCmpt(property.get(PROPERTY_CMPT), lineNum, docName));
-//        cd.set_cmpt(resolveCmpt(property.get(PROPERTY__CMPT), lineNum, docName));
-//        cd.setLogic(resolveLogic(property.get(PROPERTY_LOGIC), lineNum, docName));
-//        cd.set_logic(resolveLogic(property.get(PROPERTY__LOGIC), lineNum, docName));
+        cd.setCmpt(resolve(property.get(PROPERTY_CMPT), type));
+        cd.set_cmpt(resolve(property.get(PROPERTY__CMPT), type));
+        cd.setLogic((AssociativeOperator<Boolean>) resolve(property.get(PROPERTY_LOGIC), type));
+        cd.set_logic((AssociativeOperator<Boolean>) resolve(property.get(PROPERTY__LOGIC), type));
 
         cd.setOperator(resolveOperator(property.get(PROPERTY_OPERATOR), lineNum, docName));
         cd.setMsg(property.get("msg"));
@@ -344,13 +338,12 @@ public class ConfigReader {
         return vals;
     }
 
-    public MultivariateOperator resolve(String attr, Class clazz, CheckType type) {
+    public MultivariateOperator resolve(String attr, CheckType type) {
         if (StringUtils.isEmpty(attr))
-            return (AssociativeOperator) ReflectUtils.invokeStatic(clazz, "getDefault");
-        AssociativeOperator operator = (AssociativeOperator) ReflectUtils.invokeStatic(clazz, "fromName", attr);
-        if (operator == null)
+            return MultivariateOperators.getDefault();
+        if (!type.getCmpt().contains(attr))
             Assert.unsupportedOperator(attr, type, lineNum, docName);
-        return operator;
+        return MultivariateOperators.get(attr);
     }
 
 //    private NumberAssociativeOperator resolveCmpt(String s, int lineNum, String docName) {

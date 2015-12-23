@@ -2,12 +2,13 @@ package com.company.utils;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
  * Created by henry on 15/11/8.
  */
-public class MultiKeySetMap<K, V> extends HashMap<Set<K>, V> {
+public class MultiKeySetMap<K, V> extends HashMap<Set<K>, V>{
 
     public V putSetKey(K key, V value) {
         for (Set<K> o : keySet()) {

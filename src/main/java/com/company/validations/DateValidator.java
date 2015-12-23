@@ -3,6 +3,8 @@ package com.company.validations;
 import com.company.*;
 import com.company.Comparator;
 import com.company.element.CheckDefinition;
+import com.company.enums.CheckType;
+import com.company.enums.Operator;
 import com.company.utils.Assert;
 import com.company.utils.CollectionUtils;
 import com.company.utils.ReflectUtils;
@@ -21,13 +23,23 @@ import java.util.stream.Collectors;
  */
 public class DateValidator extends AbstractValidator<Date> {
 
-    DateComparator comparator;
+    AbstractComparator<Date> comparator;
 
     @Override
     protected Comparator<Date> getComparator() {
-        if (comparator == null)
-            comparator = new DateComparator();
-        return comparator;
+        return comparator == null ? comparator = new AbstractComparator<Date>(CheckType.DATE) {
+            @Override
+            public CompareObject<Date> preProcess(CompareObject<Date> co) {
+                if (co.getOperator().equals(Operator.BETWEEN)) {
+//            Date foo = new Date(((Date) Utils.getMax(co.get_vals())).getTime() + 1);
+                    Date foo = null;
+                    List<Date> res = co.get_vals();
+                    res.add(foo);
+                    co.set_vals(res);
+                }
+                return co;
+            }
+        } : comparator;
     }
 
     public List<Date> parseObject(Collection<Object> list) {

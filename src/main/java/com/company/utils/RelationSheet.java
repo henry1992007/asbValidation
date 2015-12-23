@@ -9,7 +9,7 @@ public class RelationSheet<V, PK, SK> {
 
     HashMap<Integer, V> map = new HashMap<>();
 
-    public V put(V v, PK pk, SK... sks) {
+    public V put(PK pk, V v, SK... sks) {
         for (SK sk : sks)
             map.put(pk.hashCode() ^ sk.hashCode(), v);
         return v;

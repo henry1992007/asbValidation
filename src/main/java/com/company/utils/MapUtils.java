@@ -22,6 +22,7 @@ public abstract class MapUtils {
         return !isEmpty(map);
     }
 
+    @SafeVarargs
     public static <K extends Enum<K>, V> EnumMap<K, V> newEnumMap(Class<K> type, Entry<K, V>... entries) {
         EnumMap<K, V> map = new EnumMap<>(type);
         for (Entry<K, V> entry : entries)
@@ -29,7 +30,8 @@ public abstract class MapUtils {
         return map;
     }
 
-    public static <K, V> MultiKeySetMap<K,V> newMultiKeySetMap(Entry<Set<K>, V>... entries) {
+    @SafeVarargs
+    public static <K, V> MultiKeySetMap<K, V> newMultiKeySetMap(Entry<Set<K>, V>... entries) {
         MultiKeySetMap<K, V> map = new MultiKeySetMap<>();
         for (Entry<Set<K>, V> entry : entries)
             map.put(entry.getKey(), entry.getValue());
@@ -46,8 +48,6 @@ public abstract class MapUtils {
             this.value = v;
         }
 
-
-
         public K getKey() {
             return key;
         }
@@ -56,4 +56,5 @@ public abstract class MapUtils {
             return value;
         }
     }
+
 }

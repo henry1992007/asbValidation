@@ -1,15 +1,11 @@
 package com.company.validations;
 
-import com.company.*;
 import com.company.Comparator;
-import com.company.element.CheckDefinition;
-import com.company.enums.Operator;
-import com.company.utils.CollectionUtils;
+import com.company.enums.CheckType;
 
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.concurrent.locks.Condition;
-import java.util.function.Function;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -17,13 +13,11 @@ import java.util.stream.Collectors;
  */
 public class StringValidator extends AbstractValidator<String> {
 
-    StringComparator comparator;
+    AbstractComparator<String> comparator;
 
     @Override
     protected Comparator<String> getComparator() {
-        if (comparator == null)
-            comparator = new StringComparator();
-        return comparator;
+        return comparator == null ? comparator = AbstractComparator.<String>defaultComparator(CheckType.STRING) : comparator;
     }
 
     @Override

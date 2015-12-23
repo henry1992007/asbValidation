@@ -5,7 +5,9 @@ import com.company.CommonEnum;
 import com.company.validations.MapValidator;
 import com.company.validations.*;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -16,40 +18,68 @@ import static com.company.enums.Operator.*;
  */
 public enum CheckType implements CommonEnum {
 
-    NUMBER("number", new NumberValidator(), NumberAssociativeOperator.values(),
-            LARGER_THAN,
-            LARGER_OR_EQUAL,
-            LESS_OR_EQUAL,
-            LESS_THAN,
-            IN,
-            NOT_IN,
-            BETWEEN,
-            INTERSECT),
-    STRING("string", new StringValidator(), StringAssociativeOperator.values(),
-            IN,
-            NOT_IN,
-            INTERSECT),
-    BOOLEAN("boolean", new BooleanValidator(), new AssociativeOperator[]{}),
-    DATE("date", new DateValidator(), new AssociativeOperator[]{},
-            BEFORE,
-            AFTER,
-            BETWEEN),
-    LIST("list", new ListValidator(), new AssociativeOperator[]{}),
-    MAP("map", new MapValidator(), new AssociativeOperator[]{}),
-    UNKNOWN("", null, new AssociativeOperator[]{});
+    NUMBER("number", new NumberValidator(),
+            Lists.newArrayList(
+                    "sum",
+                    "product",
+                    "max",
+                    "min",
+                    "average",
+                    "float"),
+            Lists.newArrayList(
+                    LARGER_THAN,
+                    LARGER_OR_EQUAL,
+                    LESS_OR_EQUAL,
+                    LESS_THAN,
+                    IN,
+                    NOT_IN,
+                    BETWEEN,
+                    INTERSECT)),
+    STRING("string", new StringValidator(),
+            Lists.newArrayList(
+                    "lower",
+                    "upper",
+                    "fcap"),
+            Lists.newArrayList(
+                    IN,
+                    NOT_IN,
+                    INTERSECT)),
+    BOOLEAN("boolean", new BooleanValidator(),
+            Lists.newArrayList(
+                    "reverse"),
+            new ArrayList<Operator>()),
+    DATE("date", new DateValidator(),
+            new ArrayList<String>(),
+            Lists.newArrayList(
+                    BEFORE,
+                    AFTER,
+                    BETWEEN));
+//    LIST("list", new ListValidator(), new ArrayList<String>()),
+//    MAP("map", new MapValidator(), new ArrayList<String>()),
 
     private String name;
     private TypeValidator typeValidator;
     private List<Operator> supportedOperators = Lists.newArrayList(EQUAL, NOT_EQUAL);
     private List<AssociativeOperator> associativeOperators;
+    private List<String> cmpt;
 
-    CheckType(String name, TypeValidator typeValidator, AssociativeOperator[] associativeOperators, Operator... operators) {
+//    CheckType(String name, TypeValidator typeValidator, AssociativeOperator[] associativeOperators, Operator... operators) {
+//        this.name = name;
+//        this.typeValidator = typeValidator;
+//        supportedOperators.addAll(Arrays.asList(operators));
+//        this.associativeOperators = Arrays.asList(associativeOperators);
+//    }
+
+    CheckType(String name, TypeValidator typeValidator, List<String> list, List<Operator> operators) {
         this.name = name;
         this.typeValidator = typeValidator;
-        supportedOperators.addAll(Arrays.asList(operators));
-        this.associativeOperators = Arrays.asList(associativeOperators);
+        this.supportedOperators.addAll(operators);
+        this.cmpt = list;
     }
 
+    public List<String> getCmpt() {
+        return cmpt;
+    }
 
     public String getName() {
         return name;
@@ -59,7 +89,7 @@ public enum CheckType implements CommonEnum {
         for (CheckType e : values())
             if (e.getName().equals(name))
                 return e;
-        return UNKNOWN;
+        return null;
     }
 
     public TypeValidator getTypeValidator() {
@@ -78,7 +108,4 @@ public enum CheckType implements CommonEnum {
         return values();
     }
 
-    public CommonEnum getDefault() {
-        return UNKNOWN;
-    }
 }

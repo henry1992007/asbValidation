@@ -1,6 +1,5 @@
 package com.company;
 
-import com.company.enums.LogicAssociativeOperator;
 import com.company.enums.Operator;
 import com.company.utils.MultiKeySetMap;
 
@@ -13,7 +12,7 @@ public interface MapAccessor {
 
     MultiKeySetMap<Operator, Operatable> getOperatables();
 
-    Map<Operator, LogicAssociativeOperator> getLogic();
+    Map<Operator, AssociativeOperator<Boolean>> getLogic();
 
-    Map<Operator, LogicAssociativeOperator> get_Logic();
+    Map<Operator, AssociativeOperator<Boolean>> get_Logic();
 }
