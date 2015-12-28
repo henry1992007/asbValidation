@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Validations>
 
+    <policy>
+        <optional action="ignore"/>
+        <null action="validate"/>
+    </policy>
+
     <class id="coupon" class="com.company.test.CouponOfferDTO"/>
     <class id="solution" class="com.company.test.SolutionDTO"/>
     <constant id="DINGE" type="number" class="com.company.test.QuickhuiConstants" field="DINGE"/>

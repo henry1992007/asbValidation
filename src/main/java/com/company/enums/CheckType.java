@@ -1,14 +1,10 @@
 package com.company.enums;
 
-import com.company.AssociativeOperator;
-import com.company.CommonEnum;
-import com.company.validations.MapValidator;
+import com.company.validations.AssociativeOperator;
 import com.company.validations.*;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static com.company.enums.Operator.*;
@@ -16,7 +12,7 @@ import static com.company.enums.Operator.*;
 /**
  * Created by henry on 15/11/10.
  */
-public enum CheckType implements CommonEnum {
+public enum CheckType {
 
     NUMBER("number", new NumberValidator(),
             Lists.newArrayList(
@@ -104,8 +100,5 @@ public enum CheckType implements CommonEnum {
         return associativeOperators;
     }
 
-    public CommonEnum[] getValues() {
-        return values();
-    }
 
 }

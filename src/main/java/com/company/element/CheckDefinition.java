@@ -1,6 +1,6 @@
 package com.company.element;
 
-import com.company.AssociativeOperator;
+import com.company.validations.AssociativeOperator;
 import com.company.enums.CheckType;
 import com.company.enums.Operator;
 import com.company.validations.MultivariateOperator;

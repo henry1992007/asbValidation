@@ -1,6 +1,5 @@
 package com.company.validations;
 
-import com.company.AssociativeOperator;
 import com.company.Comparator;
 import com.company.Compare;
 import com.company.CompareObject;
@@ -34,29 +33,6 @@ public abstract class AbstractComparator<T> implements Comparator<T> {
     static RelationSheet<Compare, CheckType, Operator> compares = new RelationSheet<>();
     static Map<Operator, AssociativeOperator<Boolean>> logicOperatorBinding = new HashMap<>();
     static Map<Operator, AssociativeOperator<Boolean>> _logicOperatorBinding = new HashMap<>();
-
-    static {
-        compares.put(NUMBER, ABSTRACT_GREATER_THAN, LARGER_THAN);
-        compares.put(NUMBER, ABSTRACT_NO_LESS_THAN, LARGER_OR_EQUAL, BETWEEN);
-        compares.put(NUMBER, ABSTRACT_EQUAL_TO, EQUAL, IN, INTERSECT);
-        compares.put(NUMBER, ABSTRACT_NO_GREATER_THAN, LESS_OR_EQUAL);
-        compares.put(NUMBER, ABSTRACT_LESS_THAN, LESS_OR_EQUAL);
-        compares.put(NUMBER, ABSTRACT_NOT_EQUAL_TO, NOT_EQUAL, NOT_IN);
-        compares.put(STRING, ABSTRACT_EQUAL_TO, EQUAL, IN, INTERSECT);
-        compares.put(STRING, ABSTRACT_NOT_EQUAL_TO, NOT_EQUAL, NOT_IN);
-        compares.put(BOOLEAN, ABSTRACT_EQUAL_TO, EQUAL);
-        compares.put(BOOLEAN, ABSTRACT_NOT_EQUAL_TO, NOT_EQUAL);
-        compares.put(DATE, ABSTRACT_GREATER_THAN, AFTER, BETWEEN);
-        compares.put(DATE, ABSTRACT_EQUAL_TO, EQUAL);
-        compares.put(DATE, ABSTRACT_NOT_EQUAL_TO, NOT_EQUAL);
-        compares.put(DATE, ABSTRACT_LESS_THAN, BEFORE);
-
-        _logicOperatorBinding.put(IN, OR);
-        _logicOperatorBinding.put(EQUAL, OR);
-        _logicOperatorBinding.put(NOT_IN, AND);
-        _logicOperatorBinding.put(INTERSECT, OR);
-        _logicOperatorBinding.put(BETWEEN, XOR);
-    }
 
     private CheckType checkType;
 
@@ -102,6 +78,29 @@ public abstract class AbstractComparator<T> implements Comparator<T> {
     public static <T> AbstractComparator<T> defaultComparator(CheckType checkType) {
         return new AbstractComparator<T>(checkType) {
         };
+    }
+
+    static {
+        compares.put(NUMBER, ABSTRACT_GREATER_THAN, LARGER_THAN);
+        compares.put(NUMBER, ABSTRACT_NO_LESS_THAN, LARGER_OR_EQUAL, BETWEEN);
+        compares.put(NUMBER, ABSTRACT_EQUAL_TO, EQUAL, IN, INTERSECT);
+        compares.put(NUMBER, ABSTRACT_NO_GREATER_THAN, LESS_OR_EQUAL);
+        compares.put(NUMBER, ABSTRACT_LESS_THAN, LESS_OR_EQUAL);
+        compares.put(NUMBER, ABSTRACT_NOT_EQUAL_TO, NOT_EQUAL, NOT_IN);
+        compares.put(STRING, ABSTRACT_EQUAL_TO, EQUAL, IN, INTERSECT);
+        compares.put(STRING, ABSTRACT_NOT_EQUAL_TO, NOT_EQUAL, NOT_IN);
+        compares.put(BOOLEAN, ABSTRACT_EQUAL_TO, EQUAL);
+        compares.put(BOOLEAN, ABSTRACT_NOT_EQUAL_TO, NOT_EQUAL);
+        compares.put(DATE, ABSTRACT_GREATER_THAN, AFTER, BETWEEN);
+        compares.put(DATE, ABSTRACT_EQUAL_TO, EQUAL);
+        compares.put(DATE, ABSTRACT_NOT_EQUAL_TO, NOT_EQUAL);
+        compares.put(DATE, ABSTRACT_LESS_THAN, BEFORE);
+
+        _logicOperatorBinding.put(IN, OR);
+        _logicOperatorBinding.put(EQUAL, OR);
+        _logicOperatorBinding.put(NOT_IN, AND);
+        _logicOperatorBinding.put(INTERSECT, OR);
+        _logicOperatorBinding.put(BETWEEN, XOR);
     }
 
 }

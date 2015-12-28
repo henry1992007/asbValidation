@@ -1,8 +1,7 @@
 package com.company;
 
 import com.company.enums.Operator;
-import com.company.validations.MultivariateOperator;
-import lombok.Data;
+import com.company.validations.AssociativeOperator;
 import lombok.Getter;
 import lombok.Setter;
 

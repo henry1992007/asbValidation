@@ -1,15 +1,17 @@
 package com.company.utils;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by henry on 15/11/27.
  */
 public class RelationSheet<V, PK, SK> {
 
-    HashMap<Integer, V> map = new HashMap<>();
+    Map<Integer, V> map = new HashMap<>();
 
-    public V put(PK pk, V v, SK... sks) {
+    @SafeVarargs
+    public final V put(PK pk, V v, SK... sks) {
         for (SK sk : sks)
             map.put(pk.hashCode() ^ sk.hashCode(), v);
         return v;

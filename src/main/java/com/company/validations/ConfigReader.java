@@ -1,6 +1,5 @@
 package com.company.validations;
 
-import com.company.AssociativeOperator;
 import com.company.ConfigContext;
 import com.company.element.*;
 import com.company.enums.*;

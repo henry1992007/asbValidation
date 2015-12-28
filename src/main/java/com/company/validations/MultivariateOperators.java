@@ -1,20 +1,11 @@
 package com.company.validations;
 
-import com.company.AssociativeOperator;
 import com.company.MappingOperator;
 import com.company.utils.CollectionUtils;
 import com.company.utils.StringUtils;
-import com.company.validations.MultivariateOperator;
-import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.common.collect.Maps;
 
 import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 
 /**
  * Created by henry on 15/12/13.
@@ -45,7 +36,7 @@ public abstract class MultivariateOperators {
     static MappingOperator<String> FCAP = var -> CollectionUtils.map(var, StringUtils::firstToCapital);
 
 
-    static MappingOperator DEFAULT = var -> CollectionUtils.map(var, Function.identity());
+    static MappingOperator DEFAULT = var -> var;
 
     public static MultivariateOperator get(String name) {
         return operators.get(name);

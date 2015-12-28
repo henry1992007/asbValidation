@@ -4,6 +4,7 @@ import com.company.Comparator;
 import com.company.CompareObject;
 import com.company.enums.CheckType;
 import com.company.enums.Operator;
+import com.company.utils.CollectionUtils;
 import com.company.utils.Utils;
 
 import java.math.BigDecimal;
@@ -28,7 +29,7 @@ public class NumberValidator extends AbstractValidator<BigDecimal> {
             public CompareObject<BigDecimal> preProcess(CompareObject<BigDecimal> co) {
                 if (co.getOperator().equals(Operator.BETWEEN)) {
                     List<BigDecimal> res = co.get_vals();
-                    res.add(Utils.getMax(co.get_vals()).add(new BigDecimal(1)));
+                    res.add(CollectionUtils.reduce(co.get_vals(),BigDecimal::max).add(new BigDecimal(1)));
                 }
                 return co;
             }

@@ -4,18 +4,14 @@ import com.company.*;
 import com.company.element.CheckDefinition;
 import com.company.utils.Assert;
 import com.company.utils.ReflectUtils;
-import com.company.utils.StringUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
-import java.math.BigDecimal;
 import java.util.*;
 
 import com.company.Comparator;
 import com.google.common.collect.Lists;
-
-import java.util.stream.Collectors;
 
 import static com.company.utils.Utils.info;
 
