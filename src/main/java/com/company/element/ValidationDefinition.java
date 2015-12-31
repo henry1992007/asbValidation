@@ -13,6 +13,7 @@ import java.util.Map;
  */
 public class ValidationDefinition extends AbstractElementDefinition implements ParentElement {
     private Map<String, Class> classes;
+    private Class mainClass;
     private List<CheckDefinition> checks = new ArrayList<>();
     private List<ConditionDefinition> conditions = new ArrayList<>();
     private Map<String, ConditionDefinition> conditionIdMap = new HashMap<>();
@@ -25,6 +26,14 @@ public class ValidationDefinition extends AbstractElementDefinition implements P
         setId(id);
     }
 
+    public Class getMainClass() {
+        return mainClass;
+    }
+
+    public void setMainClass(Class mainClass) {
+        this.mainClass = mainClass;
+    }
+
     public void addCheck(CheckDefinition cd) {
         checks.add(cd);
     }
@@ -33,7 +42,6 @@ public class ValidationDefinition extends AbstractElementDefinition implements P
         conditions.add(cd);
     }
 
-    @Override
     public List<CheckDefinition> getRefChecks() {
         return new ArrayList<>();
     }

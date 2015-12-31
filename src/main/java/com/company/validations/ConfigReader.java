@@ -124,16 +124,22 @@ public class ConfigReader {
         if (StringUtils.isEmpty(property.get(CLASS)))
             Assert.illegalDefinitionException("class not specified", vd.getLineNum(), vd.getDocName());
         String[] classNames = property.get(CLASS).split(",");
-        for (String name : classNames)
+        for (int i = 0; i < classNames.length; i++) {
+            String name = classNames[i];
             try {
                 Class clazz = Class.forName(name);
                 classMap.put(ReflectUtils.getRefClassName(name), clazz);
+                if (i == 0)
+                    vd.setMainClass(clazz);
             } catch (ClassNotFoundException e) {
                 ClassDefinition clazz = context.getClasses().get(name);
                 if (clazz == null)
                     Assert.runtimeException("class name:'" + name + "' defined in validation id:" + vd.getId() + " does not refer to an class definition or existing Class, at line " + entity.getLineNum() + " in " + entity.getDocName());
                 classMap.put(name, clazz.getClazz());
+                if (i == 0)
+                    vd.setMainClass(clazz.getClazz());
             }
+        }
 
         vd.setClasses(classMap);
         resolveDefinition(entity.getSubs(), vd);
@@ -295,8 +301,11 @@ public class ConfigReader {
                         Assert.runtimeException("class not specified in multi Classes validation, at line " + lineNum);
                     }
                 }
+                FieldPath fieldPath = new FieldPath(clazz, fields);
+                if (clazz.equals(vd.getMainClass()))
+                    fieldPath.setMain(true);
                 checkFieldAccessible(clazz, fields);
-                fieldPaths.add(new FieldPath(clazz, fields));
+                fieldPaths.add(fieldPath);
             }
         }
 
