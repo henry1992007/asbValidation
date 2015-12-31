@@ -8,8 +8,8 @@ public enum Operator {
     LARGER_THAN(">", " must be larger than "),
     LARGER_OR_EQUAL(">=", " must be larger than or equal to "),
     EQUAL("=", " must be equal to "),
-    LESS_OR_EQUAL("l=", " must be less than or equal to "),
-    LESS_THAN("l", " must be less than "),
+    LESS_OR_EQUAL("lt=", " must be less than or equal to "),
+    LESS_THAN("lt", " must be less than "),
     NOT_EQUAL("!=", " must not be equal to "),
     IN("in", " must be one of "),
     NOT_IN("not", " must not be any of "),
@@ -32,15 +32,9 @@ public enum Operator {
     }
 
     public static Operator fromName(String operator) {
-        String str = operator.toLowerCase();
-        for (Operator e : values()) {
-            if (str.equals("=>"))
-                str = ">=";
-            if (str.equals("=l"))
-                str = "l=";
-            if (e.getValue().equals(str))
+        for (Operator e : values())
+            if (e.getValue().equals(operator.toLowerCase()))
                 return e;
-        }
         return UNKNOWN;
     }
 

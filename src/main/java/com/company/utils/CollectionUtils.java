@@ -2,6 +2,7 @@ package com.company.utils;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -54,6 +55,17 @@ public abstract class CollectionUtils {
         if (list.stream().anyMatch(predicate) && andThen != null)
             return andThen.apply(o);
         return null;
+    }
+
+    public static <T> T getOnly(Collection<T> c) {
+        return (T) c.toArray()[0];
+    }
+
+    public static <T> Optional<T> findFirstMatch(Collection<T> c, Predicate<T> predicate) {
+        for (T t : c)
+            if (predicate.test(t))
+                return Optional.of(t);
+        return Optional.empty();
     }
 
 }

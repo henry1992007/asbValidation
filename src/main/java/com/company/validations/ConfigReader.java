@@ -15,30 +15,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.company.utils.Assert.runtimeException;
+import static com.company.EntityAttributes.*;
 
 /**
  * Created by henry on 15/11/16.
  */
 public class ConfigReader {
-
-    public final static String PROPERTY_ID = "id";
-
-    public final static String PROPERTY_OPERATOR = "operator";
-
-    public final static String PROPERTY_CLASS = "class";
-
-    public final static String PROPERTY_REF = "ref";
-
-    public final static String PROPERTY_TYPE = "type";
-    public final static String PROPERTY_FIELD = "field";
-    public final static String PROPERTY__FIELD = "_field";
-    public final static String PROPERTY_VALUE = "value";
-    public final static String PROPERTY__VALUE = "_value";
-    public final static String PROPERTY_CMPT = "cmpt";
-    public final static String PROPERTY__CMPT = "_cmpt";
-    public final static String PROPERTY_LOGIC = "logic";
-    public final static String PROPERTY__LOGIC = "_logic";
-    public final static String PROPERTY_MSG = "msg";
 
     public final static String SPLITTER = ",";
 
@@ -73,7 +55,7 @@ public class ConfigReader {
         Map<String, String> property = entity.getProperty();
         lineNum = entity.getLineNum();
 
-        ClassDefinition cd = new ClassDefinition(property.get(PROPERTY_ID), entity.getLineNum(), entity.getDocName());
+        ClassDefinition cd = new ClassDefinition(property.get(ID), entity.getLineNum(), entity.getDocName());
         if (context.getClasses().containsKey(cd.getId()))
             Assert.entityIDException(Assert.DUPLICATED_CLASS_ID, cd.getId(), lineNum, docName);
 
@@ -93,19 +75,19 @@ public class ConfigReader {
         lineNum = entity.getLineNum();
 
         ConstantDefinition cd = new ConstantDefinition(entity.getLineNum(), entity.getDocName());
-        if (StringUtils.isEmpty(property.get(PROPERTY_ID)))
+        if (StringUtils.isEmpty(property.get(ID)))
             Assert.illegalDefinitionException(Assert.VALIDATION_ID_UNSPECIFIED, lineNum, docName);
-        cd.setId(property.get(PROPERTY_ID));
+        cd.setId(property.get(ID));
 
-        CheckType type = CheckType.fromName(property.get(PROPERTY_TYPE));
+        CheckType type = CheckType.fromName(property.get(TYPE));
         // todo:type compatible
 //        if (type.equals())
         // 不能同时定义field和value
-        if ((StringUtils.isNotEmpty(property.get(PROPERTY_CLASS)) || StringUtils.isNotEmpty(property.get(PROPERTY_FIELD))) && StringUtils.isNotEmpty(property.get(PROPERTY_VALUE))) {
+        if ((StringUtils.isNotEmpty(property.get(CLASS)) || StringUtils.isNotEmpty(property.get(FIELD))) && StringUtils.isNotEmpty(property.get(VALUE))) {
             Assert.illegalDefinitionException("only define either in constant definition", lineNum, docName);
         }
-        String className = property.get(PROPERTY_CLASS);
-        String fieldName = property.get(PROPERTY_FIELD);
+        String className = property.get(CLASS);
+        String fieldName = property.get(FIELD);
         if (StringUtils.isNotEmpty(className) && StringUtils.isNotEmpty(fieldName)) {
             Class clazz;
             try {
@@ -132,16 +114,16 @@ public class ConfigReader {
         Map<String, String> property = entity.getProperty();
         lineNum = entity.getLineNum();
 
-        ValidationDefinition vd = new ValidationDefinition(property.get(PROPERTY_ID), entity.getLineNum(), entity.getDocName());
+        ValidationDefinition vd = new ValidationDefinition(property.get(ID), entity.getLineNum(), entity.getDocName());
         this.vd = vd;
 
         if (ValidationChecker.validations.containsKey(vd.getId()))
             Assert.entityIDException(Assert.DUPLICATED_VALIDATION_ID, vd.getId(), vd.getLineNum(), vd.getDocName());
 
         Map<String, Class> classMap = new HashMap<>();
-        if (StringUtils.isEmpty(property.get(PROPERTY_CLASS)))
+        if (StringUtils.isEmpty(property.get(CLASS)))
             Assert.illegalDefinitionException("class not specified", vd.getLineNum(), vd.getDocName());
-        String[] classNames = property.get(PROPERTY_CLASS).split(",");
+        String[] classNames = property.get(CLASS).split(",");
         for (String name : classNames)
             try {
                 Class clazz = Class.forName(name);
@@ -171,17 +153,17 @@ public class ConfigReader {
                     break;
                 case CONDITION:
                     ConditionDefinition condition = new ConditionDefinition(lineNum, docName);
-                    if (StringUtils.isNotEmpty(property.get(PROPERTY_REF))) {
+                    if (StringUtils.isNotEmpty(property.get(REF))) {
                         setConditionProperty(entity, condition, vd);
                     }
-                    if (StringUtils.isNotEmpty(property.get(PROPERTY_ID))) {
-                        String id = property.get(PROPERTY_ID);
+                    if (StringUtils.isNotEmpty(property.get(ID))) {
+                        String id = property.get(ID);
                         if (vd.getConditionIdMap().containsKey(id))
                             Assert.entityIDException("duplicated check id defined", id, entity.getLineNum(), entity.getDocName());
                         vd.getConditionIdMap().put(id, condition);
                     }
                     //todo:change to
-                    if (property.containsKey(PROPERTY_FIELD)) {
+                    if (property.containsKey(FIELD)) {
                         CheckDefinition subCd = new CheckDefinition(entity.getLineNum(), entity.getDocName());
                         setCheckProperty(entity, subCd, vd.getClasses());
                         condition.addRefCheck(subCd);
@@ -204,42 +186,42 @@ public class ConfigReader {
         int lineNum = entity.getLineNum();
         String docName = entity.getDocName();
 
-        if (StringUtils.isEmpty(property.get(PROPERTY_TYPE)))
+        if (StringUtils.isEmpty(property.get(TYPE)))
             Assert.illegalDefinitionException("check type undefined", lineNum, docName);
-        String s = property.get(PROPERTY_TYPE);
+        String s = property.get(TYPE);
         CheckType type = CheckType.fromName(s);
         if (type == null)
             Assert.illegalDefinitionException("unknown check type:'" + s + "'", lineNum, docName);
         cd.setCheckType(type);
 
 
-        cd.setFields(resolveFields(property.get(PROPERTY_FIELD), classMap));
-        cd.set_fields(resolveFields(property.get(PROPERTY__FIELD), classMap));
+        cd.setFields(resolveFields(property.get(FIELD), classMap));
+        cd.set_fields(resolveFields(property.get(_FIELD), classMap));
         //todo:type compatible with checkDefinition type
-        cd.setVals(resolveValue(property.get(PROPERTY_VALUE), context.getConstants()));
-        cd.set_vals(resolveValue(property.get(PROPERTY__VALUE), context.getConstants()));
+        cd.setVals(resolveValue(property.get(VALUE), context.getConstants()));
+        cd.set_vals(resolveValue(property.get(_VALUE), context.getConstants()));
 
-        cd.setCmpt(resolve(property.get(PROPERTY_CMPT), type));
-        cd.set_cmpt(resolve(property.get(PROPERTY__CMPT), type));
-        cd.setLogic((AssociativeOperator<Boolean>) resolve(property.get(PROPERTY_LOGIC), type));
-        cd.set_logic((AssociativeOperator<Boolean>) resolve(property.get(PROPERTY__LOGIC), type));
+        cd.setCmpt(resolve(property.get(CMPT), type));
+        cd.set_cmpt(resolve(property.get(_CMPT), type));
+        cd.setLogic((AssociativeOperator<Boolean>) resolve(property.get(LOGIC), type));
+        cd.set_logic((AssociativeOperator<Boolean>) resolve(property.get(_LOGIC), type));
 
-        cd.setOperator(resolveOperator(property.get(PROPERTY_OPERATOR), lineNum, docName));
+        cd.setOperator(resolveOperator(property.get(OPERATOR), lineNum, docName));
         cd.setMsg(property.get("msg"));
 
         checkParamsLegal(cd);
     }
 
     private void checkDefinitionLegal(Map<String, String> map) {
-        if ((StringUtils.isEmpty(map.get(PROPERTY_FIELD)) && StringUtils.isEmpty(map.get(PROPERTY_VALUE))) ||
-                (StringUtils.isEmpty(map.get(PROPERTY__FIELD)) && StringUtils.isEmpty(map.get(PROPERTY__VALUE)))) {
+        if ((StringUtils.isEmpty(map.get(FIELD)) && StringUtils.isEmpty(map.get(VALUE))) ||
+                (StringUtils.isEmpty(map.get(_FIELD)) && StringUtils.isEmpty(map.get(_VALUE)))) {
             Assert.illegalDefinitionException("check definition illegal, compare value expected for the operator", lineNum, docName);
         }
     }
 
     private void checkParamsLegal(CheckDefinition cd) {
-        if (!vd.getClasses().values().containsAll(cd.getFields().keySet()) ||
-                !vd.getClasses().values().containsAll(cd.get_fields().keySet())) {
+        if (!vd.getClasses().values().containsAll(cd.getFields().stream().map(FieldPath::getClazz).collect(Collectors.toList())) ||
+                !vd.getClasses().values().containsAll(cd.get_fields().stream().map(FieldPath::getClazz).collect(Collectors.toList()))) {
             Assert.illegalDefinitionException("class definition error", vd.getLineNum(), vd.getDocName());
         }
         if (cd.getCheckType().equals(CheckType.NUMBER)) {
@@ -257,15 +239,15 @@ public class ConfigReader {
 
     private void setConditionProperty(Entity entity, ConditionDefinition cd, ValidationDefinition vd) {
         Map<String, String> property = entity.getProperty();
-        String[] refIDs = property.get(PROPERTY_REF).split(SPLITTER);
+        String[] refIDs = property.get(REF).split(SPLITTER);
         List<CheckDefinition> refs = new ArrayList<>();
         for (String s : refIDs) {
             if (vd.getConditionIdMap().get(s) == null)
                 Assert.entityIDException("cannot find check with specified id.", s, entity.getLineNum(), entity.getDocName());
             refs.addAll(vd.getConditionIdMap().get(s).getRefChecks());
         }
-        if (property.containsKey(PROPERTY_MSG))
-            cd.setMsg(property.get(PROPERTY_MSG));
+        if (property.containsKey(MSG))
+            cd.setMsg(property.get(MSG));
         else
             cd.setMsg(refs.get(0).getMsg());
         cd.setRefChecks(refs);
@@ -282,8 +264,8 @@ public class ConfigReader {
 //    }
 
     /* 在String.split()中使用"."作为分隔符，必须写成"[.]"的形式 */
-    private Map<Class, String[]> resolveFields(String fieldProperty, Map<String, Class> classMap) {
-        Map<Class, String[]> fieldMap = new HashMap<>();
+    private List<FieldPath> resolveFields(String fieldProperty, Map<String, Class> classMap) {
+        List<FieldPath> fieldPaths = new ArrayList<>();
 
         if (StringUtils.isNotEmpty(fieldProperty)) {
             String[] fieldNames = fieldProperty.split(SPLITTER);
@@ -313,12 +295,12 @@ public class ConfigReader {
                         Assert.runtimeException("class not specified in multi Classes validation, at line " + lineNum);
                     }
                 }
-                checkFieldAccessible(clazz, fields, lineNum);
-                fieldMap.put(clazz, fields);
+                checkFieldAccessible(clazz, fields);
+                fieldPaths.add(new FieldPath(clazz, fields));
             }
         }
 
-        return fieldMap;
+        return fieldPaths;
     }
 
     private List<String> resolveValue(String value, Map<String, ConstantDefinition> map) {
@@ -377,7 +359,7 @@ public class ConfigReader {
         return operator;
     }
 
-    private void checkFieldAccessible(Class clazz, String[] fieldName, int line) {
+    private void checkFieldAccessible(Class clazz, String[] fieldName) {
         for (int i = 0; i < fieldName.length; i++) {
             try {
                 Field field = clazz.getDeclaredField(fieldName[i]);
@@ -387,10 +369,10 @@ public class ConfigReader {
                     clazz.getDeclaredMethod(ReflectUtils.genGetMethod(fieldName[i]));
                 clazz = field.getType();
             } catch (NoSuchFieldException e) {
-                Assert.runtimeException("field '" + fieldName[i] + "' in Class " + clazz.toString() + " does not exist, at line " + line);
+                Assert.runtimeException("field '" + fieldName[i] + "' in Class " + clazz.toString() + " does not exist, at line " + lineNum);
             } catch (NoSuchMethodException e) {
                 Assert.runtimeException("cannot access field '" + fieldName[i] + "' in Class " + clazz.toString() + ", the field is neither public or without " +
-                        "a get method " + ReflectUtils.genGetMethod(fieldName[i]) + "may be set, at line " + line);
+                        "a get method " + ReflectUtils.genGetMethod(fieldName[i]) + "may be set, at line " + lineNum);
             }
         }
     }

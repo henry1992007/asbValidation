@@ -1,7 +1,5 @@
 package com.company.validations;
 
-import com.company.validations.MultivariateOperator;
-
 /**
  * @author Jianheng He
  */

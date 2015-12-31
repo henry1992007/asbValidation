@@ -21,26 +21,21 @@ public class StringValidator extends AbstractValidator<String> {
     }
 
     @Override
-    protected List<String> parseObject(Collection<Object> list) {
-        return list.stream().map(Object::toString).collect(Collectors.toList());
+    protected String parseObject(Object o) {
+        return o.toString();
     }
 
     @Override
-    protected List<String> parseString(List<String> list) {
-        List<String> res = new ArrayList<>();
-        for (String s : list)
-            switch (s) {
-                case "null":
-                    setCheckNull(true);
-                    break;
-                case "\\null":
-                    res.add("null");
-                    break;
-                default:
-                    res.add(s);
-                    break;
-            }
-        return res;
+    protected String parseString(String s) {
+        switch (s) {
+            case "null":
+                setCheckNull(true);
+                return null;
+            case "\\null":
+                return "null";
+            default:
+                return s;
+        }
     }
 
 }

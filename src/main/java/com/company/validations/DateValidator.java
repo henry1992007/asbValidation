@@ -9,7 +9,9 @@ import com.company.utils.Assert;
 import com.company.utils.CollectionUtils;
 import com.company.utils.ReflectUtils;
 import com.company.utils.StringUtils;
+import sun.awt.motif.X11JIS0201;
 
+import javax.print.attribute.standard.MediaSize;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.text.DateFormat;
@@ -42,7 +44,17 @@ public class DateValidator extends AbstractValidator<Date> {
         } : comparator;
     }
 
-    public List<Date> parseObject(Collection<Object> list) {
+    @Override
+    protected Date parseObject(Object o) {
+        return o instanceof String ? parseString(((String) o)) : ((Date) o);
+    }
+
+    @Override
+    protected Date parseString(String s) {
+        return null;
+    }
+
+    public List<Date> parseObject(List<Object> list) {
         return list.stream().map(o -> (Date) o).collect(Collectors.toList());
     }
 

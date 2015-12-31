@@ -1,17 +1,20 @@
 package com.company.validations;
 
-import com.company.*;
+import com.company.Comparator;
+import com.company.CompareObject;
 import com.company.element.CheckDefinition;
+import com.company.element.FieldPath;
+import com.company.enums.CheckMode;
 import com.company.utils.Assert;
+import com.company.utils.CollectionUtils;
 import com.company.utils.ReflectUtils;
+import com.google.common.collect.Lists;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.*;
-
-import com.company.Comparator;
-import com.google.common.collect.Lists;
+import java.util.stream.Collectors;
 
 import static com.company.utils.Utils.info;
 
@@ -20,69 +23,143 @@ import static com.company.utils.Utils.info;
  */
 public abstract class AbstractValidator<T> implements TypeValidator {
 
+    private static CheckMode defaultCheckMode = CheckMode.RELATED;
     private boolean checkNull = false;
 
     @Override
-    public boolean validate(CheckDefinition cd, Map<Class, Set<Object>> objectClassMap) {
+    public boolean validate(CheckDefinition cd, Map<Class, List<Object>> objectClassMap) {
         setCheckNull(false);
-        Map<Class, String[]> fields = cd.getFields();
-        Map<String, Object> fieldValues = new HashMap<>();
-        for (Class clazz : fields.keySet())
-            for (Object obj : objectClassMap.get(clazz))
-                fieldValues.put(Arrays.toString(fields.get(clazz)) + obj, getFieldValue(obj, fields.get(clazz)));
 
-        Map<Class, String[]> _fields = cd.get_fields();
-        Map<String, Object> _fieldValues = new HashMap<>();
-        for (Class clazz : _fields.keySet())
-            for (Object obj : objectClassMap.get(clazz))
-                _fieldValues.put(Arrays.toString(_fields.get(clazz)) + obj, getFieldValue(obj, _fields.get(clazz)));
+//        CheckMode checkMode = cd.getCheckMode();
+//        if (checkMode == null) {
+//            if (cd.getCmpt().equals(MultivariateOperators.DEFAULT) ||
+//                    MultivariateOperators.defaultSemanteme.get(cd.getCmpt()) == null) {
+//                checkMode = defaultCheckMode;
+//            } else {
+//                checkMode = MultivariateOperators.defaultSemanteme.get(cd.getCmpt());
+//            }
+//        }
 
-        List<T> val = parseObject(fieldValues.values());
-        val.addAll(parseString(cd.getVals()));
-        List<T> _val = parseObject(_fieldValues.values());
-        _val.addAll(parseString(cd.get_vals()));
-
-        val = compute(val, cd.getCmpt());
-        _val = compute(_val, cd.get_cmpt());
-
-        CompareObject<T> co = new CompareObject<>(val, cd.getLogic(), cd.getOperator(), _val, cd.get_logic(), checkNull);
-        info(co.toString());
-        return getComparator().compare(co);
+//        switch (checkMode) {
+//            case SINGLE:
+        return checkBySingle(cd, objectClassMap);
+//            case RELATED:
+//                return checkByRelated(cd, objectClassMap);
+//            default:
+//                return false;
+//        }
     }
 
+    /**
+     * 以mainClass为标准
+     *
+     * @param cd
+     * @param objectClassMap
+     * @return
+     */
+    private boolean checkBySingle(CheckDefinition cd, Map<Class, List<Object>> objectClassMap) {
+        List<FieldPath> fields = cd.getFields();
+        List<FieldPath> _fields = cd.get_fields();
+
+        Optional<FieldPath> fieldPath = CollectionUtils.findFirstMatch(fields, FieldPath::isMain);
+        if (!fieldPath.isPresent())
+            throw new RuntimeException("error");
+        Class mainClass = fieldPath.get().getClass();
+        List<Object> objects = objectClassMap.get(mainClass);
+
+        List<Boolean> result = new ArrayList<>();
+        for (Object o : objects) {
+            List<T> tempVal = resolveValues(o, cd, fields, objectClassMap);
+            List<T> _tempVal = resolveValues(o, cd, _fields, objectClassMap);
+
+            CompareObject<T> co = new CompareObject<>(tempVal, cd.getValLogic(), cd.getOperator(), _tempVal, cd.get_valLogic(), checkNull);
+            info(co.toString());
+            result.add(getComparator().compare(co));
+        }
+        return cd.getLogic().operate(result);
+    }
+
+    private List<T> resolveValues(Object o, CheckDefinition cd, List<FieldPath> fields, Map<Class, List<Object>> objectClassMap) {
+        List<T> values = new ArrayList<>();
+        for (FieldPath path : fields) {
+            if (path.isMain()) {
+                values.add(parseObject(getFieldValue(o, path.getPath())));
+            } else {
+                values.addAll(fromObjects(getFieldValues(objectClassMap.get(path.getClazz()), path.getPath())));
+            }
+        }
+        values.addAll(fromStrings(cd.getVals()));
+        values = compute(values, cd.getCmpt());
+
+        return values;
+    }
+
+//    private boolean checkByRelated(CheckDefinition cd, Map<Class, List<Object>> objectClassMap) {
+//        List<FieldPath> fields = cd.getFields();
+//        List<FieldPath> _fields = cd.get_fields();
+//
+//        Optional<FieldPath> fieldPath = CollectionUtils.findFirstMatch(fields, FieldPath::isMain);
+//        if (!fieldPath.isPresent())
+//            throw new RuntimeException("error");
+//        Class mainClass = fieldPath.get().getClass();
+//        List<Object> objects = objectClassMap.get(mainClass);
+//
+//        List<T> tempVal = new ArrayList<>();
+//        List<T> _tempVal = new ArrayList<>();
+//        for (FieldPath path : fields) {
+//            List<Object> objs = objectClassMap.get(path.getClazz());
+//            tempVal.addAll(fromObjects(getFieldValues(objs, path.getPath())));
+//            tempVal = compute(tempVal, cd.getCmpt());
+//        }
+//        tempVal.addAll(compute(fromStrings(cd.getVals()), cd.getCmpt()));
+//        tempVal = compute(tempVal, cd.getCmpt());
+//
+//        List<Boolean> result = new ArrayList<>();
+//        for (Object o : objects) {
+//            List<T> tempVal = resolveValues(o, cd, fields, objectClassMap);
+//            List<T> _tempVal = resolveValues(o, cd, _fields, objectClassMap);
+//
+//            CompareObject<T> co = new CompareObject<>(tempVal, cd.getValLogic(), cd.getOperator(), _tempVal, cd.get_valLogic(), checkNull);
+//            info(co.toString());
+//            result.add(getComparator().compare(co));
+//        }
+//        return cd.getLogic().operate(result);
+//    }
+
+    @SuppressWarnings("unchecked")
     private List<T> compute(List<T> val, MultivariateOperator mo) {
         Object result = mo.operate(val);
         if (mo instanceof AssociativeOperator) {
-            return Collections.singletonList((T) result);
+            return Lists.newArrayList((T) result);
         } else {
             return (List<T>) result;
         }
     }
 
     @Override
-    public Map<Class, Set<Object>> filter(CheckDefinition cd, Map<Class, Set<Object>> objectClassMap) {
+    public Map<Class, List<Object>> filter(CheckDefinition cd, Map<Class, List<Object>> objectClassMap) {
         setCheckNull(false);
-        for (Class clazz : cd.getFields().keySet()) {
-            Set<Object> resultSet = new HashSet<>();
-            for (Object o : objectClassMap.get(clazz)) {
-                List<T> val = parseObject(Lists.newArrayList(getFieldValue(o, cd.getFields().get(o.getClass()))));
 
-                Map<Class, String[]> _fields = cd.get_fields();
-                Map<String, Object> _fieldValues = new HashMap<>();
-                for (Class clazz1 : _fields.keySet())
-                    for (Object obj : objectClassMap.get(clazz1))
-                        _fieldValues.put(Arrays.toString(_fields.get(clazz1)), getFieldValue(obj, _fields.get(clazz)));
-                List<T> _val = parseObject(_fieldValues.values());
-                _val.addAll(parseString(cd.get_vals()));
+        List<FieldPath> fields = cd.getFields();
+        List<FieldPath> _fields = cd.get_fields();
 
-                CompareObject<T> co = new CompareObject<>(val, cd.getLogic(), cd.getOperator(), _val, cd.get_logic(), checkNull);
-                if (getComparator().compare(co)) {
-                    resultSet.add(o);
-                }
-            }
-            objectClassMap.put(clazz, resultSet);
+        Optional<FieldPath> fieldPath = CollectionUtils.findFirstMatch(fields, FieldPath::isMain);
+        if (!fieldPath.isPresent())
+            throw new RuntimeException("error");
+        Class mainClass = fieldPath.get().getClass();
+        List<Object> objects = objectClassMap.get(mainClass);
+
+        List<Object> result = new ArrayList<>();
+        for (Object o : objects) {
+            List<T> tempVal = resolveValues(o, cd, fields, objectClassMap);
+            List<T> _tempVal = resolveValues(o, cd, _fields, objectClassMap);
+
+            CompareObject<T> co = new CompareObject<>(tempVal, cd.getValLogic(), cd.getOperator(), _tempVal, cd.get_valLogic(), checkNull);
+            info(co.toString());
+            if (getComparator().compare(co))
+                result.add(o);
         }
-
+        objectClassMap.put(mainClass, result);
         return objectClassMap;
     }
 
@@ -118,9 +195,30 @@ public abstract class AbstractValidator<T> implements TypeValidator {
         return target;
     }
 
-    protected abstract List<T> parseObject(Collection<Object> list);
+    private List<Object> getFieldValues(List<Object> checkObj, String[] path) {
+        return checkObj.stream().map(o -> getFieldValue(o, path)).collect(Collectors.toList());
+    }
 
-    protected abstract List<T> parseString(List<String> list);
+    protected abstract T parseObject(Object o);
+
+    private List<T> fromObjects(List<Object> objects) {
+        return objects.stream().map(this::parseObject).collect(Collectors.toList());
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<T> fromObject(Object o) {
+        return Lists.newArrayList(parseObject(o));
+    }
+
+    protected abstract T parseString(String s);
+
+    private List<T> fromString(String s) {
+        return Lists.newArrayList(parseString(s));
+    }
+
+    private List<T> fromStrings(List<String> strings) {
+        return strings.stream().map(this::parseString).filter(o -> o != null).collect(Collectors.toList());
+    }
 
     protected boolean setCheckNull(boolean b) {
         return this.checkNull = b;

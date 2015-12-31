@@ -15,17 +15,23 @@ public class BooleanValidator extends AbstractValidator<Boolean> {
 
     @Override
     protected Comparator<Boolean> getComparator() {
-        return comparator == null ? AbstractComparator.<Boolean>defaultComparator(CheckType.BOOLEAN) : comparator;
+        return comparator == null ? comparator = AbstractComparator.<Boolean>defaultComparator(CheckType.BOOLEAN) : comparator;
     }
 
     @Override
-    protected List<Boolean> parseObject(Collection<Object> list) {
-        return null;
+    protected Boolean parseObject(Object o) {
+        return o instanceof String ? parseString((String) o) :
+                o instanceof Boolean ? (Boolean) o : false;
     }
 
     @Override
-    protected List<Boolean> parseString(List<String> list) {
-        return null;
+    protected Boolean parseString(String s) {
+        if (s.equals("null")) {
+            setCheckNull(true);
+            return null;
+        } else {
+            return s.equals("true");
+        }
     }
 
 }

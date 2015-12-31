@@ -11,14 +11,13 @@ import java.util.Set;
  */
 public class ListValidator implements TypeValidator {
 
-
     @Override
-    public boolean validate(CheckDefinition cd, Map<Class, Set<Object>> objectClassMap) {
+    public boolean validate(CheckDefinition cd, Map<Class, List<Object>> objectClassMap) {
         return false;
     }
 
     @Override
-    public Map<Class, Set<Object>> filter(CheckDefinition cd, Map<Class, Set<Object>> objectClassMap) {
+    public Map<Class, List<Object>> filter(CheckDefinition cd, Map<Class, List<Object>> objectClassMap) {
         return null;
     }
 }

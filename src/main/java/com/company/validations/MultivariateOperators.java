@@ -1,11 +1,17 @@
 package com.company.validations;
 
 import com.company.MappingOperator;
+import com.company.enums.CheckMode;
+import com.company.enums.CheckType;
 import com.company.utils.CollectionUtils;
 import com.company.utils.StringUtils;
 import com.google.common.collect.HashBiMap;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.company.enums.CheckMode.*;
 
 /**
  * Created by henry on 15/12/13.
@@ -70,6 +76,20 @@ public abstract class MultivariateOperators {
         operators.put("upper", UPPER);
         operators.put("fcap", FCAP);
         operators.put("default", DEFAULT);
+    }
+
+    static Map<MultivariateOperator, CheckMode> defaultSemanteme = new HashMap<>();
+
+    static {
+        defaultSemanteme.put(SUM, RELATED);
+        defaultSemanteme.put(PRODUCT, RELATED);
+        defaultSemanteme.put(MAX, RELATED);
+        defaultSemanteme.put(MIN, RELATED);
+        defaultSemanteme.put(AVERAGE, RELATED);
+        defaultSemanteme.put(FLOAT, SINGLE);
+        defaultSemanteme.put(LOWER, SINGLE);
+        defaultSemanteme.put(UPPER, SINGLE);
+        defaultSemanteme.put(FCAP, SINGLE);
     }
 
 }

@@ -29,38 +29,32 @@ public class NumberValidator extends AbstractValidator<BigDecimal> {
             public CompareObject<BigDecimal> preProcess(CompareObject<BigDecimal> co) {
                 if (co.getOperator().equals(Operator.BETWEEN)) {
                     List<BigDecimal> res = co.get_vals();
-                    res.add(CollectionUtils.reduce(co.get_vals(),BigDecimal::max).add(new BigDecimal(1)));
+                    res.add(CollectionUtils.reduce(co.get_vals(), BigDecimal::max).add(new BigDecimal(1)));
                 }
                 return co;
             }
         } : comparator;
     }
 
-    public List<BigDecimal> parseObject(Collection<Object> list) {
-        List<BigDecimal> res = new ArrayList<>();
-        for (Object o : list) {
-            if (o == null) {
-                res.add(null);
-            } else {
-                try {
-                    res.add(new BigDecimal(o.toString()));
-                } catch (NumberFormatException e) {
-                    //todo:exception
-                    throw new RuntimeException("incompatible type:" + o, e);
-                }
+    public BigDecimal parseObject(Object o) {
+        if (o == null) {
+            return null;
+        } else {
+            try {
+                return new BigDecimal(o.toString());
+            } catch (NumberFormatException e) {
+                //todo:exception
+                throw new RuntimeException("incompatible type:" + o, e);
             }
         }
-        return res;
     }
 
-    public List<BigDecimal> parseString(List<String> list) {
-        List<BigDecimal> res = new ArrayList<>();
-        for (String s : list)
-            if (s.equals("null"))
-                setCheckNull(true);
-            else
-                res.add(new BigDecimal(s));
-        return res;
+    public BigDecimal parseString(String s) {
+        if (s.equals("null")) {
+            setCheckNull(true);
+            return null;
+        } else
+            return new BigDecimal(s);
     }
 
     private String getMapDesc(Map<String, Comparable> map) {

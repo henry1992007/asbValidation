@@ -3,6 +3,7 @@ package com.company.validations;
 
 import com.company.element.CheckDefinition;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -11,8 +12,8 @@ import java.util.Set;
  */
 public interface TypeValidator {
 
-    boolean validate(CheckDefinition cd, Map<Class, Set<Object>> objectClassMap);
+    boolean validate(CheckDefinition cd, Map<Class, List<Object>> objectClassMap);
 
-    Map<Class, Set<Object>> filter(CheckDefinition cd, Map<Class, Set<Object>> objectClassMap);
+    Map<Class, List<Object>> filter(CheckDefinition cd, Map<Class, List<Object>> objectClassMap);
 
 }

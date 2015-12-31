@@ -4,6 +4,7 @@
     <policy>
         <optional action="ignore"/>
         <null action="validate"/>
+        <mode mode="single" _mode="associative"/>
     </policy>
 
     <class id="coupon" class="com.company.test.CouponOfferDTO"/>
@@ -26,12 +27,13 @@
 
         <!--定额类型相关校验-->
         <condition type="number" field="coupon.discount.redeemType" operator="=" _value="3">
+            <define name="retailPrice" field="coupon.businessAttribute.retailPrice"/>
             <!--<check type="number" field="coupon.businessAttribute.retailPrice" operator="!=" _value="null" msg="retail price not null"/>-->
             <!--<check type="number" field="coupon.businessAttribute.salePrice" operator="!=" _value="null" msg="sale price not null"/>-->
             <!--<check type="number" field="coupon.businessAttribute.retailPrice" operator=">" _value="0" msg="retail price must be larger than 0!"/>-->
             <!--<check type="number" field="coupon.businessAttribute.salePrice" operator=">" _value="0" msg="sale price must be larger than 0!"/>-->
-            <check type="number" field="coupon.businessAttribute.retailPrice" cmpt="float" operator="l" _value="2" msg="retail price no more than two decimal"/>
-            <check type="number" field="coupon.businessAttribute.salePrice" cmpt="float" operator="l" _value="2" msg="sale price no more than two decimal"/>
+            <check type="number" mode="single" field="coupon.businessAttribute.retailPrice" cmpt="float" operator="lt" _value="2" msg="retail price no more than two decimal"/>
+            <check type="number" mode="" field="coupon.businessAttribute.salePrice" cmpt="float" operator="lt" _value="2" msg="sale price no more than two decimal"/>
 
 
             <!--<condition id="buffet" type="number" field="coupon.businessAttribute.quotaType" operator="=" _value="2" msg="自助餐"/>-->

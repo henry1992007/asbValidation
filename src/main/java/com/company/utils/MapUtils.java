@@ -1,8 +1,6 @@
 package com.company.utils;
 
-import java.util.EnumMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -55,6 +53,20 @@ public abstract class MapUtils {
         public V getValue() {
             return value;
         }
+    }
+
+    public static <K, V> K getOnlyKey(Map<K, V> map) {
+        return (K) map.keySet().toArray()[0];
+    }
+
+    public static <K, V> V getOnlyValue(Map<K, V> map) {
+        return (V) map.values().toArray()[0];
+    }
+
+    public static void main(String[] args) {
+        Map<String, Integer> map = new HashMap<>();
+        map.put("test", 2);
+        System.out.println(getOnlyValue(map).getClass());
     }
 
 }

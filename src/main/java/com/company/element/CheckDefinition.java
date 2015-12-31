@@ -1,5 +1,6 @@
 package com.company.element;
 
+import com.company.enums.CheckMode;
 import com.company.validations.AssociativeOperator;
 import com.company.enums.CheckType;
 import com.company.enums.Operator;
@@ -18,15 +19,16 @@ import java.util.Map;
 @Setter
 public class CheckDefinition extends AbstractElementDefinition {
     private CheckType checkType;
-    private Map<Class, String[]> fields;
+    private CheckMode checkMode;
+    private List<FieldPath> fields;
     private List<String> vals = new ArrayList<>();
     private MultivariateOperator cmpt;
-    private AssociativeOperator<Boolean> logic;
+    private AssociativeOperator<Boolean> logic, valLogic;
     private Operator operator;
-    private Map<Class, String[]> _fields;
+    private List<FieldPath> _fields;
     private List<String> _vals = new ArrayList<>();
     private MultivariateOperator _cmpt;
-    private AssociativeOperator<Boolean> _logic;
+    private AssociativeOperator<Boolean> _logic,_valLogic;
     private String msg;
 
 

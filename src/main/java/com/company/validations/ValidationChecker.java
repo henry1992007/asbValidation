@@ -5,6 +5,7 @@ import com.company.element.ConditionDefinition;
 import com.company.element.ParentElement;
 import com.company.element.ValidationDefinition;
 import com.company.utils.Assert;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import java.util.*;
@@ -43,12 +44,12 @@ public class ValidationChecker {
         return results;
     }
 
-    private Map<Class, Set<Object>> resolveObjectClass(Object... objs) {
-        Map<Class, Set<Object>> objectClassMap = new HashMap<>();
+    private Map<Class, List<Object>> resolveObjectClass(Object... objs) {
+        Map<Class, List<Object>> objectClassMap = new HashMap<>();
         info("resolving object class...");
         for (Object obj : objs) {
             if (!objectClassMap.containsKey(obj.getClass()))
-                objectClassMap.put(obj.getClass(), Sets.newHashSet(obj));
+                objectClassMap.put(obj.getClass(), Lists.newArrayList(obj));
             else
                 objectClassMap.get(obj.getClass()).add(obj);
         }
@@ -64,7 +65,7 @@ public class ValidationChecker {
 
     List<String> results = new ArrayList<>();
 
-    private void doCheck(ParentElement element, Map<Class, Set<Object>> objectClassMap) {
+    private void doCheck(ParentElement element, Map<Class, List<Object>> objectClassMap) {
         for (CheckDefinition check : element.getRefChecks())
             objectClassMap = check.getCheckType().getTypeValidator().filter(check, objectClassMap);
 
@@ -74,7 +75,7 @@ public class ValidationChecker {
             doCheck(subCd, objectClassMap);
     }
 
-    private List<String> processChecks(List<CheckDefinition> cds, Map<Class, Set<Object>> objectClassMap) {
+    private List<String> processChecks(List<CheckDefinition> cds, Map<Class, List<Object>> objectClassMap) {
         return cds.stream().filter(
                 cd -> !cd.getCheckType().getTypeValidator().validate(cd, objectClassMap)).map(
                 CheckDefinition::getMsg).collect(
