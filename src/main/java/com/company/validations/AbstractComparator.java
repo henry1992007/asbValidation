@@ -31,8 +31,8 @@ public abstract class AbstractComparator<T> implements Comparator<T> {
 
 
     static RelationSheet<Compare, CheckType, Operator> compares = new RelationSheet<>();
-    static Map<Operator, AssociativeOperator<Boolean>> logicOperatorBinding = new HashMap<>();
-    static Map<Operator, AssociativeOperator<Boolean>> _logicOperatorBinding = new HashMap<>();
+    static Map<Operator, AggregateOperator<Boolean>> logicOperatorBinding = new HashMap<>();
+    static Map<Operator, AggregateOperator<Boolean>> _logicOperatorBinding = new HashMap<>();
 
     private CheckType checkType;
 
@@ -43,7 +43,7 @@ public abstract class AbstractComparator<T> implements Comparator<T> {
     @Override
     public boolean compare(CompareObject<T> co) {
         Operator operator = co.getOperator();
-        AssociativeOperator<Boolean> ao = logicOperatorBinding.get(operator);
+        AggregateOperator<Boolean> ao = logicOperatorBinding.get(operator);
         if (ao != null) {
             info("logic operator override to '" + MultivariateOperators.getName(ao) + "' by checker because '" + co.getOperator().getValue() + "' does not support " + MultivariateOperators.getName(co.getLogic()));
             co.setLogic(ao);

@@ -1,7 +1,7 @@
 package com.company.element;
 
 import com.company.enums.CheckMode;
-import com.company.validations.AssociativeOperator;
+import com.company.validations.AggregateOperator;
 import com.company.enums.CheckType;
 import com.company.enums.Operator;
 import com.company.validations.MultivariateOperator;
@@ -10,7 +10,6 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by henry on 15/11/16.
@@ -23,12 +22,12 @@ public class CheckDefinition extends AbstractElementDefinition {
     private List<FieldPath> fields;
     private List<String> vals = new ArrayList<>();
     private MultivariateOperator cmpt;
-    private AssociativeOperator<Boolean> logic, valLogic;
+    private AggregateOperator<Boolean> logic, objectLogic;
     private Operator operator;
     private List<FieldPath> _fields;
     private List<String> _vals = new ArrayList<>();
     private MultivariateOperator _cmpt;
-    private AssociativeOperator<Boolean> _logic,_valLogic;
+    private AggregateOperator<Boolean> _logic, _objectLogic;
     private String msg;
 
 

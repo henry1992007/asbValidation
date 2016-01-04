@@ -209,8 +209,8 @@ public class ConfigReader {
 
         cd.setCmpt(resolve(property.get(CMPT), type));
         cd.set_cmpt(resolve(property.get(_CMPT), type));
-        cd.setLogic((AssociativeOperator<Boolean>) resolve(property.get(LOGIC), type));
-        cd.set_logic((AssociativeOperator<Boolean>) resolve(property.get(_LOGIC), type));
+        cd.setLogic((AggregateOperator<Boolean>) resolve(property.get(LOGIC)));
+        cd.set_logic((AggregateOperator<Boolean>) resolve(property.get(_LOGIC)));
 
         cd.setOperator(resolveOperator(property.get(OPERATOR), lineNum, docName));
         cd.setMsg(property.get("msg"));
@@ -333,6 +333,14 @@ public class ConfigReader {
             return MultivariateOperators.getDefault();
         if (!type.getCmpt().contains(attr))
             Assert.unsupportedOperator(attr, type, lineNum, docName);
+        return MultivariateOperators.get(attr);
+    }
+
+    public MultivariateOperator resolve(String attr) {
+        if (StringUtils.isEmpty(attr))
+            return MultivariateOperators.get("and");
+        if (!MultivariateOperators.contains(attr))
+            Assert.runtimeException("unsupported logic operator:'" + attr + "'");
         return MultivariateOperators.get(attr);
     }
 

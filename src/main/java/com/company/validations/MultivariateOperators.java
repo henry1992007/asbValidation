@@ -2,12 +2,12 @@ package com.company.validations;
 
 import com.company.MappingOperator;
 import com.company.enums.CheckMode;
-import com.company.enums.CheckType;
 import com.company.utils.CollectionUtils;
 import com.company.utils.StringUtils;
 import com.google.common.collect.HashBiMap;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,17 +23,17 @@ public abstract class MultivariateOperators {
 
     static HashBiMap<String, MultivariateOperator> operators = HashBiMap.create();
 
-    static AssociativeOperator<Boolean> AND = v -> CollectionUtils.reduce(v, Boolean::logicalAnd);
-    static AssociativeOperator<Boolean> OR = var -> CollectionUtils.reduce(var, Boolean::logicalOr);
-    static AssociativeOperator<Boolean> XOR = CollectionUtils::xor;
+    static AggregateOperator<Boolean> AND = v -> CollectionUtils.reduce(v, Boolean::logicalAnd);
+    static AggregateOperator<Boolean> OR = var -> CollectionUtils.reduce(var, Boolean::logicalOr);
+    static AggregateOperator<Boolean> XOR = CollectionUtils::xor;
     static MappingOperator<Boolean> REVERSE = var -> CollectionUtils.map(var, b -> !b);
 
 
-    static AssociativeOperator<BigDecimal> SUM = var -> CollectionUtils.reduce(var, BigDecimal::add);
-    static AssociativeOperator<BigDecimal> PRODUCT = var -> CollectionUtils.reduce(var, BigDecimal::multiply);
-    static AssociativeOperator<BigDecimal> MAX = var -> CollectionUtils.reduce(var, BigDecimal::max);
-    static AssociativeOperator<BigDecimal> MIN = var -> CollectionUtils.reduce(var, BigDecimal::min);
-    static AssociativeOperator<BigDecimal> AVERAGE = var -> SUM.operate(var).divide(new BigDecimal(var.size()), 3, BigDecimal.ROUND_FLOOR);
+    static AggregateOperator<BigDecimal> SUM = var -> CollectionUtils.reduce(var, BigDecimal::add);
+    static AggregateOperator<BigDecimal> PRODUCT = var -> CollectionUtils.reduce(var, BigDecimal::multiply);
+    static AggregateOperator<BigDecimal> MAX = var -> CollectionUtils.reduce(var, BigDecimal::max);
+    static AggregateOperator<BigDecimal> MIN = var -> CollectionUtils.reduce(var, BigDecimal::min);
+    static AggregateOperator<BigDecimal> AVERAGE = var -> SUM.operate(var).divide(new BigDecimal(var.size()), 3, BigDecimal.ROUND_FLOOR);
     static MappingOperator<BigDecimal> FLOAT = var -> CollectionUtils.map(var, bigDecimal -> new BigDecimal(bigDecimal.scale()));
 
 
@@ -42,10 +42,17 @@ public abstract class MultivariateOperators {
     static MappingOperator<String> FCAP = var -> CollectionUtils.map(var, StringUtils::firstToCapital);
 
 
+//    static MappingOperator<Date> RESET_HOUR = var -> CollectionUtils.map(var, );
+
+
     static MappingOperator DEFAULT = var -> var;
 
     public static MultivariateOperator get(String name) {
         return operators.get(name);
+    }
+
+    public static boolean contains(String name) {
+        return operators.containsKey(name);
     }
 
     public static String getName(MultivariateOperator operator) {

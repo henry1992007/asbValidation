@@ -41,4 +41,7 @@ public abstract class EntityAttributes {
     public final static String _LOGIC = "_logic";
     public final static String OPERATOR = "operator";
     public final static String MSG = "msg";
+
+
+
 }

@@ -64,15 +64,18 @@ public abstract class AbstractValidator<T> implements TypeValidator {
         Optional<FieldPath> fieldPath = CollectionUtils.findFirstMatch(fields, FieldPath::isMain);
         if (!fieldPath.isPresent())
             throw new RuntimeException("error");
-        Class mainClass = fieldPath.get().getClass();
+        Class mainClass = fieldPath.get().getClazz();
         List<Object> objects = objectClassMap.get(mainClass);
 
         List<Boolean> result = new ArrayList<>();
         for (Object o : objects) {
             List<T> tempVal = resolveValues(o, cd, fields, objectClassMap);
-            List<T> _tempVal = resolveValues(o, cd, _fields, objectClassMap);
+            tempVal.addAll(fromStrings(cd.getVals()));
 
-            CompareObject<T> co = new CompareObject<>(tempVal, cd.getValLogic(), cd.getOperator(), _tempVal, cd.get_valLogic(), checkNull);
+            List<T> _tempVal = resolveValues(o, cd, _fields, objectClassMap);
+            _tempVal.addAll(fromStrings(cd.get_vals()));
+
+            CompareObject<T> co = new CompareObject<>(tempVal, cd.getLogic(), cd.getOperator(), _tempVal, cd.get_logic(), checkNull);
             info(co.toString());
             result.add(getComparator().compare(co));
         }
@@ -129,7 +132,7 @@ public abstract class AbstractValidator<T> implements TypeValidator {
     @SuppressWarnings("unchecked")
     private List<T> compute(List<T> val, MultivariateOperator mo) {
         Object result = mo.operate(val);
-        if (mo instanceof AssociativeOperator) {
+        if (mo instanceof AggregateOperator) {
             return Lists.newArrayList((T) result);
         } else {
             return (List<T>) result;
@@ -154,7 +157,7 @@ public abstract class AbstractValidator<T> implements TypeValidator {
             List<T> tempVal = resolveValues(o, cd, fields, objectClassMap);
             List<T> _tempVal = resolveValues(o, cd, _fields, objectClassMap);
 
-            CompareObject<T> co = new CompareObject<>(tempVal, cd.getValLogic(), cd.getOperator(), _tempVal, cd.get_valLogic(), checkNull);
+            CompareObject<T> co = new CompareObject<>(tempVal, cd.getLogic(), cd.getOperator(), _tempVal, cd.get_logic(), checkNull);
             info(co.toString());
             if (getComparator().compare(co))
                 result.add(o);

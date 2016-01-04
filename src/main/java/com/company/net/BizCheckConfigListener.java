@@ -2,6 +2,7 @@ package com.company.net;
 
 import com.company.element.ValidationDefinition;
 import com.company.parsing.ConfigLoader;
+import com.company.test.CouponOfferDTO;
 import com.company.test.Mock;
 import com.company.validations.ValidationChecker;
 import org.apache.commons.logging.LogFactory;
@@ -32,7 +33,11 @@ public class BizCheckConfigListener implements ServletContextListener {
 //        Collection<ValidationDefinition> list = ValidationChecker.validations.values();
 //        System.out.println(list);
 
-        System.out.println(Arrays.toString(checker.check(Mock.mocks1()).toArray()));
+        CouponOfferDTO[] mocks = Mock.mocks();
+
+        long t1 = System.currentTimeMillis();
+        System.out.println(Arrays.toString(checker.check(mocks).toArray()));
+        System.out.println(System.currentTimeMillis() - t1);
     }
 
     @Override

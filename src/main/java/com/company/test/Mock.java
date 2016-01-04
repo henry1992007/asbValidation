@@ -15,7 +15,7 @@ public class Mock {
     public static CouponOfferDTO mock() {
         CouponOfferDTO couponOfferDTO = new CouponOfferDTO();
         couponOfferDTO.setTitle("你个大西瓜");
-//        couponOfferDTO.setMaxInventory(4);
+        couponOfferDTO.setMaxInventory(4);
         couponOfferDTO.setBeginDate(new Date());
         couponOfferDTO.setEndDate(new Date());
 
@@ -81,30 +81,30 @@ public class Mock {
 
     public static CouponOfferDTO[] mocks() {
         CouponOfferDTO couponOfferDTO = mock();
-//        couponOfferDTO.setMaxInventory(new BigInteger("77"));
+        couponOfferDTO.setMaxInventory(5);
         couponOfferDTO.getViewTimePeriod().setTimePeriod("test");
         couponOfferDTO.getViewTimePeriod().setTimePeriod("qita");
 
         CouponOfferDTO couponOfferDTO1 = new CouponOfferDTO();
-        couponOfferDTO1.setMaxInventory(new BigInteger("7"));
+        couponOfferDTO1.setMaxInventory(56);
         ViewTimePeriodDTO viewTimePeriodDTO1 = new ViewTimePeriodDTO();
         viewTimePeriodDTO1.setTimePeriod("wushi");
         couponOfferDTO1.setViewTimePeriod(viewTimePeriodDTO1);
 
         CouponOfferDTO couponOfferDTO2 = new CouponOfferDTO();
-        couponOfferDTO2.setMaxInventory(new BigInteger("7"));
+        couponOfferDTO2.setMaxInventory(44);
         ViewTimePeriodDTO viewTimePeriodDTO2 = new ViewTimePeriodDTO();
         viewTimePeriodDTO2.setTimePeriod("wushi");
         couponOfferDTO2.setViewTimePeriod(viewTimePeriodDTO2);
 
         CouponOfferDTO couponOfferDTO3 = new CouponOfferDTO();
-        couponOfferDTO3.setMaxInventory(new BigInteger("7"));
+        couponOfferDTO3.setMaxInventory(78);
         ViewTimePeriodDTO viewTimePeriodDTO3 = new ViewTimePeriodDTO();
         viewTimePeriodDTO3.setTimePeriod("wanshi");
         couponOfferDTO3.setViewTimePeriod(viewTimePeriodDTO3);
 
         CouponOfferDTO couponOfferDTO4 = new CouponOfferDTO();
-        couponOfferDTO4.setMaxInventory(new BigInteger("7"));
+        couponOfferDTO4.setMaxInventory(1234);
         ViewTimePeriodDTO viewTimePeriodDTO4 = new ViewTimePeriodDTO();
         viewTimePeriodDTO4.setTimePeriod("wushi");
         couponOfferDTO4.setViewTimePeriod(viewTimePeriodDTO4);

@@ -1,7 +1,7 @@
 package com.company;
 
 import com.company.enums.Operator;
-import com.company.validations.AssociativeOperator;
+import com.company.validations.AggregateOperator;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,7 +22,7 @@ public class CompareObject<T> {
     /**
      * 操作符前后多值分别单独比较的结果集的处理逻辑
      */
-    private AssociativeOperator<Boolean> logic, _logic;
+    private AggregateOperator<Boolean> logic, _logic;
 
 
     /**
@@ -32,7 +32,7 @@ public class CompareObject<T> {
 
     private boolean checkNull = false;
 
-    public CompareObject(List<T> vals, AssociativeOperator<Boolean> logic, Operator operator, List<T> _vals, AssociativeOperator<Boolean> _logic, boolean checkNull) {
+    public CompareObject(List<T> vals, AggregateOperator<Boolean> logic, Operator operator, List<T> _vals, AggregateOperator<Boolean> _logic, boolean checkNull) {
         this.vals = vals;
         this.logic = logic;
         this.operator = operator;

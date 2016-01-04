@@ -1,6 +1,6 @@
 package com.company.enums;
 
-import com.company.validations.AssociativeOperator;
+import com.company.validations.AggregateOperator;
 import com.company.validations.*;
 import com.google.common.collect.Lists;
 
@@ -56,14 +56,14 @@ public enum CheckType {
     private String name;
     private TypeValidator typeValidator;
     private List<Operator> supportedOperators = Lists.newArrayList(EQUAL, NOT_EQUAL);
-    private List<AssociativeOperator> associativeOperators;
+    private List<AggregateOperator> aggregateOperators;
     private List<String> cmpt;
 
-//    CheckType(String name, TypeValidator typeValidator, AssociativeOperator[] associativeOperators, Operator... operators) {
+//    CheckType(String name, TypeValidator typeValidator, AggregateOperator[] aggregateOperators, Operator... operators) {
 //        this.name = name;
 //        this.typeValidator = typeValidator;
 //        supportedOperators.addAll(Arrays.asList(operators));
-//        this.associativeOperators = Arrays.asList(associativeOperators);
+//        this.aggregateOperators = Arrays.asList(aggregateOperators);
 //    }
 
     CheckType(String name, TypeValidator typeValidator, List<String> list, List<Operator> operators) {
@@ -96,8 +96,8 @@ public enum CheckType {
         return supportedOperators;
     }
 
-    public List<AssociativeOperator> getAssociativeOperators() {
-        return associativeOperators;
+    public List<AggregateOperator> getAggregateOperators() {
+        return aggregateOperators;
     }
 
 
