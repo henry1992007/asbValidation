@@ -23,6 +23,8 @@ import static com.company.utils.Utils.info;
  */
 public abstract class AbstractValidator<T> implements TypeValidator {
 
+//    protected AbstractComparator<T> comparator;
+
     private static CheckMode defaultCheckMode = CheckMode.RELATED;
     private boolean checkNull = false;
 

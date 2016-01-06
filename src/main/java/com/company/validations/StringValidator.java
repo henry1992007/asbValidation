@@ -17,12 +17,14 @@ public class StringValidator extends AbstractValidator<String> {
 
     @Override
     protected Comparator<String> getComparator() {
-        return comparator == null ? comparator = AbstractComparator.<String>defaultComparator(CheckType.STRING) : comparator;
+        return comparator == null ?
+                comparator = AbstractComparator.<String>defaultComparator(CheckType.STRING) :
+                comparator;
     }
 
     @Override
     protected String parseObject(Object o) {
-        return o.toString();
+        return o == null ? null : o.toString();
     }
 
     @Override

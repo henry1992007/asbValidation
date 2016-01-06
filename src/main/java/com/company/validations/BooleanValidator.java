@@ -20,8 +20,9 @@ public class BooleanValidator extends AbstractValidator<Boolean> {
 
     @Override
     protected Boolean parseObject(Object o) {
-        return o instanceof String ? parseString((String) o) :
-                o instanceof Boolean ? (Boolean) o : false;
+        return o == null ? null :
+                o instanceof String ? parseString((String) o) :
+                        o instanceof Boolean ? (Boolean) o : false;
     }
 
     @Override

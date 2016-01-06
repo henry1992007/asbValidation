@@ -46,7 +46,8 @@ public class DateValidator extends AbstractValidator<Date> {
 
     @Override
     protected Date parseObject(Object o) {
-        return o instanceof String ? parseString(((String) o)) : ((Date) o);
+        return o == null ? null :
+                o instanceof String ? parseString(((String) o)) : ((Date) o);
     }
 
     @Override

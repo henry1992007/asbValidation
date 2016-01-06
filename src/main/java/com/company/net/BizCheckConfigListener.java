@@ -24,7 +24,8 @@ public class BizCheckConfigListener implements ServletContextListener {
     public void contextInitialized(ServletContextEvent event) {
         configReader = new ConfigReader();
         configReader.load(event.getServletContext());
-        ValidationChecker checker = ValidationChecker.get("couponFieldsCheck");
+//        ValidationChecker checker = ValidationChecker.get("couponFieldsCheck");
+        ValidationChecker checker = ValidationChecker.get("testCheck");
         info("获得checker:" + checker.getID());
 //        Collection<ValidationDefinition> list = ValidationChecker.validations.values();
 //        System.out.println(list);
