@@ -1,5 +1,7 @@
 package com.company.utils;
 
+import com.google.common.collect.Maps;
+
 import java.util.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -67,6 +69,16 @@ public abstract class MapUtils {
         Map<String, Integer> map = new HashMap<>();
         map.put("test", 2);
         System.out.println(getOnlyValue(map).getClass());
+    }
+
+    public static <K, V> Map<K, V> newHashMap(Object... objects) {
+        Map<K, V> map = new HashMap<>();
+        for (int i = 0; i < objects.length; i++) {
+            if (i % 2 == 1)
+                continue;
+            map.put((K) objects[i], (V) objects[i + 1]);
+        }
+        return map;
     }
 
 }

@@ -1,18 +1,14 @@
 package com.company.net;
 
-import com.company.element.ValidationDefinition;
-import com.company.parsing.ConfigLoader;
+import com.company.parsing.ConfigReader;
 import com.company.test.CouponOfferDTO;
 import com.company.test.Mock;
 import com.company.validations.ValidationChecker;
-import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
 
 import static com.company.utils.Utils.info;
 
@@ -21,17 +17,18 @@ import static com.company.utils.Utils.info;
  */
 public class BizCheckConfigListener implements ServletContextListener {
 
-    private ConfigLoader configLoader;
+    private ConfigReader configReader;
     Logger logger = Logger.getLogger(BizCheckConfigListener.class);
 
     @Override
     public void contextInitialized(ServletContextEvent event) {
-        configLoader = new ConfigLoader();
-        configLoader.load(event.getServletContext());
+        configReader = new ConfigReader();
+        configReader.load(event.getServletContext());
         ValidationChecker checker = ValidationChecker.get("couponFieldsCheck");
         info("获得checker:" + checker.getID());
 //        Collection<ValidationDefinition> list = ValidationChecker.validations.values();
 //        System.out.println(list);
+
 
         CouponOfferDTO[] mocks = Mock.mocks();
 
@@ -42,8 +39,8 @@ public class BizCheckConfigListener implements ServletContextListener {
 
     @Override
     public void contextDestroyed(ServletContextEvent event) {
-        if (configLoader != null)
-            configLoader.destroy(event.getServletContext());
+        if (configReader != null)
+            configReader.destroy(event.getServletContext());
     }
 
 
