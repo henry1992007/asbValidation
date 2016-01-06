@@ -4,13 +4,13 @@ package com.company.element;
  * Created by henry on 15/11/16.
  */
 public abstract class AbstractElementDefinition {
-    protected String id;
-    protected int lineNum;
-    protected String docName;
 
-    protected AbstractElementDefinition(int lineNum, String docName) {
+    protected String id;
+
+    protected int lineNum;
+
+    protected AbstractElementDefinition(int lineNum) {
         this.lineNum = lineNum;
-        this.docName = docName;
     }
 
     public String getId() {
@@ -23,10 +23,6 @@ public abstract class AbstractElementDefinition {
 
     public int getLineNum() {
         return lineNum;
-    }
-
-    public String getDocName() {
-        return docName;
     }
 
 }

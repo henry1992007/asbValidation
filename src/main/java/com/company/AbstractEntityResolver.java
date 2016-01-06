@@ -8,12 +8,12 @@ import com.company.parsing.Entity;
 public class AbstractEntityResolver implements EntityResolver {
 
     protected int lineNum;
-    protected String docName;
+    protected String docPath;
 
     @Override
     public void resolve(Entity entity, ConfigContext context) {
         lineNum = entity.getLineNum();
-        docName = entity.getDocName();
+        docPath = context.getDocPath();
     }
 
 }

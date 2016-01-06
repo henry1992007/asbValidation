@@ -39,6 +39,10 @@ public class ValidationChecker {
         return new ValidationChecker(id);
     }
 
+    public static void clearAll() {
+        validations.clear();
+    }
+
     public List<String> check(Object... objects) {
         doCheck(vd, resolveObjectClass(objects));
         return results;

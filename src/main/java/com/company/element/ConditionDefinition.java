@@ -12,8 +12,8 @@ public class ConditionDefinition extends AbstractElementDefinition implements Pa
     private List<CheckDefinition> subChecks = new ArrayList<>();
     private List<ConditionDefinition> subConditions = new ArrayList<>();
 
-    public ConditionDefinition(int lineNum, String docName) {
-        super(lineNum, docName);
+    public ConditionDefinition(int lineNum) {
+        super(lineNum);
     }
 
     public String getMsg() {

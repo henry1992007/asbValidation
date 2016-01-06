@@ -1,8 +1,5 @@
 package com.company.element;
 
-import com.company.utils.Assert;
-import com.company.utils.StringUtils;
-
 /**
  * Created by henry on 15/11/16.
  */
@@ -10,13 +7,12 @@ public class ClassDefinition extends AbstractElementDefinition {
 
     private Class clazz;
 
-    public ClassDefinition(String id, int lineNum, String docName) {
-        super(lineNum, docName);
-        if (StringUtils.isEmpty(id))
-            Assert.illegalDefinitionException(Assert.CLASS_ID_UNSPECIFIED, lineNum, docName);
-        setId(id);
-    }
 
+    public ClassDefinition(String id, int lineNum) {
+        super(lineNum);
+        //todo: check id not null
+        this.id = id;
+    }
 
     public void setClazz(Class clazz) {
         this.clazz = clazz;
@@ -25,4 +21,5 @@ public class ClassDefinition extends AbstractElementDefinition {
     public Class getClazz() {
         return clazz;
     }
+
 }

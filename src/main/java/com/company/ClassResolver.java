@@ -20,17 +20,17 @@ public class ClassResolver extends AbstractEntityResolver {
 
         Map<String, String> property = entity.getProperty();
 
-        ClassDefinition cd = new ClassDefinition(property.get(ID), entity.getLineNum(), entity.getDocName());
+        ClassDefinition cd = new ClassDefinition(property.get(ID), entity.getLineNum());
         if (context.getClasses().containsKey(cd.getId()))
-            Assert.entityIDException(Assert.DUPLICATED_CLASS_ID, cd.getId(), lineNum, docName);
+            Assert.entityIDException(Assert.DUPLICATED_CLASS_ID, cd.getId(), lineNum, docPath);
 
         String className = property.get(CLASS);
         try {
             if (StringUtils.isEmpty(className))
-                Assert.illegalDefinitionException(Assert.CLASS_NAME_UNSPECIFIED, lineNum, docName);
+                Assert.illegalDefinitionException(Assert.CLASS_NAME_UNSPECIFIED, lineNum, docPath);
             cd.setClazz(Class.forName(className));
         } catch (ClassNotFoundException e) {
-            Assert.illegalDefinitionException(Assert.CLASS_NOT_FOUND + ":'" + className + "'", lineNum, docName);
+            Assert.illegalDefinitionException(Assert.CLASS_NOT_FOUND + ":'" + className + "'", lineNum, docPath);
         }
 
         context.getClasses().put(cd.getId(), cd);

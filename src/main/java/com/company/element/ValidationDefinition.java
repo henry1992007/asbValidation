@@ -12,6 +12,7 @@ import java.util.Map;
  * Created by henry on 15/11/16.
  */
 public class ValidationDefinition extends AbstractElementDefinition implements ParentElement {
+    private String docPath;
     private Map<String, Class> classes;
     private Class mainClass;
     private List<CheckDefinition> checks = new ArrayList<>();
@@ -19,11 +20,11 @@ public class ValidationDefinition extends AbstractElementDefinition implements P
     private Map<String, ConditionDefinition> conditionIdMap = new HashMap<>();
 
 
-    public ValidationDefinition(String id, int lineNum, String docName) {
-        super(lineNum, docName);
-        if (StringUtils.isEmpty(id))
-            Assert.illegalDefinitionException(Assert.VALIDATION_ID_UNSPECIFIED, lineNum, docName);
-        setId(id);
+    public ValidationDefinition(String id, int lineNum, String docPath) {
+        super(lineNum);
+        this.docPath = docPath;
+        //todo:check id not null
+        this.id = id;
     }
 
     public Class getMainClass() {
@@ -70,4 +71,7 @@ public class ValidationDefinition extends AbstractElementDefinition implements P
         return conditionIdMap;
     }
 
+    public String getDocPath() {
+        return docPath;
+    }
 }

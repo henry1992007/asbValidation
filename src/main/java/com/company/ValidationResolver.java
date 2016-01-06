@@ -43,16 +43,16 @@ public class ValidationResolver extends AbstractEntityResolver {
 
         Map<String, String> property = entity.getProperty();
 
-        ValidationDefinition vd = new ValidationDefinition(property.get(ID), entity.getLineNum(), entity.getDocName());
+        ValidationDefinition vd = new ValidationDefinition(property.get(ID), entity.getLineNum(), docPath);
         this.vd = vd;
         this.context = context;
 
         if (ValidationChecker.validations.containsKey(vd.getId()))
-            Assert.entityIDException(Assert.DUPLICATED_VALIDATION_ID, vd.getId(), vd.getLineNum(), vd.getDocName());
+            Assert.entityIDException(Assert.DUPLICATED_VALIDATION_ID, vd.getId(), vd.getLineNum(), docPath);
 
         Map<String, Class> classMap = new HashMap<>();
         if (StringUtils.isEmpty(property.get(CLASS)))
-            Assert.illegalDefinitionException("class not specified", vd.getLineNum(), vd.getDocName());
+            Assert.illegalDefinitionException("class not specified", vd.getLineNum(), docPath);
         String[] classNames = property.get(CLASS).split(",");
         for (int i = 0; i < classNames.length; i++) {
             String name = classNames[i];
@@ -64,7 +64,7 @@ public class ValidationResolver extends AbstractEntityResolver {
             } catch (ClassNotFoundException e) {
                 ClassDefinition clazz = context.getClasses().get(name);
                 if (clazz == null)
-                    Assert.runtimeException("class name:'" + name + "' defined in validation id:" + vd.getId() + " does not refer to an class definition or existing Class, at line " + entity.getLineNum() + " in " + entity.getDocName());
+                    Assert.runtimeException("class name:'" + name + "' defined in validation id:" + vd.getId() + " does not refer to an class definition or existing Class, at line " + entity.getLineNum() + " in " + docPath);
                 classMap.put(name, clazz.getClazz());
                 if (i == 0)
                     vd.setMainClass(clazz.getClazz());
@@ -72,7 +72,7 @@ public class ValidationResolver extends AbstractEntityResolver {
         }
 
         vd.setClasses(classMap);
-        resolveDefinition(entity.getSubs(), vd, vd);
+        resolveDefinition(entity.getChildEntities(), vd, vd);
         ValidationChecker.validations.put(vd.getId(), vd);
     }
 
@@ -83,29 +83,29 @@ public class ValidationResolver extends AbstractEntityResolver {
             lineNum = entity.getLineNum();
             switch (DefinitionType.fromName(entity.getName())) {
                 case CHECK:
-                    CheckDefinition check = new CheckDefinition(lineNum, docName);
+                    CheckDefinition check = new CheckDefinition(lineNum);
                     setCheckProperty(entity, check, vd.getClasses());
                     pe.addCheck(check);
                     break;
                 case CONDITION:
-                    ConditionDefinition condition = new ConditionDefinition(lineNum, docName);
+                    ConditionDefinition condition = new ConditionDefinition(lineNum);
                     if (StringUtils.isNotEmpty(property.get(REF))) {
                         setConditionProperty(entity, condition, vd);
                     }
                     if (StringUtils.isNotEmpty(property.get(ID))) {
                         String id = property.get(ID);
                         if (vd.getConditionIdMap().containsKey(id))
-                            Assert.entityIDException("duplicated check id defined", id, entity.getLineNum(), entity.getDocName());
+                            Assert.entityIDException("duplicated check id defined", id, entity.getLineNum(), docPath);
                         vd.getConditionIdMap().put(id, condition);
                     }
                     //todo:change to
                     if (property.containsKey(FIELD)) {
-                        CheckDefinition subCd = new CheckDefinition(entity.getLineNum(), entity.getDocName());
+                        CheckDefinition subCd = new CheckDefinition(entity.getLineNum());
                         setCheckProperty(entity, subCd, vd.getClasses());
                         condition.addRefCheck(subCd);
                     }
-                    if (CollectionUtils.isNotEmpty(entity.getSubs()))
-                        resolveDefinition(entity.getSubs(), condition, vd);
+                    if (CollectionUtils.isNotEmpty(entity.getChildEntities()))
+                        resolveDefinition(entity.getChildEntities(), condition, vd);
                     pe.addCondition(condition);
                     break;
                 case UNKNOWN:
@@ -119,14 +119,13 @@ public class ValidationResolver extends AbstractEntityResolver {
         checkDefinitionLegal(property);
 
         int lineNum = entity.getLineNum();
-        String docName = entity.getDocName();
 
         if (StringUtils.isEmpty(property.get(TYPE)))
-            Assert.illegalDefinitionException("check type undefined", lineNum, docName);
+            Assert.illegalDefinitionException("check type undefined", lineNum, docPath);
         String s = property.get(TYPE);
         CheckType type = CheckType.fromName(s);
         if (type == null)
-            Assert.illegalDefinitionException("unknown check type:'" + s + "'", lineNum, docName);
+            Assert.illegalDefinitionException("unknown check type:'" + s + "'", lineNum, docPath);
         cd.setCheckType(type);
 
 
@@ -141,7 +140,7 @@ public class ValidationResolver extends AbstractEntityResolver {
         cd.setLogic((AggregateOperator<Boolean>) resolve(property.get(LOGIC)));
         cd.set_logic((AggregateOperator<Boolean>) resolve(property.get(_LOGIC)));
 
-        cd.setOperator(resolveOperator(property.get(OPERATOR), lineNum, docName));
+        cd.setOperator(resolveOperator(property.get(OPERATOR), lineNum, docPath));
         cd.setMsg(property.get("msg"));
 
         checkParamsLegal(cd);
@@ -150,25 +149,25 @@ public class ValidationResolver extends AbstractEntityResolver {
     private void checkDefinitionLegal(Map<String, String> map) {
         if ((StringUtils.isEmpty(map.get(FIELD)) && StringUtils.isEmpty(map.get(VALUE))) ||
                 (StringUtils.isEmpty(map.get(_FIELD)) && StringUtils.isEmpty(map.get(_VALUE)))) {
-            Assert.illegalDefinitionException("check definition illegal, compare value expected for the operator", lineNum, docName);
+            Assert.illegalDefinitionException("check definition illegal, compare value expected for the operator", lineNum, docPath);
         }
     }
 
     private void checkParamsLegal(CheckDefinition cd) {
         if (!vd.getClasses().values().containsAll(cd.getFields().stream().map(FieldPath::getClazz).collect(Collectors.toList())) ||
                 !vd.getClasses().values().containsAll(cd.get_fields().stream().map(FieldPath::getClazz).collect(Collectors.toList()))) {
-            Assert.illegalDefinitionException("class definition error", vd.getLineNum(), vd.getDocName());
+            Assert.illegalDefinitionException("class definition error", vd.getLineNum(), docPath);
         }
         if (cd.getCheckType().equals(CheckType.NUMBER)) {
-            cd.getVals().stream().filter(s -> (!s.equals("null")) && (!StringUtils.isDigit(s))).forEach(s -> Assert.illegalDefinitionException("the value '" + s + "' is not a digit in val", cd.getLineNum(), cd.getDocName()));
+            cd.getVals().stream().filter(s -> (!s.equals("null")) && (!StringUtils.isDigit(s))).forEach(s -> Assert.illegalDefinitionException("the value '" + s + "' is not a digit in val", cd.getLineNum(), docPath));
             cd.setVals(cd.getVals().stream().filter(s -> StringUtils.isDigit(s) || s.equals("null")).collect(Collectors.toList()));
-            cd.get_vals().stream().filter(s -> !s.equals("null") && !StringUtils.isDigit(s)).forEach(s -> Assert.illegalDefinitionException("the value '" + s + "' is not a digit in _val", cd.getLineNum(), cd.getDocName()));
+            cd.get_vals().stream().filter(s -> !s.equals("null") && !StringUtils.isDigit(s)).forEach(s -> Assert.illegalDefinitionException("the value '" + s + "' is not a digit in _val", cd.getLineNum(), docPath));
             cd.set_vals(cd.get_vals().stream().filter(s -> StringUtils.isDigit(s) || s.equals("null")).collect(Collectors.toList()));
         }
         if (!cd.getCheckType().getSupportedOperators().contains(cd.getOperator()))
             runtimeException("unsupported operator:'" + cd.getOperator().getValue() + "' in check type " + cd.getCheckType().getName() + " ,at line " + cd.getLineNum());
         if (cd.get_vals().contains("null") && (cd.getOperator() != Operator.EQUAL && cd.getOperator() != Operator.NOT_EQUAL)) {
-            Assert.illegalDefinitionException("unsupported operator:'" + cd.getOperator().getValue() + "' in null checking", cd.getLineNum(), cd.getDocName());
+            Assert.illegalDefinitionException("unsupported operator:'" + cd.getOperator().getValue() + "' in null checking", cd.getLineNum(), docPath);
         }
     }
 
@@ -178,7 +177,7 @@ public class ValidationResolver extends AbstractEntityResolver {
         List<CheckDefinition> refs = new ArrayList<>();
         for (String s : refIDs) {
             if (vd.getConditionIdMap().get(s) == null)
-                Assert.entityIDException("cannot find check with specified id.", s, entity.getLineNum(), entity.getDocName());
+                Assert.entityIDException("cannot find check with specified id.", s, entity.getLineNum(), docPath);
             refs.addAll(vd.getConditionIdMap().get(s).getRefChecks());
         }
         if (property.containsKey(MSG))
@@ -250,7 +249,7 @@ public class ValidationResolver extends AbstractEntityResolver {
         if (StringUtils.isEmpty(attr))
             return MultivariateOperators.getDefault();
         if (!type.getCmpt().contains(attr))
-            Assert.unsupportedOperator(attr, type, lineNum, docName);
+            Assert.unsupportedOperator(attr, type, lineNum, docPath);
         return MultivariateOperators.get(attr);
     }
 

@@ -6,8 +6,6 @@ import com.company.parsing.extended.LocatingDocumentFactory;
 import com.company.parsing.extended.LocatingElement;
 import com.company.parsing.extended.LocatingSaxReader;
 import com.company.utils.Assert;
-import com.company.utils.CollectionUtils;
-import com.company.utils.StringUtils;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -16,9 +14,11 @@ import org.dom4j.io.SAXReader;
 import org.xml.sax.Locator;
 import org.xml.sax.helpers.LocatorImpl;
 
-import java.io.File;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 import static com.company.utils.Utils.info;
 
@@ -27,7 +27,7 @@ import static com.company.utils.Utils.info;
  */
 public class XMLConfigParser {
 
-    private SAXReader saxReader;
+    private LocatingSaxReader saxReader;
 
     public XMLConfigParser() {
         Locator locator = new LocatorImpl();
@@ -39,7 +39,7 @@ public class XMLConfigParser {
     public ConfigContext parse(InputStream inputStream, String docName) throws DocumentException {
         Document document = saxReader.read(inputStream);
         ConfigContext configContext = new ConfigContext(docName, getEntities((LocatingElement) document.getRootElement(), docName));
-        info("在" + docName + "中读取到" + configContext.getEntities().size() + "条entities:\n"+ Arrays.toString(configContext.getEntities().toArray()));
+        info("在" + docName + "中读取到" + configContext.getEntities().size() + "条entities:\n" + Arrays.toString(configContext.getEntities().toArray()));
         return configContext;
     }
 
@@ -49,10 +49,10 @@ public class XMLConfigParser {
             LocatingElement element = i.next();
             if (ElementType.fromString(element.getName().toLowerCase()) == null)
                 Assert.unknownElementException(element.getName(), element.getLineNum(), docName);
-            Entity entity = new Entity(element.getName(), element.getLineNum(), docName);
+            Entity entity = new Entity(element.getName(), element.getLineNum());
             for (Attribute attribute : (List<Attribute>) element.attributes())
-                entity.getProperty().put(attribute.getName(), attribute.getValue());
-            entity.setSubs(getEntities(element, docName));
+                entity.putProperty(attribute.getName(), attribute.getValue());
+            entity.setChildEntities(getEntities(element, docName));
             entities.add(entity);
         }
 

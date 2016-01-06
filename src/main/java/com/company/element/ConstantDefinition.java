@@ -8,14 +8,14 @@ import java.util.Map;
  * Created by henry on 15/12/18.
  */
 public class ConstantDefinition extends AbstractElementDefinition {
+
     private CheckType Type;
     private Map<Class, String[]> fields;
     private Object value;
 
-    public ConstantDefinition(int lineNum, String docName) {
-        super(lineNum, docName);
+    public ConstantDefinition(int lineNum) {
+        super(lineNum);
     }
-
 
     public CheckType getType() {
         return Type;

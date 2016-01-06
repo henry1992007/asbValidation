@@ -31,8 +31,8 @@ public class CheckDefinition extends AbstractElementDefinition {
     private String msg;
 
 
-    public CheckDefinition(int lineNum, String docName) {
-        super(lineNum, docName);
+    public CheckDefinition(int lineNum) {
+        super(lineNum);
     }
 
 }

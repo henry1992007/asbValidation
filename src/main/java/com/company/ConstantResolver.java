@@ -21,9 +21,9 @@ public class ConstantResolver extends AbstractEntityResolver {
         super.resolve(entity, context);
         Map<String, String> property = entity.getProperty();
 
-        ConstantDefinition cd = new ConstantDefinition(entity.getLineNum(), entity.getDocName());
+        ConstantDefinition cd = new ConstantDefinition(entity.getLineNum());
         if (StringUtils.isEmpty(property.get(ID)))
-            Assert.illegalDefinitionException(Assert.VALIDATION_ID_UNSPECIFIED, lineNum, docName);
+            Assert.illegalDefinitionException(Assert.VALIDATION_ID_UNSPECIFIED, lineNum, docPath);
         cd.setId(property.get(ID));
 
         CheckType type = CheckType.fromName(property.get(TYPE));
@@ -31,7 +31,7 @@ public class ConstantResolver extends AbstractEntityResolver {
 //        if (type.equals())
         // 不能同时定义field和value
         if ((StringUtils.isNotEmpty(property.get(CLASS)) || StringUtils.isNotEmpty(property.get(FIELD))) && StringUtils.isNotEmpty(property.get(VALUE))) {
-            Assert.illegalDefinitionException("only define either in constant definition", lineNum, docName);
+            Assert.illegalDefinitionException("only define either in constant definition", lineNum, docPath);
         }
         String className = property.get(CLASS);
         String fieldName = property.get(FIELD);
@@ -42,7 +42,7 @@ public class ConstantResolver extends AbstractEntityResolver {
             } catch (ClassNotFoundException e) {
                 clazz = context.getClasses().get(className).getClazz();
                 if (clazz == null)
-                    Assert.illegalDefinitionException("class '" + className + "' does not exist", lineNum, docName);
+                    Assert.illegalDefinitionException("class '" + className + "' does not exist", lineNum, docPath);
             }
             try {
                 cd.setValue(ReflectUtils.getConstantValue(clazz, fieldName));
