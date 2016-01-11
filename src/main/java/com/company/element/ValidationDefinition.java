@@ -3,10 +3,7 @@ package com.company.element;
 import com.company.utils.Assert;
 import com.company.utils.StringUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by henry on 15/11/16.
@@ -44,7 +41,7 @@ public class ValidationDefinition extends AbstractElementDefinition implements P
     }
 
     public List<CheckDefinition> getRefChecks() {
-        return new ArrayList<>();
+        return Collections.emptyList();
     }
 
     public Map<String, Class> getClasses() {

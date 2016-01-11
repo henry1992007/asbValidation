@@ -53,7 +53,6 @@ public class ConfigReader {
                 }
         }
 
-
         for (ConfigContext ctx : configContexts)
             for (String eName : fistClass.keySet())
                 ctx.getEntities().stream().filter(

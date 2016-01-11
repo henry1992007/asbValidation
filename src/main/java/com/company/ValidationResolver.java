@@ -15,6 +15,7 @@ import com.company.validations.MultivariateOperators;
 import com.company.validations.ValidationChecker;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -270,22 +271,36 @@ public class ValidationResolver extends AbstractEntityResolver {
         return operator;
     }
 
-    private void checkFieldAccessible(Class clazz, String[] fieldName) {
-        for (int i = 0; i < fieldName.length; i++) {
+    /**
+     * 该属性可以被访问必须满足以下条件之一:
+     * 1.被public修饰
+     * 2.存在该属性的getter
+     * <p>
+     * 该方法遵循以下算法
+     * 假设类C是当前类
+     * 1.如果该属性是C或者C父类的public属性,则该属性可以访问,用这个属性的类代替C并重1开始,否则执行2
+     * 2.如果C或者C的父类拥有该属性的public getter,则该属性可以访问,用这个属性的类代替C并重1开始,否则抛出异常
+     *
+     * @param clazz      需要访问的类链的第一个类
+     * @param fieldNames 需要访问属性的路径
+     */
+    private void checkFieldAccessible(Class clazz, String[] fieldNames) {
+        for (String fieldName : fieldNames)
             try {
-                Field field = clazz.getDeclaredField(fieldName[i]);
-                if (ReflectUtils.isMapClass(field.getType()))
+                if (ReflectUtils.isMapClass(clazz)) {
                     break;
-                if (!Modifier.isPublic(field.getModifiers()))
-                    clazz.getDeclaredMethod(ReflectUtils.genGetMethod(fieldName[i]));
-                clazz = field.getType();
+                } else {
+                    Field field = clazz.getField(fieldName);
+                    clazz = field.getType();
+                }
             } catch (NoSuchFieldException e) {
-                Assert.runtimeException("field '" + fieldName[i] + "' in Class " + clazz.toString() + " does not exist, at line " + lineNum);
-            } catch (NoSuchMethodException e) {
-                Assert.runtimeException("cannot access field '" + fieldName[i] + "' in Class " + clazz.toString() + ", the field is neither public or without " +
-                        "a get method " + ReflectUtils.genGetMethod(fieldName[i]) + "may be set, at line " + lineNum);
+                try {
+                    clazz = clazz.getMethod(ReflectUtils.genGetMethod(fieldName)).getReturnType();
+                } catch (NoSuchMethodException e1) {
+                    Assert.runtimeException("cannot access field '" + fieldName + "' in Class " + clazz.toString() + ", the field might do not exist, " +
+                            "be public or have a accessible public getter, at line " + lineNum + ", " + docPath);
+                }
             }
-        }
     }
 
 }

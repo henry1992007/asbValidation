@@ -141,6 +141,12 @@ public abstract class AbstractValidator<T> implements TypeValidator {
         }
     }
 
+    /**
+     * fixme: 确保返回一个新的map
+     * @param cd
+     * @param objectClassMap
+     * @return
+     */
     @Override
     public Map<Class, List<Object>> filter(CheckDefinition cd, Map<Class, List<Object>> objectClassMap) {
         setCheckNull(false);

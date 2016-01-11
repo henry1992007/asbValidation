@@ -6,10 +6,7 @@ import com.company.parsing.extended.LocatingDocumentFactory;
 import com.company.parsing.extended.LocatingElement;
 import com.company.parsing.extended.LocatingSaxReader;
 import com.company.utils.Assert;
-import org.dom4j.Attribute;
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.DocumentFactory;
+import org.dom4j.*;
 import org.dom4j.io.SAXReader;
 import org.xml.sax.Locator;
 import org.xml.sax.helpers.LocatorImpl;
@@ -50,8 +47,8 @@ public class XMLConfigParser {
             if (ElementType.fromString(element.getName().toLowerCase()) == null)
                 Assert.unknownElementException(element.getName(), element.getLineNum(), docName);
             Entity entity = new Entity(element.getName(), element.getLineNum());
-            for (Attribute attribute : (List<Attribute>) element.attributes())
-                entity.putProperty(attribute.getName(), attribute.getValue());
+            ((List<Attribute>) element.attributes()).stream().forEach(
+                    a -> entity.putProperty(a.getName(), a.getValue()));
             entity.setChildEntities(getEntities(element, docName));
             entities.add(entity);
         }

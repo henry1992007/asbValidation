@@ -81,4 +81,16 @@ public abstract class MapUtils {
         return map;
     }
 
+
+    public static <K, V> Map<K, V> copy(Map<K, V> map) {
+        try {
+            Map<K, V> copy = map.getClass().newInstance();
+            map.forEach(copy::put);
+            return copy;
+        } catch (InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 }
